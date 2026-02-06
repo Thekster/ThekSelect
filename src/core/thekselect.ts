@@ -24,7 +24,7 @@ export class ThekSelect {
   private originalElement: HTMLElement;
   private documentClickListener!: (e: MouseEvent) => void;
 
-  constructor(element: string | HTMLElement, config: ThekSelectConfig = {}) {
+  private constructor(element: string | HTMLElement, config: ThekSelectConfig = {}) {
     const el = typeof element === 'string' ? document.querySelector(element) : element;
     if (!el) throw new Error('Element not found');
     this.originalElement = el as HTMLElement;
@@ -34,7 +34,11 @@ export class ThekSelect {
     this.stateManager = new StateManager<ThekSelectState>(this.getInitialState());
 
     this.setupHandleSearch();
-    this.init();
+    this.initialize();
+  }
+
+  public static init(element: string | HTMLElement, config: ThekSelectConfig = {}): ThekSelect {
+    return new ThekSelect(element, config);
   }
 
   private parseConfig(config: ThekSelectConfig): Required<ThekSelectConfig> {
@@ -86,7 +90,7 @@ export class ThekSelect {
     };
   }
 
-  private init(): void {
+  private initialize(): void {
     this.createDom();
     this.setupListeners();
     this.stateManager.subscribe(() => this.render());
