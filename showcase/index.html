@@ -234,6 +234,10 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
                             </div>
                             <div style="display: flex; gap: 8px;">
                                 <input type="text" id="setvalue-input" placeholder="Value to set..." style="flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px;">
+                                <div style="display: flex; align-items: center; gap: 4px;">
+                                    <input type="checkbox" id="setvalue-silent">
+                                    <label for="setvalue-silent" style="font-size: 0.75rem;">Silent</label>
+                                </div>
                                 <button id="btn-setvalue" class="api-btn">setValue()</button>
                             </div>
                             <div style="display: flex; gap: 8px;">
@@ -295,6 +299,56 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
                         </table>
                     </div>
 
+                    <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color);">Theme Object Properties</h3>
+                    <div style="overflow-x: auto; margin-bottom: 24px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border-color);">
+                                    <th style="padding: 8px;">Property</th>
+                                    <th style="padding: 8px;">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">primary</td>
+                                    <td style="padding: 8px;">Main accent color (borders, focus, checkboxes).</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">bgSurface</td>
+                                    <td style="padding: 8px;">Background color of the control and dropdown.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">bgPanel</td>
+                                    <td style="padding: 8px;">Hover color for options and tag background.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">textMain</td>
+                                    <td style="padding: 8px;">Primary text color.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">textMuted</td>
+                                    <td style="padding: 8px;">Color for placeholders and secondary text.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">borderRadius</td>
+                                    <td style="padding: 8px;">Corner rounding (e.g., '8px', '0px').</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">fontFamily</td>
+                                    <td style="padding: 8px;">Typography stack for the component.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">height[Sm|Md|Lg]</td>
+                                    <td style="padding: 8px;">Explicit heights for each size tier.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">itemPadding</td>
+                                    <td style="padding: 8px;">Padding for dropdown items (e.g., '8px 12px').</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                     <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color);">Public Methods</h3>
                     <div style="overflow-x: auto; margin-bottom: 24px;">
                         <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
@@ -316,6 +370,10 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
                                 <tr style="border-bottom: 1px solid var(--border-color);">
                                     <td style="padding: 8px; font-weight: 600;">setTheme(theme)</td>
                                     <td style="padding: 8px;">Updates component theme at runtime.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">setValue(val, silent)</td>
+                                    <td style="padding: 8px;">Sets value. silent (default:false) triggers event.</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--border-color);">
                                     <td style="padding: 8px; font-weight: 600;">destroy()</td>
@@ -679,7 +737,8 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
 
     document.getElementById('btn-setvalue').addEventListener('click', () => {
         const val = document.getElementById('setvalue-input').value;
-        apiInstance.setValue(val);
+        const silent = document.getElementById('setvalue-silent').checked;
+        apiInstance.setValue(val, silent);
     });
 
     document.getElementById('btn-destroy').addEventListener('click', () => {

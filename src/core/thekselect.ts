@@ -368,11 +368,13 @@ export class ThekSelect {
     return this.config.multiple ? selected : selected[0];
   }
 
-  public setValue(value: string | string[]): void {
+  public setValue(value: string | string[], silent: boolean = false): void {
     const values = Array.isArray(value) ? value : [value];
     this.stateManager.setState({ selectedValues: values });
     this.syncOriginalElement(values);
-    this.emit('change', this.getValue());
+    if (!silent) {
+      this.emit('change', this.getValue());
+    }
   }
 
   public setTheme(theme: ThekSelectTheme): void {
