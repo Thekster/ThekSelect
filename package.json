@@ -1,0 +1,44 @@
+{
+  "name": "thekselect",
+  "version": "1.0.0",
+  "description": "A headless, framework-agnostic select library with themes.",
+  "type": "module",
+  "main": "./dist/thekselect.umd.cjs",
+  "module": "./dist/thekselect.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/thekselect.js",
+      "require": "./dist/thekselect.umd.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./css/*": "./dist/css/*"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc && mkdir -p dist/css && cp src/themes/*.css dist/css/",
+    "preview": "vite preview",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "select",
+    "autocomplete",
+    "multiselect",
+    "tagging",
+    "headless",
+    "accessible",
+    "aria"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "jsdom": "^24.0.0",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11",
+    "vitest": "^1.6.0"
+  }
+}
