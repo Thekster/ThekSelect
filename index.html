@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThekSelect Showcase & Documentation</title>
+    <link rel="stylesheet" href="/src/themes/base.css">
+    <link rel="stylesheet" id="theme-link" href="/src/themes/default.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #f9f9f9;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+        }
+        h2 {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .demo-container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .demo-control {
+            flex: 1;
+            min-width: 300px;
+        }
+        .demo-code {
+            flex: 1.5;
+            min-width: 300px;
+            background: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+        }
+        pre {
+            margin: 0;
+        }
+        .theme-selector {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        select#theme-switcher {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        code {
+            background: #eee;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        .event-log {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #666;
+            height: 60px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 5px;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>ThekSelect</h1>
+    <p class="subtitle">A headless, framework-agnostic, and accessible select library.</p>
+</header>
+
+<section>
+    <h2>Theme Preview</h2>
+    <div class="theme-selector">
+        <label for="theme-switcher">Switch Theme:</label>
+        <select id="theme-switcher">
+            <option value="default">Default</option>
+            <option value="bootstrap">Bootstrap</option>
+            <option value="tailwind">Tailwind</option>
+            <option value="material">Material</option>
+        </select>
+    </div>
+    <p>Change the theme above to see how the components adapt.</p>
+</section>
+
+<section id="basic">
+    <h2>Basic Usage</h2>
+    <p>Simple single-select initialized from an existing <code>&lt;select&gt;</code> element.</p>
+    <div class="demo-container">
+        <div class="demo-control">
+            <select id="basic-select">
+                <option value="apple">Apple</option>
+                <option value="banana">Banana</option>
+                <option value="cherry">Cherry</option>
+                <option value="date">Date</option>
+            </select>
+            <div id="basic-log" class="event-log">Events will appear here...</div>
+        </div>
+        <div class="demo-code">
+<pre><code>ThekSelect.init('#basic-select', {
+    placeholder: 'Pick a fruit'
+});</code></pre>
+        </div>
+    </div>
+</section>
+
+<section id="multi">
+    <h2>Multi-select & Tagging</h2>
+    <p>Support for multiple selections with reorderable tags via Drag-and-Drop.</p>
+    <div class="demo-container">
+        <div class="demo-control">
+            <select id="multi-select" multiple>
+                <option value="react" selected>React</option>
+                <option value="vue">Vue</option>
+                <option value="svelte" selected>Svelte</option>
+                <option value="angular">Angular</option>
+            </select>
+            <div id="multi-log" class="event-log">Events will appear here...</div>
+        </div>
+        <div class="demo-code">
+<pre><code>ThekSelect.init('#multi-select', {
+    placeholder: 'Select frameworks',
+    multiple: true
+});</code></pre>
+        </div>
+    </div>
+</section>
+
+<section id="creation">
+    <h2>Custom Tag Creation</h2>
+    <p>Allow users to create new options on the fly by typing.</p>
+    <div class="demo-container">
+        <div class="demo-control">
+            <div id="create-container"></div>
+            <div id="create-log" class="event-log">Events will appear here...</div>
+        </div>
+        <div class="demo-code">
+<pre><code>ThekSelect.init('#create-container', {
+    canCreate: true,
+    multiple: true,
+    options: [
+        { value: 'js', label: 'JavaScript' },
+        { value: 'ts', label: 'TypeScript' }
+    ],
+    createText: "Add new skill: '{%t}'"
+});</code></pre>
+        </div>
+    </div>
+</section>
+
+<section id="remote">
+    <h2>Remote Data Loading</h2>
+    <p>Fetch options from an API with built-in debouncing.</p>
+    <div class="demo-container">
+        <div class="demo-control">
+            <div id="remote-container"></div>
+            <div id="remote-log" class="event-log">Events will appear here...</div>
+        </div>
+        <div class="demo-code">
+<pre><code>ThekSelect.init('#remote-container', {
+    searchable: true,
+    placeholder: 'Search GitHub Users...',
+    loadOptions: async (query) => {
+        const res = await fetch(`https://api.github.com/search/users?q=${query}`);
+        const data = await res.json();
+        return data.items.map(u => ({
+            value: u.login,
+            label: u.login
+        }));
+    }
+});</code></pre>
+        </div>
+    </div>
+</section>
+
+<script type="module">
+    import { ThekSelect } from './src/index.ts';
+
+    // Theme Switcher
+    const themeLink = document.getElementById('theme-link');
+    document.getElementById('theme-switcher').addEventListener('change', (e) => {
+        themeLink.href = `/src/themes/${e.target.value}.css`;
+    });
+
+    const log = (id, msg) => {
+        const el = document.getElementById(id);
+        const div = document.createElement('div');
+        div.textContent = `${new Date().toLocaleTimeString()}: ${msg}`;
+        el.prepend(div);
+    };
+
+    // Basic
+    const basic = ThekSelect.init('#basic-select', {
+        placeholder: 'Pick a fruit'
+    });
+    basic.on('change', (val) => log('basic-log', `Changed to: ${val}`));
+
+    // Multi
+    const multi = ThekSelect.init('#multi-select', {
+        placeholder: 'Select frameworks'
+    });
+    multi.on('change', (val) => log('multi-log', `Selected: ${val.join(', ')}`));
+    multi.on('reordered', (val) => log('multi-log', `Reordered: ${val.join(', ')}`));
+
+    // Creation
+    const create = ThekSelect.init('#create-container', {
+        canCreate: true,
+        multiple: true,
+        options: [
+            { value: 'js', label: 'JavaScript' },
+            { value: 'ts', label: 'TypeScript' }
+        ],
+        createText: "Add new skill: '{%t}'"
+    });
+    create.on('change', (val) => log('create-log', `Skills: ${val.join(', ')}`));
+
+    // Remote
+    const remote = ThekSelect.init('#remote-container', {
+        searchable: true,
+        placeholder: 'Search GitHub Users...',
+        loadOptions: async (query) => {
+            if (!query) return [];
+            try {
+                const res = await fetch(`https://api.github.com/search/users?q=${query}&per_page=5`);
+                const data = await res.json();
+                return (data.items || []).map(u => ({ value: u.login, label: u.login }));
+            } catch (e) {
+                return [];
+            }
+        }
+    });
+    remote.on('change', (val) => log('remote-log', `User selected: ${val}`));
+</script>
+
+</body>
+</html>

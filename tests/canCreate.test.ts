@@ -10,7 +10,7 @@ describe('ThekSelect canCreate', () => {
   });
 
   it('should allow creating a new option', async () => {
-    const ts = new ThekSelect(container, {
+    const ts = ThekSelect.init(container, {
       canCreate: true,
       options: [{ value: '1', label: 'Existing' }]
     });
