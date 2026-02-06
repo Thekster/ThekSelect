@@ -11,7 +11,6 @@ A headless, framework-agnostic, and accessible select library with native Drag-a
 - **Remote Data Loading**: Fetch options from APIs with built-in debounce.
 - **Native Drag-and-Drop**: Reorder selected tags using HTML5 DnD.
 - **Accessible**: WAI-ARIA compliant.
-- **Themed**: Includes 4 themes (Default, Bootstrap, Tailwind, Material).
 - **Responsive Sizing**: Support for `sm`, `md`, and `lg` variants.
 
 ## Installation
@@ -26,7 +25,7 @@ npm install thekselect
 
 ```javascript
 import { ThekSelect } from 'thekselect';
-import 'thekselect/css/default.css';
+import 'thekselect/css/thekselect.css';
 
 const select = new ThekSelect('#my-select', {
   placeholder: 'Select an option...',
@@ -72,14 +71,49 @@ const ts = new ThekSelect('#remote-select', {
 | `createText` | `string` | `"Create '{%t}'..."` | Text for creation option. `{%t}` is replaced by input. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size of the control. |
 | `debounce` | `number` | `300` | Debounce delay for `loadOptions`. |
+| `maxSelectedLabels` | `number` | `3` | Maximum number of tags to show before collapsing to summary text. |
+| `theme` | `ThekSelectTheme` | `{}` | Custom theme object (primary, bgSurface, fontFamily, etc.). |
+| `displayField` | `string` | `'label'` | Property name to use for display text. |
+| `valueField` | `string` | `'value'` | Property name to use for internal value. |
 | `loadOptions` | `Function` | `undefined` | Async function to fetch remote options. |
-| `renderOption` | `Function` | `(o) => o.label` | Custom rendering for dropdown options. |
-| `renderSelection` | `Function` | `(o) => o.label` | Custom rendering for selected items. |
+| `renderOption` | `Function` | `(o) => o[displayField]` | Custom rendering for dropdown options. |
+| `renderSelection` | `Function` | `(o) => o[displayField]` | Custom rendering for selected items. |
+
+### Theming Example
+
+```javascript
+const select = new ThekSelect('#themed-select', {
+  theme: {
+    primary: '#8b5cf6',
+    bgSurface: '#faf5ff',
+    textMain: '#5b21b6',
+    fontFamily: '"Georgia", serif'
+  }
+});
+```
+
+### Custom Fields & Data Example
+
+```javascript
+const select = new ThekSelect('#custom-fields', {
+  displayField: 'name',
+  valueField: 'id',
+  options: [
+    { id: '1', name: 'John Doe', data: { role: 'Admin' } },
+    { id: '2', name: 'Jane Smith', data: { role: 'User' } }
+  ],
+  renderOption: (opt) => {
+    return `<div><strong>${opt.name}</strong> <small>(${opt.data.role})</small></div>`;
+  }
+});
+```
 
 ## Methods
 
 - `getValue()`: Returns the selected value (or values array).
 - `setValue(value)`: Programmatically sets the selection.
+- `setTheme(theme)`: Updates the theme dynamically.
+- `setRenderOption(callback)`: Updates the rendering function dynamically.
 - `on(event, callback)`: Subscribe to events.
 - `destroy()`: Removes the library instance and restores the original element.
 

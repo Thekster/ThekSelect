@@ -1,0 +1,15 @@
+[data-theme='dark'] {
+    /* ThekSelect Dark Theme Variables */
+    --thek-primary: #38bdf8;
+    --thek-primary-light: rgba(56, 189, 248, 0.15);
+    --thek-bg-surface: #0f172a;
+    --thek-bg-panel: #1e293b;
+    --thek-bg-subtle: #334155;
+    --thek-border: #334155;
+    --thek-border-strong: #475569;
+    --thek-text-main: #f8fafc;
+    --thek-text-muted: #94a3b8;
+    --thek-text-inverse: #0f172a;
+    --thek-danger: #f43f5e;
+    --thek-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+}

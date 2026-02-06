@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThekSelect | Modern Headless Select</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="./thek-dark.css">
+    <link rel="stylesheet" href="./testpage.css">
+</head>
+<body>
+
+<div class="app-container">
+    <aside>
+        <div class="logo">
+            <i class="fa-solid fa-layer-group"></i>
+            ThekSelect
+        </div>
+
+        <div style="margin-bottom: 32px;">
+            <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">Theme</label>
+            <div id="theme-selector-container"></div>
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="#basic" class="active">Basic Select</a></li>
+                <li><a href="#multi">Multi & Tagging</a></li>
+                <li><a href="#creation">Tag Creation</a></li>
+                <li><a href="#remote">Remote Loading</a></li>
+                <li><a href="#sizing">Custom Sizing</a></li>
+                <li><a href="#fields">Custom Fields</a></li>
+                <li><a href="#api">API Methods</a></li>
+                <li><a href="#properties">Properties</a></li>
+                <li><a href="#configurator">Configurator</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main>
+        <h1>ThekSelect</h1>
+        <p class="description">A lightweight, framework-agnostic select library built for modern interfaces. Accessible, customizable, and developer-friendly.</p>
+
+        <section id="basic">
+            <h2><i class="fa-solid fa-square-check"></i> Basic Usage</h2>
+            <div class="demo-card">
+                <div class="demo-content">
+                    <div style="max-width: 400px;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Pick a framework</label>
+                        <select id="basic-select">
+                            <option value="react">React</option>
+                            <option value="vue">Vue.js</option>
+                            <option value="angular">Angular</option>
+                            <option value="svelte">Svelte</option>
+                            <option value="solid">SolidJS</option>
+                        </select>
+                    </div>
+                    <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
+                    <div class="code-snippet">
+<pre>ThekSelect.init('#basic-select', {
+  placeholder: 'Select a framework...'
+});</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="multi">
+            <h2><i class="fa-solid fa-tags"></i> Multi-select & Tagging</h2>
+            <div class="demo-card">
+                <div class="demo-content">
+                    <div style="max-width: 500px;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Select multiple technologies</label>
+                        <select id="multi-select" multiple>
+                            <option value="ts" selected>TypeScript</option>
+                            <option value="js" selected>JavaScript</option>
+                            <option value="node">Node.js</option>
+                            <option value="python">Python</option>
+                            <option value="go">Go</option>
+                            <option value="rust">Rust</option>
+                        </select>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Try dragging tags to reorder them.</p>
+                    </div>
+                    <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
+                    <div class="code-snippet">
+<pre>ThekSelect.init('#multi-select', {
+  multiple: true,
+  maxSelectedLabels: 3
+});</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="creation">
+            <h2><i class="fa-solid fa-plus"></i> Tag Creation</h2>
+            <div class="demo-card">
+                <div class="demo-content">
+                    <div style="max-width: 500px;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Add custom skills</label>
+                        <div id="create-container"></div>
+                    </div>
+                    <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
+                    <div class="code-snippet">
+<pre>ThekSelect.init('#create-container', {
+  canCreate: true,
+  multiple: true,
+  createText: "Add skill: '{%t}'",
+  options: [
+    { value: 'design', label: 'Design' },
+    { value: 'marketing', label: 'Marketing' }
+  ]
+});</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="remote">
+            <h2><i class="fa-solid fa-cloud-arrow-down"></i> Remote Data</h2>
+            <div class="demo-card">
+                <div class="demo-content">
+                    <div style="max-width: 500px;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Search GitHub Users</label>
+                        <div id="remote-container"></div>
+                    </div>
+                    <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
+                    <div class="code-snippet">
+<pre>ThekSelect.init('#remote-container', {
+  loadOptions: async (query) => {
+    const res = await fetch(`https://api.github.com/search/users?q=${query}`);
+    const data = await res.json();
+    return data.items.map(u => ({ value: u.id, label: u.login }));
+  }
+});</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sizing">
+            <h2><i class="fa-solid fa-up-right-and-down-left-from-center"></i> Custom Sizing</h2>
+            <div class="demo-card">
+                <div class="demo-content">
+                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: end;">
+                            <div>
+                                <span class="badge" style="margin-bottom: 8px;">Small (sm) - Single</span>
+                                <div id="size-sm"></div>
+                            </div>
+                            <div>
+                                <span class="badge" style="margin-bottom: 8px;">Small (sm) - Multi</span>
+                                <div id="size-sm-multi"></div>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: end;">
+                            <div>
+                                <span class="badge" style="margin-bottom: 8px;">Medium (md) - Single</span>
+                                <div id="size-md"></div>
+                            </div>
+                            <div>
+                                <span class="badge" style="margin-bottom: 8px;">Medium (md) - Multi</span>
+                                <div id="size-md-multi"></div>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: end;">
+                            <div>
+                                <span class="badge" style="margin-bottom: 8px;">Large (lg) - Single</span>
+                                <div id="size-lg"></div>
+                            </div>
+                            <div>
+                                <span class="badge" style="margin-bottom: 8px;">Large (lg) - Multi</span>
+                                <div id="size-lg-multi"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
+                    <div class="code-snippet">
+<pre>// sm, md, lg sizes supported
+ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="fields">
+            <h2><i class="fa-solid fa-database"></i> Custom Fields</h2>
+            <div class="demo-card">
+                <div class="demo-content">
+                    <div style="max-width: 500px;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Using 'id' and 'name' instead of 'value' and 'label'</label>
+                        <div id="fields-container"></div>
+                    </div>
+                    <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
+                    <div class="code-snippet">
+<pre>ThekSelect.init('#fields-container', {
+  displayField: 'name',
+  valueField: 'id',
+  options: [
+    { id: 'usr_1', name: 'John Doe' },
+    { id: 'usr_2', name: 'Jane Smith' }
+  ]
+});</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="api">
+            <h2><i class="fa-solid fa-terminal"></i> API Methods</h2>
+            <div class="demo-card">
+                <div class="demo-content">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Target Instance</label>
+                            <div id="api-target-container"></div>
+                            <div style="margin-top: 12px; display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="api-multiple-toggle">
+                                <label for="api-multiple-toggle" style="font-size: 0.8rem; cursor: pointer;">Enable Multiple</label>
+                            </div>
+                            <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                                <label style="font-size: 0.8rem;">Max Items:</label>
+                                <input type="number" id="api-max-options" placeholder="All" style="width: 60px; padding: 4px; border: 1px solid var(--border-color); border-radius: 4px;">
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div>
+                                <button id="btn-getvalue" class="api-btn">getValue()</button>
+                                <span id="getvalue-output" style="margin-left: 8px; font-family: monospace; font-size: 0.8rem; color: var(--brand-color);"></span>
+                            </div>
+                            <div>
+                                <button id="btn-getobjects" class="api-btn">getSelectedOptions()</button>
+                                <div id="getobjects-output" style="margin-top: 4px; font-family: monospace; font-size: 0.75rem; color: var(--text-muted); background: var(--sidebar-bg); padding: 8px; border-radius: 4px; white-space: pre; display: none;"></div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="setvalue-input" placeholder="Value to set..." style="flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px;">
+                                <button id="btn-setvalue" class="api-btn">setValue()</button>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button id="btn-destroy" class="api-btn btn-danger">destroy()</button>
+                                <button id="btn-reinit" class="api-btn">Re-initialize</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="properties">
+            <h2><i class="fa-solid fa-list-ul"></i> Properties & Methods</h2>
+            <div class="demo-card">
+                <div class="demo-content">
+                    <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color);">Configuration Options</h3>
+                    <div style="overflow-x: auto; margin-bottom: 24px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border-color);">
+                                    <th style="padding: 8px;">Property</th>
+                                    <th style="padding: 8px;">Type</th>
+                                    <th style="padding: 8px;">Default</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">options</td>
+                                    <td style="padding: 8px;">Option[]</td>
+                                    <td style="padding: 8px;">[]</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">multiple</td>
+                                    <td style="padding: 8px;">boolean</td>
+                                    <td style="padding: 8px;">false</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">size</td>
+                                    <td style="padding: 8px;">'sm' | 'md' | 'lg'</td>
+                                    <td style="padding: 8px;">'md'</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">displayField</td>
+                                    <td style="padding: 8px;">string</td>
+                                    <td style="padding: 8px;">'label'</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">valueField</td>
+                                    <td style="padding: 8px;">string</td>
+                                    <td style="padding: 8px;">'value'</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">maxOptions</td>
+                                    <td style="padding: 8px;">number | null</td>
+                                    <td style="padding: 8px;">null</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color);">Public Methods</h3>
+                    <div style="overflow-x: auto; margin-bottom: 24px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border-color);">
+                                    <th style="padding: 8px;">Method</th>
+                                    <th style="padding: 8px;">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">getValue()</td>
+                                    <td style="padding: 8px;">Returns selected value(s).</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">getSelectedOptions()</td>
+                                    <td style="padding: 8px;">Returns full option data objects.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">setTheme(theme)</td>
+                                    <td style="padding: 8px;">Updates component theme at runtime.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">destroy()</td>
+                                    <td style="padding: 8px;">Cleans up instance and reverts DOM.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color);">Theme Object</h3>
+                    <div style="background: var(--sidebar-bg); padding: 12px; border-radius: 8px; font-family: monospace; font-size: 0.75rem;">
+                        { primary, bgSurface, bgPanel, border, textMain, fontFamily, borderRadius, heightSm, heightMd, heightLg, itemPadding }
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="configurator">
+            <h2><i class="fa-solid fa-sliders"></i> Theme Configurator</h2>
+            <div class="demo-card">
+                <div class="demo-content">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+                        <div>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Primary Color</label>
+                                <select id="config-primary" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
+                                    <option value="#0f172a">Slate (Default)</option>
+                                    <option value="#4f46e5">Indigo</option>
+                                    <option value="#e11d48">Rose</option>
+                                    <option value="#059669">Emerald</option>
+                                    <option value="#d97706">Amber</option>
+                                    <option value="#7c3aed">Violet</option>
+                                    <option value="#2563eb">Blue</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Background Surface</label>
+                                <select id="config-bg" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
+                                    <option value="#ffffff">White</option>
+                                    <option value="#f8fafc">Light Gray</option>
+                                    <option value="#fff1f2">Soft Red</option>
+                                    <option value="#eff6ff">Soft Blue</option>
+                                    <option value="#f0fdf4">Soft Green</option>
+                                    <option value="#0f172a">Deep Slate</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Text Color</label>
+                                <select id="config-text" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
+                                    <option value="#0f172a">Slate Dark</option>
+                                    <option value="#ffffff">White</option>
+                                    <option value="#1e3a8a">Blue Dark</option>
+                                    <option value="#450a0a">Red Dark</option>
+                                    <option value="#064e3b">Green Dark</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Border Color</label>
+                                <select id="config-border" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
+                                    <option value="#e2e8f0">Light</option>
+                                    <option value="#cbd5e1">Medium</option>
+                                    <option value="#94a3b8">Dark</option>
+                                    <option value="#334155">Slate</option>
+                                    <option value="transparent">None</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Font Family</label>
+                                <select id="config-font" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
+                                    <option value="inherit">Inherit (Default)</option>
+                                    <option value="'Inter', sans-serif">Inter</option>
+                                    <option value="'Georgia', serif">Georgia</option>
+                                    <option value="'Courier New', monospace">Courier New</option>
+                                    <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Rounding</label>
+                                <select id="config-round" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
+                                    <option value="8px">Default (8px)</option>
+                                    <option value="0px">Sharp (0px)</option>
+                                    <option value="4px">Slight (4px)</option>
+                                    <option value="12px">Rounded (12px)</option>
+                                    <option value="24px">Extra (24px)</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Component Size</label>
+                                <select id="config-size" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
+                                    <option value="sm">Small (sm)</option>
+                                    <option value="md" selected>Medium (md)</option>
+                                    <option value="lg">Large (lg)</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Base Height (MD)</label>
+                                <input type="number" id="config-height" value="40" min="24" max="80" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Item Padding</label>
+                                <select id="config-padding" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
+                                    <option value="8px 10px">Default</option>
+                                    <option value="4px 8px">Compact</option>
+                                    <option value="12px 16px">Relaxed</option>
+                                    <option value="16px 20px">Airy</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Render Mode</label>
+                                <select id="config-render" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
+                                    <option value="default">Default</option>
+                                    <option value="custom">Custom (Icons)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Live Preview</label>
+                            <div id="config-preview-container"></div>
+                            
+                            <div style="margin-top: 24px; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 0.75rem;">
+                                <div style="color: var(--text-muted); margin-bottom: 4px;">Generated Config:</div>
+                                <div id="config-json-output" style="white-space: pre; overflow-x: auto;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script type="module">
+    import { ThekSelect } from '../src/index.ts';
+
+    window.toggleCode = (btn) => {
+        const snippet = btn.nextElementSibling;
+        snippet.classList.toggle('visible');
+        btn.textContent = snippet.classList.contains('visible') ? 'Hide Code' : 'Show Code';
+    };
+
+    const instances = [];
+
+    const THEMES = {
+        light: {
+            primary: '#0f172a',
+            primaryLight: '#f1f5f9',
+            bgSurface: '#ffffff',
+            bgPanel: '#f8fafc',
+            textMain: '#0f172a',
+            border: '#e2e8f0'
+        },
+        dark: {
+            primary: '#38bdf8',
+            primaryLight: 'rgba(56, 189, 248, 0.15)',
+            bgSurface: '#0f172a',
+            bgPanel: '#334155',
+            textMain: '#f8fafc',
+            border: '#334155'
+        },
+        gray: {
+            primary: '#374151',
+            primaryLight: '#e5e7eb',
+            bgSurface: '#ffffff',
+            bgPanel: '#f3f4f6',
+            textMain: '#111827',
+            border: '#9ca3af'
+        },
+        red: {
+            primary: '#b91c1c',
+            primaryLight: '#fef2f2',
+            bgSurface: '#ffffff',
+            bgPanel: '#fff1f2',
+            textMain: '#450a0a',
+            border: '#f87171'
+        },
+        blue: {
+            primary: '#1e3a8a',
+            primaryLight: '#eff6ff',
+            bgSurface: '#ffffff',
+            bgPanel: '#eff6ff',
+            textMain: '#1e3a8a',
+            border: '#60a5fa'
+        },
+        green: {
+            primary: '#064e3b',
+            primaryLight: '#f0fdf4',
+            bgSurface: '#ffffff',
+            bgPanel: '#f0fdf4',
+            textMain: '#064e3b',
+            border: '#4ade80'
+        }
+    };
+
+    // Theme Selector
+    const themeSelector = ThekSelect.init('#theme-selector-container', {
+        options: [
+            { value: 'light', label: '☀️ Light' },
+            { value: 'dark', label: '🌙 Dark' },
+            { value: 'gray', label: '🩶 Gray' },
+            { value: 'red', label: '❤️ Red' },
+            { value: 'blue', label: '💙 Blue' },
+            { value: 'green', label: '💚 Green' }
+        ],
+        placeholder: 'Select Theme',
+        size: 'sm'
+    });
+
+    const refreshAllThemes = (themeKey) => {
+        const themeObj = THEMES[themeKey] || THEMES.light;
+        let optimizedTheme = { ...themeObj };
+        
+        if (themeKey === 'dark') {
+            optimizedTheme.bgSurface = '#1e293b'; 
+            optimizedTheme.border = '#334155';
+        } else {
+            optimizedTheme.bgSurface = '#ffffff';
+            optimizedTheme.textMain = themeObj.textMain || themeObj.primary; 
+        }
+
+        instances.forEach(ins => {
+            if (ins.originalElement.id === 'config-preview-container' || 
+                ins.originalElement.parentNode?.id === 'config-preview-container') {
+                return;
+            }
+            ins.setTheme(optimizedTheme);
+        });
+        
+        themeSelector.setTheme(optimizedTheme);
+    };
+
+    themeSelector.on('change', (val) => {
+        if (val === 'light') {
+            document.documentElement.removeAttribute('data-theme');
+        } else {
+            document.documentElement.setAttribute('data-theme', val);
+        }
+        refreshAllThemes(val);
+    });
+
+    // Basic
+    const basic = ThekSelect.init('#basic-select', {
+        placeholder: 'Select framework...'
+    });
+    instances.push(basic);
+
+    // Multi
+    const multi = ThekSelect.init('#multi-select', {
+        multiple: true,
+        maxSelectedLabels: 3
+    });
+    instances.push(multi);
+
+    // Creation
+    const create = ThekSelect.init('#create-container', {
+        canCreate: true,
+        multiple: true,
+        options: [
+            { value: 'design', label: 'Design' },
+            { value: 'marketing', label: 'Marketing' }
+        ],
+        createText: "Add skill: '{%t}'"
+    });
+    instances.push(create);
+
+    // Remote
+    const remote = ThekSelect.init('#remote-container', {
+        searchable: true,
+        placeholder: 'Type a GitHub username...',
+        loadOptions: async (query) => {
+            if (!query) return [];
+            try {
+                const res = await fetch(`https://api.github.com/search/users?q=${query}&per_page=10`);
+                const data = await res.json();
+                return (data.items || []).map(u => ({ value: u.login, label: u.login }));
+            } catch (e) {
+                return [];
+            }
+        }
+    });
+    instances.push(remote);
+
+    // Sizing
+    const options = [
+        { value: '1', label: 'Option 1' },
+        { value: '2', label: 'Option 2' },
+        { value: '3', label: 'Option 3' }
+    ];
+    instances.push(ThekSelect.init('#size-sm', { size: 'sm', options, placeholder: 'Small size' }));
+    instances.push(ThekSelect.init('#size-md', { size: 'md', options, placeholder: 'Medium size' }));
+    instances.push(ThekSelect.init('#size-lg', { size: 'lg', options, placeholder: 'Large size' }));
+
+    // Multi-select sizing
+    const smMulti = ThekSelect.init('#size-sm-multi', { size: 'sm', multiple: true, options, placeholder: 'Small multi' });
+    const mdMulti = ThekSelect.init('#size-md-multi', { size: 'md', multiple: true, options, placeholder: 'Medium multi' });
+    const lgMulti = ThekSelect.init('#size-lg-multi', { size: 'lg', multiple: true, options, placeholder: 'Large multi' });
+    
+    smMulti.setValue(['1', '2']);
+    mdMulti.setValue(['1', '2']);
+    lgMulti.setValue(['1', '2']);
+
+    instances.push(smMulti, mdMulti, lgMulti);
+
+    // Custom Fields
+    const fieldOptions = [
+        { id: 'usr_1', name: 'John Doe', role: 'Admin' },
+        { id: 'usr_2', name: 'Jane Smith', role: 'Editor' },
+        { id: 'usr_3', name: 'Bob Wilson', role: 'User' }
+    ];
+    instances.push(ThekSelect.init('#fields-container', {
+        displayField: 'name',
+        valueField: 'id',
+        options: fieldOptions,
+        placeholder: 'Select a user...'
+    }));
+
+    // API Methods
+    let apiInstance = null;
+    const initApiInstance = () => {
+        const isMultiple = document.getElementById('api-multiple-toggle').checked;
+        const maxOptVal = document.getElementById('api-max-options').value;
+        const maxOptions = maxOptVal ? parseInt(maxOptVal) : null;
+
+        apiInstance = ThekSelect.init('#api-target-container', {
+            multiple: isMultiple,
+            maxOptions: maxOptions,
+            options: [
+                { value: '1', label: 'API Option 1' },
+                { value: '2', label: 'API Option 2' },
+                { value: '3', label: 'API Option 3' },
+                { value: '4', label: 'API Option 4' },
+                { value: '5', label: 'API Option 5' }
+            ],
+            placeholder: 'API testing...'
+        });
+        instances.push(apiInstance);
+    };
+    initApiInstance();
+
+    document.getElementById('api-multiple-toggle').addEventListener('change', () => {
+        if (apiInstance) apiInstance.destroy();
+        initApiInstance();
+        refreshAllThemes(themeSelector.getValue());
+    });
+
+    document.getElementById('api-max-options').addEventListener('input', (e) => {
+        const val = e.target.value;
+        apiInstance.setMaxOptions(val ? parseInt(val) : null);
+    });
+
+    document.getElementById('btn-getvalue').addEventListener('click', () => {
+        const val = apiInstance.getValue();
+        document.getElementById('getvalue-output').textContent = `=> ${JSON.stringify(val)}`;
+    });
+
+    document.getElementById('btn-getobjects').addEventListener('click', () => {
+        const objs = apiInstance.getSelectedOptions();
+        const out = document.getElementById('getobjects-output');
+        out.style.display = 'block';
+        out.textContent = `=> ${JSON.stringify(objs, null, 2)}`;
+    });
+
+    document.getElementById('btn-setvalue').addEventListener('click', () => {
+        const val = document.getElementById('setvalue-input').value;
+        apiInstance.setValue(val);
+    });
+
+    document.getElementById('btn-destroy').addEventListener('click', () => {
+        apiInstance.destroy();
+        const idx = instances.indexOf(apiInstance);
+        if (idx > -1) instances.splice(idx, 1);
+    });
+
+    document.getElementById('btn-reinit').addEventListener('click', () => {
+        try { apiInstance.destroy(); } catch(e) {}
+        initApiInstance();
+        refreshAllThemes(themeSelector.getValue());
+    });
+
+    // Configurator
+    const optionsWithMetadata = [
+        { value: '1', label: 'User Profile', data: { icon: 'fa-user', desc: 'Account settings' } },
+        { value: '2', label: 'Security', data: { icon: 'fa-shield-halved', desc: 'Password & Auth' } },
+        { value: '3', label: 'Integrations', data: { icon: 'fa-puzzle-piece', desc: 'Connected apps' } },
+        { value: '4', label: 'Billing', data: { icon: 'fa-credit-card', desc: 'Subscription plans' } }
+    ];
+
+    const configPreview = ThekSelect.init('#config-preview-container', {
+        placeholder: 'Custom preview...',
+        options: optionsWithMetadata,
+        multiple: true
+    });
+    instances.push(configPreview);
+
+    const updateConfigurator = () => {
+        const baseHeight = parseInt(document.getElementById('config-height').value) || 40;
+        const theme = {
+            primary: document.getElementById('config-primary').value,
+            bgSurface: document.getElementById('config-bg').value,
+            textMain: document.getElementById('config-text').value,
+            border: document.getElementById('config-border').value,
+            fontFamily: document.getElementById('config-font').value,
+            borderRadius: document.getElementById('config-round').value,
+            heightMd: `${baseHeight}px`,
+            heightSm: `${Math.max(24, baseHeight - 8)}px`,
+            heightLg: `${baseHeight + 8}px`,
+            itemPadding: document.getElementById('config-padding').value,
+            primaryLight: document.getElementById('config-primary').value + '20',
+            bgPanel: document.getElementById('config-primary').value + '10'
+        };
+        configPreview.setSize(document.getElementById('config-size').value);
+        configPreview.setTheme(theme);
+
+        const renderMode = document.getElementById('config-render').value;
+        if (renderMode === 'custom') {
+            configPreview.setRenderOption((option) => {
+                if (!option.data) return option.label;
+                const wrapper = document.createElement('div');
+                wrapper.style.display = 'flex';
+                wrapper.style.alignItems = 'center';
+                wrapper.style.gap = '12px';
+                wrapper.style.padding = '4px 0';
+                wrapper.innerHTML = `
+                    <div style="width: 32px; height: 32px; border-radius: 6px; background: ${theme.primaryLight}; color: ${theme.primary}; display: flex; align-items: center; justify-content: center; font-size: 0.9em;">
+                        <i class="fa-solid ${option.data.icon}"></i>
+                    </div>
+                    <div style="display: flex; flex-direction: column; line-height: 1.2;">
+                        <span style="font-weight: 600; font-size: 0.9em;">${option.label}</span>
+                        <span style="font-size: 0.75em; opacity: 0.6;">${option.data.desc}</span>
+                    </div>
+                `;
+                return wrapper;
+            });
+        } else {
+            configPreview.setRenderOption((option) => option.label);
+        }
+
+        const configSnippet = {
+            options: optionsWithMetadata,
+            theme,
+            renderOption: renderMode === 'custom' ? `(option) => { ... }` : undefined
+        };
+        document.getElementById('config-json-output').textContent = JSON.stringify(configSnippet, null, 2);
+    };
+
+    ['config-primary', 'config-bg', 'config-text', 'config-border', 'config-font', 'config-round', 'config-height', 'config-size', 'config-padding', 'config-render'].forEach(id => {
+        const el = document.getElementById(id);
+        el.addEventListener('input', updateConfigurator);
+        el.addEventListener('change', updateConfigurator);
+    });
+    updateConfigurator();
+
+    setTimeout(() => {
+        themeSelector.setValue('light');
+    }, 50);
+
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('nav a');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 100) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -42,7 +42,7 @@ describe('ThekSelect Events', () => {
     const options = document.querySelectorAll('.thek-option');
     (options[0] as HTMLElement).click();
 
-    expect(onChange).toHaveBeenCalledWith(['1']);
+    expect(onChange).toHaveBeenCalledWith('1');
   });
 
   it('should emit search event when typing', async () => {
