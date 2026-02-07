@@ -1,0 +1,15 @@
+html[data-thek-theme='material'] {
+  --thek-primary: #6750a4;
+  --thek-primary-light: #eaddff;
+  --thek-bg-surface: #fffbfe;
+  --thek-bg-panel: #f7f2fa;
+  --thek-bg-subtle: #ede7f6;
+  --thek-border: #d0c4dc;
+  --thek-border-strong: #b39ddb;
+  --thek-text-main: #1d1b20;
+  --thek-text-muted: #625b71;
+  --thek-text-inverse: #ffffff;
+  --thek-danger: #b3261e;
+  --thek-shadow: 0 10px 20px -10px rgba(103, 80, 164, 0.35);
+  --thek-border-radius: 10px;
+}

@@ -3,8 +3,7 @@ import {
   ThekSelectConfig,
   ThekSelectOption,
   ThekSelectState,
-  ThekSelectEvent,
-  ThekSelectTheme
+  ThekSelectEvent
 } from './types.js';
 import { debounce, DebouncedFn } from '../utils/debounce.js';
 import { generateId } from '../utils/dom.js';
@@ -69,11 +68,7 @@ export class ThekSelect {
   public static setDefaults(defaults: Partial<ThekSelectConfig>): void {
     ThekSelect.globalDefaults = {
       ...ThekSelect.globalDefaults,
-      ...defaults,
-      theme: {
-        ...(ThekSelect.globalDefaults.theme || {}),
-        ...(defaults.theme || {})
-      }
+      ...defaults
     };
   }
 
@@ -341,20 +336,10 @@ export class ThekSelect {
     }
   }
 
-  public setTheme(theme: ThekSelectTheme): void {
-    this.config.theme = { ...this.config.theme, ...theme };
-    this.renderer.setTheme(this.config.theme);
-  }
-
-  public setSize(size: string): void {
-    this.config.size = size as any;
-    this.renderer.setSize(size);
+  public setHeight(height: number | string): void {
+    this.config.height = height as any;
+    this.renderer.setHeight(height);
     this.renderer.positionDropdown();
-  }
-
-  public resetTheme(): void {
-    this.config.theme = {};
-    this.renderer.resetTheme();
   }
 
   public setRenderOption(callback: (option: ThekSelectOption) => string | HTMLElement): void {

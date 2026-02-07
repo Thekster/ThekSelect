@@ -1,5 +1,4 @@
 import { ThekSelectConfig, ThekSelectState, ThekSelectOption } from './types.js';
-import { ThemeManager } from './theme-manager.js';
 
 export interface RendererCallbacks {
   onSelect: (option: ThekSelectOption) => void;
@@ -18,7 +17,6 @@ export class DomRenderer {
   public dropdown!: HTMLElement;
   public optionsList!: HTMLElement;
   
-  private themeManager!: ThemeManager;
   private lastState: ThekSelectState | null = null;
   private lastFilteredOptions: ThekSelectOption[] = [];
 
@@ -28,9 +26,26 @@ export class DomRenderer {
     private callbacks: RendererCallbacks
   ) {}
 
+  private normalizeHeight(value: number | string): string {
+    if (typeof value === 'number') {
+      return `${value}px`;
+    }
+    const trimmed = value.trim();
+    if (/^\d+(\.\d+)?$/.test(trimmed)) {
+      return `${trimmed}px`;
+    }
+    return trimmed;
+  }
+
+  private applyHeight(height: number | string): void {
+    const resolved = this.normalizeHeight(height);
+    this.wrapper.style.setProperty('--thek-input-height', resolved);
+    this.dropdown.style.setProperty('--thek-input-height', resolved);
+  }
+
   public createDom(): void {
     this.wrapper = document.createElement('div');
-    this.wrapper.className = `thek-select thek-select-${this.config.size}`;
+    this.wrapper.className = 'thek-select';
     if (this.config.disabled) this.wrapper.classList.add('thek-disabled');
     if (this.config.multiple) this.wrapper.classList.add('thek-multiple');
 
@@ -57,7 +72,7 @@ export class DomRenderer {
     this.control.appendChild(this.indicatorsContainer);
 
     this.dropdown = document.createElement('div');
-    this.dropdown.className = `thek-dropdown thek-dropdown-${this.config.size}`;
+    this.dropdown.className = 'thek-dropdown';
     this.dropdown.hidden = true;
 
     if (this.config.searchable) {
@@ -90,9 +105,8 @@ export class DomRenderer {
 
     this.wrapper.appendChild(this.control);
     document.body.appendChild(this.dropdown);
+    this.applyHeight(this.config.height);
 
-    this.themeManager = new ThemeManager(this.wrapper, this.dropdown);
-    this.themeManager.apply(this.config.theme);
   }
 
   public render(state: ThekSelectState, filteredOptions: ThekSelectOption[]): void {
@@ -411,26 +425,9 @@ export class DomRenderer {
     });
   }
 
-  public setTheme(theme: any): void {
-    this.themeManager.apply(theme);
-  }
-
-  public resetTheme(): void {
-    this.themeManager.reset();
-  }
-
-  public setSize(size: string): void {
-    // Remove all possible size classes
-    ['sm', 'md', 'lg'].forEach(s => {
-      this.wrapper.classList.remove(`thek-select-${s}`);
-      this.dropdown.classList.remove(`thek-dropdown-${s}`);
-    });
-    
-    // Add new size classes
-    this.wrapper.classList.add(`thek-select-${size}`);
-    this.dropdown.classList.add(`thek-dropdown-${size}`);
-    
-    this.config.size = size as any;
+  public setHeight(height: number | string): void {
+    this.config.height = height as any;
+    this.applyHeight(height);
   }
 
   public updateConfig(newConfig: Partial<Required<ThekSelectConfig>>): void {

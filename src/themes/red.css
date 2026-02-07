@@ -1,0 +1,14 @@
+html[data-thek-theme='red'] {
+  --thek-primary: #b91c1c;
+  --thek-primary-light: #fee2e2;
+  --thek-bg-surface: #fff5f5;
+  --thek-bg-panel: #fee2e2;
+  --thek-bg-subtle: #fecaca;
+  --thek-border: #fca5a5;
+  --thek-border-strong: #ef4444;
+  --thek-text-main: #7f1d1d;
+  --thek-text-muted: #991b1b;
+  --thek-text-inverse: #ffffff;
+  --thek-danger: #dc2626;
+  --thek-shadow: 0 8px 18px -8px rgba(185, 28, 28, 0.35);
+}

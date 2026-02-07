@@ -5,21 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ThekSelect | Modern Headless Select</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="./thek-dark.css">
+    <link rel="stylesheet" href="../src/themes/base.css">
+    <link rel="stylesheet" href="../src/themes/dark.css">
+    <link rel="stylesheet" href="../src/themes/forest.css">
+    <link rel="stylesheet" href="../src/themes/red.css">
+    <link rel="stylesheet" href="../src/themes/blue.css">
+    <link rel="stylesheet" href="../src/themes/gray.css">
+    <link rel="stylesheet" href="../src/themes/bootstrap.css">
+    <link rel="stylesheet" href="../src/themes/tailwind.css">
+    <link rel="stylesheet" href="../src/themes/material.css">
     <link rel="stylesheet" href="./testpage.css">
 </head>
 <body>
+
+<div class="showcase-toolbar">
+    <div class="toolbar-group">
+        <label for="page-theme-select">Page Theme</label>
+        <select id="page-theme-select">
+            <option value="light" selected>Light</option>
+            <option value="dark">Dark</option>
+        </select>
+    </div>
+    <div class="toolbar-group">
+        <label for="thek-theme-select">ThekSelect Theme</label>
+        <select id="thek-theme-select">
+            <option value="base" selected>Base</option>
+            <option value="dark">Dark</option>
+            <option value="forest">Forest</option>
+            <option value="red">Red</option>
+            <option value="blue">Blue</option>
+            <option value="gray">Gray</option>
+            <option value="bootstrap">Bootstrap</option>
+            <option value="tailwind">Tailwind</option>
+            <option value="material">Material</option>
+        </select>
+    </div>
+</div>
 
 <div class="app-container">
     <aside>
         <div class="logo">
             <i class="fa-solid fa-layer-group"></i>
             ThekSelect
-        </div>
-
-        <div style="margin-bottom: 32px;">
-            <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">Theme</label>
-            <div id="theme-selector-container"></div>
         </div>
 
         <nav>
@@ -69,6 +96,72 @@ npm run dev</pre>
                     <div style="margin-top: 16px; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.78rem; color: var(--text-muted);">
                         Remote demo note: the GitHub search example depends on network availability and API rate limits.
                     </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px;">
+                        <div>
+                            <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color);">Initialize From Existing &lt;select&gt;</h3>
+                            <pre style="margin: 0;">&lt;select id="country-select" multiple&gt;
+  &lt;option value="us" selected&gt;United States&lt;/option&gt;
+  &lt;option value="de"&gt;Germany&lt;/option&gt;
+  &lt;option value="jp" disabled&gt;Japan (disabled)&lt;/option&gt;
+&lt;/select&gt;
+
+ThekSelect.init('#country-select');</pre>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color);">Global Defaults</h3>
+                            <pre style="margin: 0;">&lt;div id="first"&gt;&lt;/div&gt;
+&lt;div id="second"&gt;&lt;/div&gt;
+
+ThekSelect.setDefaults({
+  height: 40,
+  virtualize: true
+});
+
+ThekSelect.init('#first');
+ThekSelect.init('#second', { height: 52 });
+ThekSelect.resetDefaults();</pre>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px;">
+                        <div>
+                            <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color);">Live: Existing &lt;select&gt;</h3>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Countries (native options)</label>
+                            <select id="quick-country-select" multiple>
+                                <option value="us" selected>United States</option>
+                                <option value="de">Germany</option>
+                                <option value="jp" disabled>Japan (disabled)</option>
+                                <option value="tr">Turkey</option>
+                            </select>
+                            <button class="toggle-code" onclick="toggleCode(this)" style="margin-top: 10px;">Show Code</button>
+                            <div class="code-snippet">
+<pre>&lt;select id="quick-country-select" multiple&gt;
+  &lt;option value="us" selected&gt;United States&lt;/option&gt;
+  &lt;option value="de"&gt;Germany&lt;/option&gt;
+  &lt;option value="jp" disabled&gt;Japan (disabled)&lt;/option&gt;
+&lt;/select&gt;
+
+ThekSelect.init('#quick-country-select');</pre>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color);">Live: Global Defaults</h3>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Default height vs override</label>
+                            <div id="quick-defaults-first" style="margin-bottom: 10px;"></div>
+                            <div id="quick-defaults-second"></div>
+                            <button class="toggle-code" onclick="toggleCode(this)" style="margin-top: 10px;">Show Code</button>
+                            <div class="code-snippet">
+<pre>const demoOptions = [
+  { value: 'alpha', label: 'Alpha' },
+  { value: 'beta', label: 'Beta' }
+];
+
+ThekSelect.setDefaults({ height: 44 });
+ThekSelect.init('#quick-defaults-first', { options: demoOptions });
+ThekSelect.init('#quick-defaults-second', { options: demoOptions, height: 56 });
+ThekSelect.resetDefaults();</pre>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -89,7 +182,13 @@ npm run dev</pre>
                     </div>
                     <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
                     <div class="code-snippet">
-<pre>ThekSelect.init('#basic-select', {
+<pre>&lt;select id="basic-select"&gt;
+  &lt;option value="react"&gt;React&lt;/option&gt;
+  &lt;option value="vue"&gt;Vue.js&lt;/option&gt;
+  &lt;option value="angular"&gt;Angular&lt;/option&gt;
+&lt;/select&gt;
+
+ThekSelect.init('#basic-select', {
   placeholder: 'Select a framework...'
 });</pre>
                     </div>
@@ -181,7 +280,14 @@ npm run dev</pre>
                     </div>
                     <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
                     <div class="code-snippet">
-<pre>ThekSelect.init('#virtual-container', {
+<pre>&lt;div id="virtual-container"&gt;&lt;/div&gt;
+
+const bigOptions = Array.from({ length: 5000 }, (_, i) => ({
+  value: `opt_${i + 1}`,
+  label: `Option ${i + 1}`
+}));
+
+ThekSelect.init('#virtual-container', {
   options: bigOptions,
   searchable: true,
   virtualize: true,
@@ -232,8 +338,8 @@ npm run dev</pre>
                     </div>
                     <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
                     <div class="code-snippet">
-<pre>// sm, md, lg sizes supported
-ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
+<pre>// height accepts number(px) or CSS string
+ThekSelect.init('#el', { height: 36, multiple: true });</pre>
                     </div>
                 </div>
             </div>
@@ -318,6 +424,7 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
                                     <th style="padding: 8px;">Property</th>
                                     <th style="padding: 8px;">Type</th>
                                     <th style="padding: 8px;">Default</th>
+                                    <th style="padding: 8px;">Description</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -325,31 +432,37 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
                                     <td style="padding: 8px; font-weight: 600;">options</td>
                                     <td style="padding: 8px;">Option[]</td>
                                     <td style="padding: 8px;">[]</td>
+                                    <td style="padding: 8px;">List of selectable option objects.</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--border-color);">
                                     <td style="padding: 8px; font-weight: 600;">multiple</td>
                                     <td style="padding: 8px;">boolean</td>
                                     <td style="padding: 8px;">false</td>
+                                    <td style="padding: 8px;">Enables multi-select with removable tags.</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">size</td>
-                                    <td style="padding: 8px;">'sm' | 'md' | 'lg'</td>
-                                    <td style="padding: 8px;">'md'</td>
+                                    <td style="padding: 8px; font-weight: 600;">height</td>
+                                    <td style="padding: 8px;">number | string</td>
+                                    <td style="padding: 8px;">40</td>
+                                    <td style="padding: 8px;">Control height (`number` = px, or CSS value string).</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--border-color);">
                                     <td style="padding: 8px; font-weight: 600;">displayField</td>
                                     <td style="padding: 8px;">string</td>
                                     <td style="padding: 8px;">'label'</td>
+                                    <td style="padding: 8px;">Field used for visible option text.</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--border-color);">
                                     <td style="padding: 8px; font-weight: 600;">valueField</td>
                                     <td style="padding: 8px;">string</td>
                                     <td style="padding: 8px;">'value'</td>
+                                    <td style="padding: 8px;">Field used as the internal selected value key.</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--border-color);">
                                     <td style="padding: 8px; font-weight: 600;">maxOptions</td>
                                     <td style="padding: 8px;">number | null</td>
                                     <td style="padding: 8px;">null</td>
+                                    <td style="padding: 8px;">Limits rendered filtered options (`null` = unlimited).</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -411,28 +524,58 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
                             <thead>
                                 <tr style="border-bottom: 2px solid var(--border-color);">
                                     <th style="padding: 8px;">Method</th>
+                                    <th style="padding: 8px;">Parameters</th>
+                                    <th style="padding: 8px;">Returns</th>
                                     <th style="padding: 8px;">Description</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr style="border-bottom: 1px solid var(--border-color);">
                                     <td style="padding: 8px; font-weight: 600;">getValue()</td>
+                                    <td style="padding: 8px;">none</td>
+                                    <td style="padding: 8px;">string \| string[] \| undefined</td>
                                     <td style="padding: 8px;">Returns selected value(s).</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--border-color);">
                                     <td style="padding: 8px; font-weight: 600;">getSelectedOptions()</td>
+                                    <td style="padding: 8px;">none</td>
+                                    <td style="padding: 8px;">Option \| Option[] \| undefined</td>
                                     <td style="padding: 8px;">Returns full option data objects.</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">setTheme(theme)</td>
-                                    <td style="padding: 8px;">Updates component theme at runtime.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
                                     <td style="padding: 8px; font-weight: 600;">setValue(val, silent)</td>
+                                    <td style="padding: 8px;">val: string \| string[], silent?: boolean</td>
+                                    <td style="padding: 8px;">void</td>
                                     <td style="padding: 8px;">Sets value. silent (default:false) triggers event.</td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">setHeight(height)</td>
+                                    <td style="padding: 8px;">height: number \| string</td>
+                                    <td style="padding: 8px;">void</td>
+                                    <td style="padding: 8px;">Sets instance control height (`number` = px).</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">setMaxOptions(limit)</td>
+                                    <td style="padding: 8px;">limit: number \| null</td>
+                                    <td style="padding: 8px;">void</td>
+                                    <td style="padding: 8px;">Caps rendered filtered options (`null` for unlimited).</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">setRenderOption(fn)</td>
+                                    <td style="padding: 8px;">fn: (option) => string \| HTMLElement</td>
+                                    <td style="padding: 8px;">void</td>
+                                    <td style="padding: 8px;">Overrides option row rendering.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">on(event, cb)</td>
+                                    <td style="padding: 8px;">event: string, cb: (payload) => void</td>
+                                    <td style="padding: 8px;">() => void</td>
+                                    <td style="padding: 8px;">Subscribes to events and returns unsubscribe callback.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
                                     <td style="padding: 8px; font-weight: 600;">destroy()</td>
+                                    <td style="padding: 8px;">none</td>
+                                    <td style="padding: 8px;">void</td>
                                     <td style="padding: 8px;">Cleans up instance and reverts DOM.</td>
                                 </tr>
                             </tbody>
@@ -493,15 +636,13 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
                             <div style="margin-bottom: 16px;">
                                 <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Ready Theme</label>
                                 <select id="config-preset" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
-                                    <option value="system" selected>System</option>
                                     <option value="light">Light</option>
                                     <option value="dark">Dark</option>
-                                    <option value="slate">Slate (Default)</option>
+                                    <option value="slate" selected>Slate (Default)</option>
                                     <option value="ocean">Ocean</option>
                                     <option value="sunset">Sunset</option>
                                     <option value="forest">Forest</option>
                                     <option value="mono">Mono Gray</option>
-                                    <option value="custom">Custom (Manual)</option>
                                 </select>
                             </div>
                             <div style="margin-bottom: 16px;">
@@ -571,14 +712,6 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
                                 </select>
                             </div>
                             <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Component Size</label>
-                                <select id="config-size" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
-                                    <option value="sm">Small (sm)</option>
-                                    <option value="md" selected>Medium (md)</option>
-                                    <option value="lg">Large (lg)</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 16px;">
                                 <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Base Height (MD)</label>
                                 <input type="number" id="config-height" value="40" min="24" max="80" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
                             </div>
@@ -606,7 +739,10 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
                             <div id="config-preview-container"></div>
                             
                             <div style="margin-top: 24px; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 0.75rem;">
-                                <div style="color: var(--text-muted); margin-bottom: 4px;">Generated Config:</div>
+                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
+                                    <div style="color: var(--text-muted);">Generated CSS Theme:</div>
+                                    <button id="copy-theme-css" class="api-btn" style="padding: 4px 8px; font-size: 0.72rem;">Copy CSS</button>
+                                </div>
                                 <div id="config-json-output" style="white-space: pre; overflow-x: auto;"></div>
                             </div>
                         </div>
@@ -627,89 +763,73 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
     };
 
     const instances = [];
+    const pageThemeSelect = document.getElementById('page-theme-select');
+    const thekThemeSelect = document.getElementById('thek-theme-select');
 
-    const THEMES = {
-        light: {
-            primary: '#0f172a',
-            primaryLight: '#f1f5f9',
-            bgSurface: '#ffffff',
-            bgPanel: '#f8fafc',
-            textMain: '#0f172a',
-            border: '#e2e8f0'
-        },
-        dark: {
-            primary: '#38bdf8',
-            primaryLight: 'rgba(56, 189, 248, 0.15)',
-            bgSurface: '#0f172a',
-            bgPanel: '#334155',
-            textMain: '#f8fafc',
-            border: '#334155'
-        },
-        gray: {
-            primary: '#374151',
-            primaryLight: '#e5e7eb',
-            bgSurface: '#f3f4f6',
-            bgPanel: '#e5e7eb',
-            textMain: '#111827',
-            border: '#9ca3af'
-        }
+    const registerInstance = (instance) => {
+        instances.push(instance);
     };
 
-    // Theme Selector
-    const themeSelector = ThekSelect.init('#theme-selector-container', {
-        options: [
-            { value: 'light', label: '☀️ Light' },
-            { value: 'dark', label: '🌙 Dark' },
-            { value: 'gray', label: '🩶 Gray' }
-        ],
-        placeholder: 'Select Theme',
-        size: 'sm'
+    const applyThekTheme = (theme) => {
+        const supportedThemes = ['dark', 'forest', 'red', 'blue', 'gray', 'bootstrap', 'tailwind', 'material'];
+        const resolvedTheme = supportedThemes.includes(theme) ? theme : 'base';
+        if (resolvedTheme === 'base') {
+            document.documentElement.removeAttribute('data-thek-theme');
+        } else {
+            document.documentElement.setAttribute('data-thek-theme', resolvedTheme);
+        }
+        thekThemeSelect.value = resolvedTheme;
+    };
+
+    const applyPageTheme = (theme) => {
+        const resolvedTheme = theme === 'dark' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-showcase-theme', resolvedTheme);
+        pageThemeSelect.value = resolvedTheme;
+    };
+
+    pageThemeSelect.addEventListener('change', (e) => {
+        applyPageTheme(e.target.value);
     });
-
-    const refreshAllThemes = (themeKey) => {
-        const themeObj = THEMES[themeKey] || THEMES.light;
-        let optimizedTheme = { ...themeObj };
-        
-        if (themeKey === 'dark') {
-            optimizedTheme.bgSurface = '#1e293b'; 
-            optimizedTheme.border = '#334155';
-        } else {
-            optimizedTheme.bgSurface = themeObj.bgSurface || '#ffffff';
-            optimizedTheme.textMain = themeObj.textMain || themeObj.primary; 
-        }
-
-        instances.forEach(ins => {
-            if (ins.originalElement.id === 'config-preview-container' || 
-                ins.originalElement.parentNode?.id === 'config-preview-container') {
-                return;
-            }
-            ins.setTheme(optimizedTheme);
-        });
-        
-        themeSelector.setTheme(optimizedTheme);
-    };
-
-    themeSelector.on('change', (val) => {
-        if (val === 'light') {
-            document.documentElement.removeAttribute('data-theme');
-        } else {
-            document.documentElement.setAttribute('data-theme', val);
-        }
-        refreshAllThemes(val);
+    thekThemeSelect.addEventListener('change', (e) => {
+        applyThekTheme(e.target.value);
     });
 
     // Basic
     const basic = ThekSelect.init('#basic-select', {
         placeholder: 'Select framework...'
     });
-    instances.push(basic);
+    registerInstance(basic);
+
+    // Quick docs: initialize from existing native select
+    const quickCountry = ThekSelect.init('#quick-country-select');
+    registerInstance(quickCountry);
+
+    // Quick docs: global defaults demo
+    const quickDefaultsOptions = [
+        { value: 'alpha', label: 'Alpha' },
+        { value: 'beta', label: 'Beta' },
+        { value: 'gamma', label: 'Gamma' }
+    ];
+    ThekSelect.setDefaults({ height: 44 });
+    const quickDefaultsFirst = ThekSelect.init('#quick-defaults-first', {
+        options: quickDefaultsOptions,
+        placeholder: 'Uses global height (44px)'
+    });
+    const quickDefaultsSecond = ThekSelect.init('#quick-defaults-second', {
+        options: quickDefaultsOptions,
+        height: 56,
+        placeholder: 'Overrides to 56px'
+    });
+    ThekSelect.resetDefaults();
+    registerInstance(quickDefaultsFirst);
+    registerInstance(quickDefaultsSecond);
 
     // Multi
     const multi = ThekSelect.init('#multi-select', {
         multiple: true,
         maxSelectedLabels: 3
     });
-    instances.push(multi);
+    registerInstance(multi);
 
     // Creation
     const create = ThekSelect.init('#create-container', {
@@ -721,7 +841,7 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
         ],
         createText: "Add skill: '{%t}'"
     });
-    instances.push(create);
+    registerInstance(create);
 
     // Remote
     const remote = ThekSelect.init('#remote-container', {
@@ -738,7 +858,7 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
             }
         }
     });
-    instances.push(remote);
+    registerInstance(remote);
 
     // Virtualization
     const bigOptions = Array.from({ length: 5000 }, (_, i) => ({
@@ -754,7 +874,7 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
         virtualItemHeight: 40,
         virtualOverscan: 4
     });
-    instances.push(virtualized);
+    registerInstance(virtualized);
 
     // Sizing
     const options = [
@@ -762,20 +882,22 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
         { value: '2', label: 'Option 2' },
         { value: '3', label: 'Option 3' }
     ];
-    instances.push(ThekSelect.init('#size-sm', { size: 'sm', options, placeholder: 'Small size' }));
-    instances.push(ThekSelect.init('#size-md', { size: 'md', options, placeholder: 'Medium size' }));
-    instances.push(ThekSelect.init('#size-lg', { size: 'lg', options, placeholder: 'Large size' }));
+    registerInstance(ThekSelect.init('#size-sm', { height: 32, options, placeholder: 'Small size' }));
+    registerInstance(ThekSelect.init('#size-md', { height: 40, options, placeholder: 'Medium size' }));
+    registerInstance(ThekSelect.init('#size-lg', { height: 48, options, placeholder: 'Large size' }));
 
     // Multi-select sizing
-    const smMulti = ThekSelect.init('#size-sm-multi', { size: 'sm', multiple: true, options, placeholder: 'Small multi' });
-    const mdMulti = ThekSelect.init('#size-md-multi', { size: 'md', multiple: true, options, placeholder: 'Medium multi' });
-    const lgMulti = ThekSelect.init('#size-lg-multi', { size: 'lg', multiple: true, options, placeholder: 'Large multi' });
+    const smMulti = ThekSelect.init('#size-sm-multi', { height: 32, multiple: true, options, placeholder: 'Small multi' });
+    const mdMulti = ThekSelect.init('#size-md-multi', { height: 40, multiple: true, options, placeholder: 'Medium multi' });
+    const lgMulti = ThekSelect.init('#size-lg-multi', { height: 48, multiple: true, options, placeholder: 'Large multi' });
     
     smMulti.setValue(['1', '2']);
     mdMulti.setValue(['1', '2']);
     lgMulti.setValue(['1', '2']);
 
-    instances.push(smMulti, mdMulti, lgMulti);
+    registerInstance(smMulti);
+    registerInstance(mdMulti);
+    registerInstance(lgMulti);
 
     // Custom Fields
     const fieldOptions = [
@@ -783,7 +905,7 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
         { id: 'usr_2', name: 'Jane Smith', role: 'Editor' },
         { id: 'usr_3', name: 'Bob Wilson', role: 'User' }
     ];
-    instances.push(ThekSelect.init('#fields-container', {
+    registerInstance(ThekSelect.init('#fields-container', {
         displayField: 'name',
         valueField: 'id',
         options: fieldOptions,
@@ -809,14 +931,13 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
             ],
             placeholder: 'API testing...'
         });
-        instances.push(apiInstance);
+        registerInstance(apiInstance);
     };
     initApiInstance();
 
     document.getElementById('api-multiple-toggle').addEventListener('change', () => {
         if (apiInstance) apiInstance.destroy();
         initApiInstance();
-        refreshAllThemes(themeSelector.getValue());
     });
 
     document.getElementById('api-max-options').addEventListener('input', (e) => {
@@ -851,7 +972,6 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
     document.getElementById('btn-reinit').addEventListener('click', () => {
         try { apiInstance.destroy(); } catch(e) {}
         initApiInstance();
-        refreshAllThemes(themeSelector.getValue());
     });
 
     // Configurator
@@ -867,7 +987,36 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
         options: optionsWithMetadata,
         multiple: true
     });
-    instances.push(configPreview);
+    registerInstance(configPreview);
+
+    const applyThemeToPreviewInstance = (theme) => {
+        const targetElements = [configPreview.renderer?.wrapper, configPreview.renderer?.dropdown].filter(Boolean);
+        const cssVarMap = {
+            primary: '--thek-primary',
+            primaryLight: '--thek-primary-light',
+            bgSurface: '--thek-bg-surface',
+            bgPanel: '--thek-bg-panel',
+            border: '--thek-border',
+            textMain: '--thek-text-main',
+            fontFamily: '--thek-font-family',
+            borderRadius: '--thek-border-radius',
+            heightSm: '--thek-height-sm',
+            heightMd: '--thek-height-md',
+            heightLg: '--thek-height-lg',
+            itemPadding: '--thek-item-padding'
+        };
+
+        targetElements.forEach((el) => {
+            Object.entries(cssVarMap).forEach(([key, cssVar]) => {
+                const value = theme[key];
+                if (value) {
+                    el.style.setProperty(cssVar, value);
+                } else {
+                    el.style.removeProperty(cssVar);
+                }
+            });
+        });
+    };
 
     const CONFIG_PRESETS = {
         light: {
@@ -877,7 +1026,6 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
             border: '#e2e8f0',
             fontFamily: 'inherit',
             borderRadius: '8px',
-            size: 'md',
             height: 40,
             padding: '8px 10px',
             render: 'default'
@@ -889,7 +1037,6 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
             border: '#334155',
             fontFamily: 'inherit',
             borderRadius: '8px',
-            size: 'md',
             height: 40,
             padding: '8px 10px',
             render: 'default'
@@ -901,7 +1048,6 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
             border: '#e2e8f0',
             fontFamily: 'inherit',
             borderRadius: '8px',
-            size: 'md',
             height: 40,
             padding: '8px 10px',
             render: 'default'
@@ -913,7 +1059,6 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
             border: '#60a5fa',
             fontFamily: "'Inter', sans-serif",
             borderRadius: '12px',
-            size: 'md',
             height: 42,
             padding: '8px 10px',
             render: 'custom'
@@ -925,7 +1070,6 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
             border: '#cbd5e1',
             fontFamily: "'Georgia', serif",
             borderRadius: '12px',
-            size: 'md',
             height: 42,
             padding: '12px 16px',
             render: 'default'
@@ -937,7 +1081,6 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
             border: '#4ade80',
             fontFamily: "'Inter', sans-serif",
             borderRadius: '8px',
-            size: 'md',
             height: 40,
             padding: '8px 10px',
             render: 'custom'
@@ -949,22 +1092,14 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
             border: '#94a3b8',
             fontFamily: "'Courier New', monospace",
             borderRadius: '4px',
-            size: 'md',
             height: 38,
             padding: '4px 8px',
             render: 'default'
         }
     };
 
-    const getResolvedPresetKey = (presetKey) => {
-        if (presetKey !== 'system') return presetKey;
-        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        return prefersDark ? 'dark' : 'light';
-    };
-
     const applyConfigPreset = (presetKey) => {
-        const resolvedPresetKey = getResolvedPresetKey(presetKey);
-        const preset = CONFIG_PRESETS[resolvedPresetKey];
+        const preset = CONFIG_PRESETS[presetKey];
         if (!preset) return;
         document.getElementById('config-primary').value = preset.primary;
         document.getElementById('config-bg').value = preset.bgSurface;
@@ -972,30 +1107,46 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
         document.getElementById('config-border').value = preset.border;
         document.getElementById('config-font').value = preset.fontFamily;
         document.getElementById('config-round').value = preset.borderRadius;
-        document.getElementById('config-size').value = preset.size;
         document.getElementById('config-height').value = String(preset.height);
         document.getElementById('config-padding').value = preset.padding;
         document.getElementById('config-render').value = preset.render;
     };
 
+    const escapeHtml = (value) =>
+        String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+
     const updateConfigurator = () => {
         const baseHeight = parseInt(document.getElementById('config-height').value) || 40;
+        const primary = document.getElementById('config-primary').value;
+        const bgSurface = document.getElementById('config-bg').value;
+        const textMain = document.getElementById('config-text').value;
+        const border = document.getElementById('config-border').value;
         const theme = {
-            primary: document.getElementById('config-primary').value,
-            bgSurface: document.getElementById('config-bg').value,
-            textMain: document.getElementById('config-text').value,
-            border: document.getElementById('config-border').value,
+            primary,
+            bgSurface,
+            textMain,
+            border,
             fontFamily: document.getElementById('config-font').value,
             borderRadius: document.getElementById('config-round').value,
             heightMd: `${baseHeight}px`,
             heightSm: `${Math.max(24, baseHeight - 8)}px`,
             heightLg: `${baseHeight + 8}px`,
             itemPadding: document.getElementById('config-padding').value,
-            primaryLight: document.getElementById('config-primary').value + '20',
-            bgPanel: document.getElementById('config-primary').value + '10'
+            primaryLight: `${primary}20`,
+            bgPanel: `${primary}10`,
+            bgSubtle: `${primary}08`,
+            borderStrong: border,
+            textMuted: textMain,
+            textInverse: '#ffffff',
+            danger: '#ef4444'
         };
-        configPreview.setSize(document.getElementById('config-size').value);
-        configPreview.setTheme(theme);
+        configPreview.setHeight(baseHeight);
+        applyThemeToPreviewInstance(theme);
 
         const renderMode = document.getElementById('config-render').value;
         if (renderMode === 'custom') {
@@ -1021,52 +1172,69 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
             configPreview.setRenderOption((option) => option.label);
         }
 
-        const configSnippet = {
-            preset: document.getElementById('config-preset').value,
-            options: '......',
-            theme,
-            renderOption: renderMode === 'custom' ? `(option) => { ... }` : undefined
-        };
-        document.getElementById('config-json-output').textContent = JSON.stringify(configSnippet, null, 2);
+        const themeVars = [
+            ['--thek-primary', theme.primary],
+            ['--thek-primary-light', theme.primaryLight],
+            ['--thek-bg-surface', theme.bgSurface],
+            ['--thek-bg-panel', theme.bgPanel],
+            ['--thek-bg-subtle', theme.bgSubtle],
+            ['--thek-border', theme.border],
+            ['--thek-border-strong', theme.borderStrong],
+            ['--thek-text-main', theme.textMain],
+            ['--thek-text-muted', theme.textMuted],
+            ['--thek-text-inverse', theme.textInverse],
+            ['--thek-danger', theme.danger],
+            ['--thek-font-family', theme.fontFamily],
+            ['--thek-border-radius', theme.borderRadius],
+            ['--thek-height-sm', theme.heightSm],
+            ['--thek-height-md', theme.heightMd],
+            ['--thek-height-lg', theme.heightLg],
+            ['--thek-item-padding', theme.itemPadding]
+        ];
+
+        const cssThemeSnippetHtml = [
+            `<span class="css-selector">:root</span> <span class="css-punct">{</span>`,
+            ...themeVars.map(([name, value]) =>
+                `  <span class="css-var">${escapeHtml(name)}</span><span class="css-punct">:</span> <span class="css-value">${escapeHtml(value)}</span><span class="css-punct">;</span>`
+            ),
+            `<span class="css-punct">}</span>`
+        ].join('\n');
+        document.getElementById('config-json-output').innerHTML = cssThemeSnippetHtml;
     };
+
+    document.getElementById('copy-theme-css').addEventListener('click', async () => {
+        const output = document.getElementById('config-json-output');
+        const cssText = output.textContent || '';
+        if (!cssText.trim()) return;
+        try {
+            await navigator.clipboard.writeText(cssText);
+        } catch (_err) {
+            // Clipboard API might be unavailable in some contexts.
+        }
+    });
 
     const presetEl = document.getElementById('config-preset');
     presetEl.addEventListener('change', (e) => {
         const value = e.target.value;
-        if (value !== 'custom') {
-            applyConfigPreset(value);
-        }
+        applyConfigPreset(value);
         updateConfigurator();
     });
 
-    if (window.matchMedia) {
-        const systemMedia = window.matchMedia('(prefers-color-scheme: dark)');
-        systemMedia.addEventListener('change', () => {
-            if (presetEl.value === 'system') {
-                applyConfigPreset('system');
-                updateConfigurator();
-            }
-        });
-    }
-
-    ['config-primary', 'config-bg', 'config-text', 'config-border', 'config-font', 'config-round', 'config-height', 'config-size', 'config-padding', 'config-render'].forEach(id => {
+    ['config-primary', 'config-bg', 'config-text', 'config-border', 'config-font', 'config-round', 'config-height', 'config-padding', 'config-render'].forEach(id => {
         const el = document.getElementById(id);
         el.addEventListener('input', () => {
-            presetEl.value = 'custom';
             updateConfigurator();
         });
         el.addEventListener('change', () => {
-            presetEl.value = 'custom';
             updateConfigurator();
         });
     });
-    applyConfigPreset('system');
+    applyConfigPreset('slate');
     updateConfigurator();
 
-    setTimeout(() => {
-        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        themeSelector.setValue(prefersDark ? 'dark' : 'light');
-    }, 50);
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyPageTheme(prefersDark ? 'dark' : 'light');
+    applyThekTheme(thekThemeSelect.value);
 
     const sections = document.querySelectorAll('section');
     const navLinks = document.querySelectorAll('nav a');

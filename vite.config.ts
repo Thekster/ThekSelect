@@ -6,12 +6,24 @@ export default defineConfig({
     environment: 'jsdom',
   },
   build: {
-    minify: 'esbuild',
-    cssMinify: 'esbuild',
+    minify: process.env.THEK_MINIFY === '1' ? 'terser' : false,
+    cssMinify: process.env.THEK_MINIFY === '1' ? 'esbuild' : false,
+    terserOptions: process.env.THEK_MINIFY === '1'
+      ? {
+          compress: { passes: 2 },
+          format: { comments: false }
+        }
+      : undefined,
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'ThekSelect',
-      fileName: (format) => `thekselect.${format === 'es' ? 'js' : 'umd.cjs'}`,
+      fileName: (format) => {
+        const isMin = process.env.THEK_MINIFY === '1';
+        if (format === 'es') {
+          return isMin ? 'thekselect.min.js' : 'thekselect.js';
+        }
+        return isMin ? 'thekselect.umd.min.cjs' : 'thekselect.umd.cjs';
+      },
       formats: ['es', 'umd'],
     },
     rollupOptions: {

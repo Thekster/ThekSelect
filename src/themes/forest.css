@@ -1,0 +1,14 @@
+html[data-thek-theme='forest'] {
+  --thek-primary: #14532d;
+  --thek-primary-light: #dcfce7;
+  --thek-bg-surface: #f7fee7;
+  --thek-bg-panel: #ecfccb;
+  --thek-bg-subtle: #d9f99d;
+  --thek-border: #a3e635;
+  --thek-border-strong: #65a30d;
+  --thek-text-main: #1f2937;
+  --thek-text-muted: #4b5563;
+  --thek-text-inverse: #ffffff;
+  --thek-danger: #dc2626;
+  --thek-shadow: 0 8px 18px -6px rgba(20, 83, 45, 0.2);
+}

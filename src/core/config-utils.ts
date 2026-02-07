@@ -27,10 +27,9 @@ export function buildConfig(
     placeholder: 'Select...',
     canCreate: false,
     createText: "Create '{%t}'...",
-    size: 'md',
+    height: 40,
     debounce: 300,
     maxSelectedLabels: 3,
-    theme: {},
     displayField: 'label',
     valueField: 'value',
     maxOptions: null,
@@ -47,12 +46,6 @@ export function buildConfig(
     ...defaultConfig,
     ...globalDefaults,
     ...config
-  };
-
-  finalConfig.theme = {
-    ...defaultConfig.theme,
-    ...(globalDefaults.theme || {}),
-    ...(config.theme || {})
   };
 
   const hasCustomRenderOption = !!(globalDefaults.renderOption || config.renderOption);

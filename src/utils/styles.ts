@@ -275,10 +275,6 @@ export const BASE_STYLES = `:root {
     font-size: 0.9em;
 }
 
-.thek-select-sm, .thek-dropdown-sm { --thek-input-height: var(--thek-height-sm); font-size: 0.875rem; }
-.thek-select-md, .thek-dropdown-md { --thek-input-height: var(--thek-height-md); font-size: 1rem; }
-.thek-select-lg, .thek-dropdown-lg { --thek-input-height: var(--thek-height-lg); font-size: 1.125rem; }
-
 .thek-disabled .thek-control {
     background-color: var(--thek-bg-subtle);
     cursor: not-allowed;

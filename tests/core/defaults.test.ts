@@ -13,8 +13,7 @@ describe('ThekSelect Global Defaults', () => {
 
   it('applies global defaults to new instances', () => {
     ThekSelect.setDefaults({
-      size: 'lg',
-      theme: { primary: '#123456' },
+      height: 52,
       virtualize: true
     });
 
@@ -23,35 +22,30 @@ describe('ThekSelect Global Defaults', () => {
     });
 
     const wrapper = document.querySelector('.thek-select') as HTMLElement;
-    expect(wrapper.classList.contains('thek-select-lg')).toBe(true);
-    expect(wrapper.style.getPropertyValue('--thek-primary')).toBe('#123456');
+    expect(wrapper.style.getPropertyValue('--thek-input-height')).toBe('52px');
   });
 
   it('lets instance config override global defaults', () => {
     ThekSelect.setDefaults({
-      size: 'lg',
-      theme: { primary: '#123456', borderRadius: '20px' }
+      height: 52
     });
 
     ThekSelect.init('#b', {
-      size: 'sm',
-      theme: { primary: '#abcdef' },
+      height: '36px',
       options: [{ value: '1', label: 'One' }]
     });
 
     const wrapper = document.querySelector('.thek-select') as HTMLElement;
-    expect(wrapper.classList.contains('thek-select-sm')).toBe(true);
-    expect(wrapper.style.getPropertyValue('--thek-primary')).toBe('#abcdef');
-    expect(wrapper.style.getPropertyValue('--thek-border-radius')).toBe('20px');
+    expect(wrapper.style.getPropertyValue('--thek-input-height')).toBe('36px');
   });
 
   it('resetDefaults restores normal behavior', () => {
-    ThekSelect.setDefaults({ size: 'lg' });
+    ThekSelect.setDefaults({ height: 52 });
     ThekSelect.resetDefaults();
 
     ThekSelect.init('#c', { options: [{ value: '1', label: 'One' }] });
 
     const wrapper = document.querySelector('.thek-select') as HTMLElement;
-    expect(wrapper.classList.contains('thek-select-md')).toBe(true);
+    expect(wrapper.style.getPropertyValue('--thek-input-height')).toBe('40px');
   });
 });
