@@ -33,24 +33,9 @@ describe('ThekSelect Edge Cases', () => {
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
 
-    const option = document.querySelector('.thek-option-label');
-    // It should generally escape HTML by default in standard rendering
-    // or at least not execute it.
-    // However, the current default renderOption uses innerHTML.
-    // Let's verify if we need to enforce escaping in the default renderer.
-    
-    // If the library is secure, we shouldn't see the img tag rendered as HTML if we didn't ask for it,
-    // OR we should accept that custom renderers must handle safety.
-    // But the default renderer string output is: (o) => o.label.
-    // The renderOptionsContent does: label.innerHTML = content.
-    
-    // CHECK: Does ThekSelect escape by default? 
-    // Looking at the code: renderOptionsContent sets innerHTML directly from renderOption output.
-    // If renderOption returns a string, it's put in innerHTML.
-    // So default behavior effectively trusts the label.
-    
-    // Let's just check what is actually in the DOM.
-    expect(option?.innerHTML).toContain('<img');
+    const option = document.querySelector('.thek-option-label') as HTMLElement;
+    expect(option.textContent).toBe(dangerousLabel);
+    expect(option.querySelector('img')).toBeNull();
   });
 
   it('should handle extremely long labels gracefully', () => {

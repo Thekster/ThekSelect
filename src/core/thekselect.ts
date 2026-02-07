@@ -6,12 +6,12 @@ import {
   ThekSelectEvent,
   ThekSelectTheme
 } from './types.js';
-import { debounce } from '../utils/debounce.js';
+import { debounce, DebouncedFn } from '../utils/debounce.js';
 import { generateId } from '../utils/dom.js';
 import { injectStyles } from '../utils/styles.js';
 import { DomRenderer, RendererCallbacks } from './dom-renderer.js';
 
-const NOOP_LOAD_OPTIONS = async () => [];
+const NOOP_LOAD_OPTIONS = async (_query: string): Promise<ThekSelectOption[]> => [];
 
 export class ThekSelect {
   private config: Required<ThekSelectConfig>;
@@ -21,6 +21,8 @@ export class ThekSelect {
   private eventListeners: Map<string, Set<Function>> = new Map();
   private originalElement: HTMLElement;
   private documentClickListener!: (e: MouseEvent) => void;
+  private remoteRequestId = 0;
+  private isDestroyed = false;
 
   private constructor(element: string | HTMLElement, config: ThekSelectConfig = {}) {
     injectStyles();
@@ -68,7 +70,7 @@ export class ThekSelect {
       displayField: 'label',
       valueField: 'value',
       maxOptions: null,
-      loadOptions: NOOP_LOAD_OPTIONS as any,
+      loadOptions: NOOP_LOAD_OPTIONS,
       renderOption: (o: ThekSelectOption) => o[this.config?.displayField || 'label'],
       renderSelection: (o: ThekSelectOption) => o[this.config?.displayField || 'label'],
     };
@@ -98,10 +100,18 @@ export class ThekSelect {
     const selectedValues = this.config.multiple
       ? this.config.options.filter(o => o.selected).map(o => o[vField])
       : (this.config.options.find(o => o.selected)?.[vField] ? [this.config.options.find(o => o.selected)![vField]] : []);
+    const selectedOptionsByValue: Record<string, ThekSelectOption> = {};
+    selectedValues.forEach((val) => {
+      const option = this.config.options.find(o => o[vField] === val);
+      if (option) {
+        selectedOptionsByValue[val] = option;
+      }
+    });
 
     return {
       options: this.config.options,
       selectedValues,
+      selectedOptionsByValue,
       isOpen: false,
       focusedIndex: -1,
       inputValue: '',
@@ -147,7 +157,7 @@ export class ThekSelect {
     window.addEventListener('scroll', () => this.renderer.positionDropdown(), true);
   }
 
-  private handleSearch!: (query: string) => void;
+  private handleSearch!: DebouncedFn<(query: string) => Promise<void>>;
 
   private setupHandleSearch(): void {
     this.handleSearch = debounce(async (query: string) => {
@@ -155,20 +165,58 @@ export class ThekSelect {
       const isRemote = this.config.loadOptions && this.config.loadOptions !== NOOP_LOAD_OPTIONS;
       if (isRemote) {
         if (query.length > 0) {
+          const requestId = ++this.remoteRequestId;
           this.stateManager.setState({ isLoading: true });
           try {
             const options = await this.config.loadOptions(query);
-            this.stateManager.setState({ options, isLoading: false, focusedIndex: 0 });
+            if (this.isDestroyed || requestId !== this.remoteRequestId) return;
+            const state = this.stateManager.getState();
+            this.stateManager.setState({
+              options,
+              isLoading: false,
+              focusedIndex: 0,
+              selectedOptionsByValue: this.mergeSelectedOptionsByValue(
+                state.selectedValues,
+                state.selectedOptionsByValue,
+                options
+              )
+            });
           } catch (error) {
+            if (this.isDestroyed || requestId !== this.remoteRequestId) return;
             this.stateManager.setState({ isLoading: false });
           }
         } else {
+          this.remoteRequestId++;
           this.stateManager.setState({ options: this.config.options, focusedIndex: -1 });
         }
       } else {
         this.stateManager.setState({ focusedIndex: 0 });
       }
     }, this.config.debounce);
+  }
+
+  private mergeSelectedOptionsByValue(
+    selectedValues: string[],
+    previous: Record<string, ThekSelectOption>,
+    latestOptions: ThekSelectOption[]
+  ): Record<string, ThekSelectOption> {
+    const vField = this.config.valueField;
+    const byValueFromLatest: Record<string, ThekSelectOption> = {};
+    latestOptions.forEach((option) => {
+      const value = option[vField];
+      if (typeof value === 'string') {
+        byValueFromLatest[value] = option;
+      }
+    });
+
+    const merged: Record<string, ThekSelectOption> = {};
+    selectedValues.forEach((value) => {
+      const option = byValueFromLatest[value] || previous[value];
+      if (option) {
+        merged[value] = option;
+      }
+    });
+    return merged;
   }
 
   private handleKeyDown(e: KeyboardEvent): void {
@@ -262,21 +310,26 @@ export class ThekSelect {
     if (option.disabled) return;
 
     const vField = this.config.valueField;
+    const optionValue = option[vField];
     let newSelectedValues: string[];
+    let selectedOptionsByValue = { ...state.selectedOptionsByValue };
     if (this.config.multiple) {
-      if (state.selectedValues.includes(option[vField])) {
-        newSelectedValues = state.selectedValues.filter(v => v !== option[vField]);
+      if (state.selectedValues.includes(optionValue)) {
+        newSelectedValues = state.selectedValues.filter(v => v !== optionValue);
+        delete selectedOptionsByValue[optionValue];
         this.emit('tagRemoved', option);
       } else {
-        newSelectedValues = [...state.selectedValues, option[vField]];
+        newSelectedValues = [...state.selectedValues, optionValue];
+        selectedOptionsByValue[optionValue] = option;
         this.emit('tagAdded', option);
       }
     } else {
-      newSelectedValues = [option[vField]];
+      newSelectedValues = [optionValue];
+      selectedOptionsByValue = { [optionValue]: option };
       this.closeDropdown();
     }
 
-    this.stateManager.setState({ selectedValues: newSelectedValues, inputValue: '' });
+    this.stateManager.setState({ selectedValues: newSelectedValues, selectedOptionsByValue, inputValue: '' });
     this.renderer.input.value = '';
     this.syncOriginalElement(newSelectedValues);
     this.emit('change', this.getValue());
@@ -300,10 +353,12 @@ export class ThekSelect {
     const state = this.stateManager.getState();
     const vField = this.config.valueField;
     const newSelectedValues = [...state.selectedValues];
+    const selectedOptionsByValue = { ...state.selectedOptionsByValue };
     const removedValue = newSelectedValues.pop();
     if (removedValue) {
-      const option = state.options.find(o => o[vField] === removedValue);
-      this.stateManager.setState({ selectedValues: newSelectedValues });
+      const option = state.options.find(o => o[vField] === removedValue) || selectedOptionsByValue[removedValue];
+      delete selectedOptionsByValue[removedValue];
+      this.stateManager.setState({ selectedValues: newSelectedValues, selectedOptionsByValue });
       this.syncOriginalElement(newSelectedValues);
       if (option) this.emit('tagRemoved', option);
       this.emit('change', this.getValue());
@@ -363,14 +418,25 @@ export class ThekSelect {
     const state = this.stateManager.getState();
     const vField = this.config.valueField;
     const selected = state.selectedValues.map(val => 
-      state.options.find(o => o[vField] === val) || { [vField]: val, [this.config.displayField]: val } as any
+      state.options.find(o => o[vField] === val) ||
+      state.selectedOptionsByValue[val] ||
+      { [vField]: val, [this.config.displayField]: val } as any
     );
     return this.config.multiple ? selected : selected[0];
   }
 
   public setValue(value: string | string[], silent: boolean = false): void {
+    const state = this.stateManager.getState();
+    const vField = this.config.valueField;
     const values = Array.isArray(value) ? value : [value];
-    this.stateManager.setState({ selectedValues: values });
+    const selectedOptionsByValue: Record<string, ThekSelectOption> = {};
+    values.forEach((val) => {
+      const option = state.options.find(o => o[vField] === val) || state.selectedOptionsByValue[val];
+      if (option) {
+        selectedOptionsByValue[val] = option;
+      }
+    });
+    this.stateManager.setState({ selectedValues: values, selectedOptionsByValue });
     this.syncOriginalElement(values);
     if (!silent) {
       this.emit('change', this.getValue());
@@ -405,6 +471,9 @@ export class ThekSelect {
   }
 
   public destroy(): void {
+    this.isDestroyed = true;
+    this.remoteRequestId++;
+    this.handleSearch.cancel();
     this.renderer.destroy();
     document.removeEventListener('click', this.documentClickListener);
     this.originalElement.style.display = '';

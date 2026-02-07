@@ -53,6 +53,7 @@ export interface ThekSelectConfig {
 export interface ThekSelectState {
   options: ThekSelectOption[];
   selectedValues: string[];
+  selectedOptionsByValue: Record<string, ThekSelectOption>;
   isOpen: boolean;
   focusedIndex: number;
   inputValue: string;

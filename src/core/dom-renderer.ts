@@ -126,7 +126,7 @@ export class DomRenderer {
           this.selectionContainer.appendChild(summary);
         } else {
           state.selectedValues.forEach((val, i) => {
-            const option = state.options.find(o => o[vField] === val) || { [vField]: val, [dField]: val } as any;
+            const option = state.options.find(o => o[vField] === val) || state.selectedOptionsByValue[val] || { [vField]: val, [dField]: val } as any;
             const tag = document.createElement('span');
             tag.className = 'thek-tag';
             tag.draggable = true;
@@ -139,7 +139,7 @@ export class DomRenderer {
             if (content instanceof HTMLElement) {
               label.appendChild(content);
             } else {
-              label.innerHTML = content;
+              label.textContent = content;
             }
             tag.appendChild(label);
 
@@ -157,13 +157,13 @@ export class DomRenderer {
         }
       } else {
         const val = state.selectedValues[0];
-        const option = state.options.find(o => o[vField] === val);
+        const option = state.options.find(o => o[vField] === val) || state.selectedOptionsByValue[val];
         if (option) {
           const content = this.config.renderSelection(option);
           if (content instanceof HTMLElement) {
             this.selectionContainer.appendChild(content);
           } else {
-            this.selectionContainer.innerHTML = content;
+            this.selectionContainer.textContent = content;
           }
         }
       }
@@ -220,7 +220,7 @@ export class DomRenderer {
       if (content instanceof HTMLElement) {
         label.appendChild(content);
       } else {
-        label.innerHTML = content;
+        label.textContent = content;
       }
       li.appendChild(label);
 
