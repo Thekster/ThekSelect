@@ -32,8 +32,12 @@ export class ThekSelect {
   private events = new ThekSelectEventEmitter();
   private originalElement: HTMLElement;
   private documentClickListener!: (e: MouseEvent) => void;
+  private windowResizeListener!: () => void;
+  private windowScrollListener!: () => void;
+  private unsubscribeState?: () => void;
   private remoteRequestId = 0;
   private isDestroyed = false;
+  private focusTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
   private constructor(element: string | HTMLElement, config: ThekSelectConfig = {}) {
     injectStyles();
@@ -80,7 +84,7 @@ export class ThekSelect {
   private initialize(): void {
     this.renderer.createDom();
     this.setupListeners();
-    this.stateManager.subscribe(() => this.render());
+    this.unsubscribeState = this.stateManager.subscribe(() => this.render());
     this.render();
 
     if (this.originalElement.parentNode) {
@@ -110,9 +114,11 @@ export class ThekSelect {
         this.closeDropdown();
       }
     };
+    this.windowResizeListener = () => this.renderer.positionDropdown();
+    this.windowScrollListener = () => this.renderer.positionDropdown();
     document.addEventListener('click', this.documentClickListener);
-    window.addEventListener('resize', () => this.renderer.positionDropdown());
-    window.addEventListener('scroll', () => this.renderer.positionDropdown(), true);
+    window.addEventListener('resize', this.windowResizeListener);
+    window.addEventListener('scroll', this.windowScrollListener, true);
   }
 
   private handleSearch!: DebouncedFn<(query: string) => Promise<void>>;
@@ -145,7 +151,7 @@ export class ThekSelect {
           }
         } else {
           this.remoteRequestId++;
-          this.stateManager.setState({ options: this.config.options, focusedIndex: -1 });
+          this.stateManager.setState({ options: this.config.options, focusedIndex: -1, isLoading: false });
         }
       } else {
         this.stateManager.setState({ focusedIndex: 0 });
@@ -208,7 +214,11 @@ export class ThekSelect {
     this.stateManager.setState({ isOpen: true, focusedIndex: 0 });
     this.renderer.positionDropdown();
     if (this.config.searchable) {
-      setTimeout(() => this.renderer.input.focus(), 10);
+      this.focusTimeoutId = setTimeout(() => {
+        if (!this.isDestroyed) {
+          this.renderer.input.focus();
+        }
+      }, 10);
     }
     this.emit('open', null);
   }
@@ -297,27 +307,31 @@ export class ThekSelect {
     this.renderer.render(this.stateManager.getState(), getFilteredOptions(this.config, this.stateManager.getState()));
   }
 
-  public on(event: ThekSelectEvent, callback: Function): void {
-    this.events.on(event, callback);
+  public on(event: ThekSelectEvent, callback: Function): () => void {
+    return this.events.on(event, callback);
   }
 
   private emit(event: ThekSelectEvent, data: any): void {
     this.events.emit(event, data);
   }
 
-  public getValue(): string | string[] {
+  public getValue(): string | string[] | undefined {
     const state = this.stateManager.getState();
     return this.config.multiple ? state.selectedValues : state.selectedValues[0];
   }
 
-  public getSelectedOptions(): ThekSelectOption | ThekSelectOption[] {
+  public getSelectedOptions(): ThekSelectOption | ThekSelectOption[] | undefined {
     const selected = resolveSelectedOptions(this.config, this.stateManager.getState());
     return this.config.multiple ? selected : selected[0];
   }
 
   public setValue(value: string | string[], silent: boolean = false): void {
     const state = this.stateManager.getState();
-    const values = Array.isArray(value) ? value : [value];
+    const incomingValues = Array.isArray(value) ? value : [value];
+    const stringValues = incomingValues.filter((entry): entry is string => typeof entry === 'string');
+    const values = this.config.multiple
+      ? Array.from(new Set(stringValues))
+      : stringValues.slice(0, 1);
     const selectedOptionsByValue = buildSelectedOptionsMapFromValues(this.config, state, values);
 
     this.stateManager.setState({ selectedValues: values, selectedOptionsByValue });
@@ -358,8 +372,18 @@ export class ThekSelect {
     this.isDestroyed = true;
     this.remoteRequestId++;
     this.handleSearch.cancel();
+    if (this.focusTimeoutId !== null) {
+      clearTimeout(this.focusTimeoutId);
+      this.focusTimeoutId = null;
+    }
+    if (this.unsubscribeState) {
+      this.unsubscribeState();
+      this.unsubscribeState = undefined;
+    }
     this.renderer.destroy();
     document.removeEventListener('click', this.documentClickListener);
+    window.removeEventListener('resize', this.windowResizeListener);
+    window.removeEventListener('scroll', this.windowScrollListener, true);
     this.originalElement.style.display = '';
   }
 }

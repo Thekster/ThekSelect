@@ -1,5 +1,4 @@
 import { ThekSelectConfig, ThekSelectState, ThekSelectOption } from './types.js';
-import { generateId, escapeHtml } from '../utils/dom.js';
 import { ThemeManager } from './theme-manager.js';
 
 export interface RendererCallbacks {
@@ -255,8 +254,7 @@ export class DomRenderer {
     if (this.config.canCreate && state.inputValue && !exactMatch) {
       const li = document.createElement('li');
       li.className = 'thek-option thek-create';
-      const text = this.config.createText.replace('{%t}', escapeHtml(state.inputValue));
-      li.innerHTML = text;
+      li.textContent = this.config.createText.replace('{%t}', state.inputValue);
       if (state.focusedIndex === filteredOptions.length) li.classList.add('thek-focused');
       li.addEventListener('click', (e) => {
         e.stopPropagation();

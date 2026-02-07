@@ -138,8 +138,8 @@ When using custom fields (`valueField`, `displayField`), keep `value` and `label
 
 ## API Methods
 
-- `getValue()`: Return selected value (`string`) or values (`string[]`).
-- `getSelectedOptions()`: Return full selected option objects.
+- `getValue()`: Return selected value (`string`), values (`string[]`), or `undefined` when single-select has no selection.
+- `getSelectedOptions()`: Return selected option object(s), or `undefined` when single-select has no selection.
 - `setValue(value, silent = false)`: Set current selection programmatically.
 - `setTheme(theme)`: Update theme at runtime.
 - `setSize(size)`: Update size (`sm`, `md`, `lg`) at runtime.
@@ -147,7 +147,7 @@ When using custom fields (`valueField`, `displayField`), keep `value` and `label
 - `setRenderOption(callback)`: Update option rendering function.
 - `ThekSelect.setDefaults(defaults)`: Set global defaults for future instances.
 - `ThekSelect.resetDefaults()`: Clear global defaults.
-- `on(event, callback)`: Subscribe to component events.
+- `on(event, callback)`: Subscribe to component events. Returns an unsubscribe function.
 - `destroy()`: Tear down and restore original element.
 
 ## Events

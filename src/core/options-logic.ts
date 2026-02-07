@@ -21,7 +21,8 @@ export function getFilteredOptions(
   });
 
   if (config.maxOptions != null) {
-    return filtered.slice(0, config.maxOptions);
+    const limit = Math.max(0, config.maxOptions);
+    return filtered.slice(0, limit);
   }
 
   return filtered;

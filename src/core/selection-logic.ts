@@ -86,8 +86,18 @@ export function removeLastSelection(
 }
 
 export function reorderSelectedValues(state: ThekSelectState, from: number, to: number): string[] {
+  if (!Number.isInteger(from) || !Number.isInteger(to)) {
+    return [...state.selectedValues];
+  }
+  if (from < 0 || to < 0 || from >= state.selectedValues.length || to >= state.selectedValues.length || from === to) {
+    return [...state.selectedValues];
+  }
+
   const selectedValues = [...state.selectedValues];
   const [movedItem] = selectedValues.splice(from, 1);
+  if (typeof movedItem === 'undefined') {
+    return [...state.selectedValues];
+  }
   selectedValues.splice(to, 0, movedItem);
   return selectedValues;
 }

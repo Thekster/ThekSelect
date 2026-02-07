@@ -70,10 +70,11 @@ export function buildConfig(
 
 export function buildInitialState(config: Required<ThekSelectConfig>): ThekSelectState {
   const valueField = config.valueField;
+  const firstSelected = config.options.find(o => o.selected);
   const selectedValues = config.multiple
     ? config.options.filter(o => o.selected).map(o => o[valueField])
-    : (config.options.find(o => o.selected)?.[valueField]
-      ? [config.options.find(o => o.selected)![valueField]]
+    : (firstSelected && valueField in firstSelected
+      ? [firstSelected[valueField]]
       : []);
 
   const selectedOptionsByValue: Record<string, ThekSelectOption> = {};
