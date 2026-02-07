@@ -6,6 +6,8 @@ export default defineConfig({
     environment: 'jsdom',
   },
   build: {
+    minify: 'esbuild',
+    cssMinify: 'esbuild',
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'ThekSelect',
