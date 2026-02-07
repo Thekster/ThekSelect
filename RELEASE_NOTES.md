@@ -12,6 +12,9 @@
   - safe `createText` rendering
   - negative `maxOptions` handling
   - `on()` unsubscribe contract
+- Browser script-tag usage docs:
+  - added no-bundler UMD example in `README.md`
+  - added matching snippet in `showcase/index.html` Quick Docs
 
 ### Changed
 - `on(event, callback)` now returns an unsubscribe function.

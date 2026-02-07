@@ -162,6 +162,21 @@ ThekSelect.resetDefaults();</pre>
                             </div>
                         </div>
                     </div>
+                    <div style="margin-top: 16px;">
+                        <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color);">Browser Usage (Script Tag)</h3>
+                        <pre style="margin: 0;">&lt;link rel="stylesheet" href="./dist/css/base.css" /&gt;
+&lt;script src="./dist/thekselect.umd.min.cjs"&gt;&lt;/script&gt;
+
+&lt;select id="my-select"&gt;
+  &lt;option value="react"&gt;React&lt;/option&gt;
+  &lt;option value="vue"&gt;Vue&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;script&gt;
+  const { ThekSelect } = window.ThekSelect;
+  ThekSelect.init('#my-select');
+&lt;/script&gt;</pre>
+                    </div>
                 </div>
             </div>
         </section>

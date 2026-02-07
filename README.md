@@ -73,6 +73,25 @@ const select = ThekSelect.init('#my-select', {
 });
 ```
 
+### Browser `<script>` Tag (No Bundler)
+
+```html
+<link rel="stylesheet" href="./dist/css/base.css" />
+<script src="./dist/thekselect.umd.min.cjs"></script>
+
+<select id="my-select">
+  <option value="react">React</option>
+  <option value="vue">Vue</option>
+</select>
+
+<script>
+  const { ThekSelect } = window.ThekSelect;
+  ThekSelect.init('#my-select');
+</script>
+```
+
+If your static server does not serve `.cjs` files as JavaScript, rename the UMD output to `.js` for browser delivery.
+
 ### Initialize From Existing `<select>`
 
 If options already exist in your native `<select>`, initialize directly from it:
