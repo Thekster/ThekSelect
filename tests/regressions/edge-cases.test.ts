@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ThekSelect } from '../src/core/thekselect';
+import { ThekSelect } from '../../src/core/thekselect';
 
 describe('ThekSelect Edge Cases', () => {
   let container: HTMLElement;
@@ -94,3 +94,4 @@ describe('ThekSelect Edge Cases', () => {
     expect(document.querySelector('.thek-dropdown')).toBeFalsy();
   });
 });
+

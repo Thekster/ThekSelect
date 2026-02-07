@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ThekSelect } from '../src/core/thekselect';
+import { ThekSelect } from '../../src/core/thekselect';
 
 describe('ThekSelect Events', () => {
   let selectEl: HTMLSelectElement;
@@ -83,3 +83,4 @@ describe('ThekSelect Events', () => {
     expect(onTagRemoved).toHaveBeenCalledWith(expect.objectContaining({ value: '1' }));
   });
 });
+

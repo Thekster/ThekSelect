@@ -8,9 +8,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/thekselect.js",
-      "require": "./dist/thekselect.umd.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/thekselect.umd.cjs"
     },
     "./css/*": "./dist/css/*"
   },
@@ -18,7 +18,7 @@
     "dist"
   ],
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open /showcase/index.html",
     "build": "vite build && tsc && mkdir -p dist/css && cp src/themes/*.css dist/css/",
     "preview": "vite preview",
     "test": "vitest",
@@ -36,6 +36,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^25.2.1",
     "jsdom": "^28.0.0",
     "typescript": "^5.4.5",
     "vite": "^7.3.1",

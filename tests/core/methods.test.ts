@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ThekSelect } from '../src/core/thekselect';
+import { ThekSelect } from '../../src/core/thekselect';
 
 describe('ThekSelect Methods', () => {
   let selectEl: HTMLSelectElement;
@@ -44,3 +44,4 @@ describe('ThekSelect Methods', () => {
     expect(document.querySelector('.thek-select')).toBeNull();
   });
 });
+

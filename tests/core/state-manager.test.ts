@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { StateManager } from '../src/core/state';
+import { StateManager } from '../../src/core/state';
 
 describe('StateManager', () => {
   it('should initialize with initial state', () => {
@@ -27,3 +27,4 @@ describe('StateManager', () => {
     expect(listener).not.toHaveBeenCalled();
   });
 });
+

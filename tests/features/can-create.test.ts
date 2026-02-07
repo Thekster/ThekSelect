@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ThekSelect } from '../src/core/thekselect';
+import { ThekSelect } from '../../src/core/thekselect';
 
 describe('ThekSelect canCreate', () => {
   let container: HTMLDivElement;
@@ -29,3 +29,4 @@ describe('ThekSelect canCreate', () => {
     expect(ts.getValue()).toBe('New Item');
   });
 });
+

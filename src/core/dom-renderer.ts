@@ -20,6 +20,8 @@ export class DomRenderer {
   public optionsList!: HTMLElement;
   
   private themeManager!: ThemeManager;
+  private lastState: ThekSelectState | null = null;
+  private lastFilteredOptions: ThekSelectOption[] = [];
 
   constructor(
     private config: Required<ThekSelectConfig>,
@@ -82,6 +84,8 @@ export class DomRenderer {
     this.optionsList.className = 'thek-options';
     this.optionsList.id = `${this.id}-list`;
     this.optionsList.setAttribute('role', 'listbox');
+    this.optionsList.addEventListener('scroll', () => this.handleOptionsScroll());
+    this.optionsList.addEventListener('wheel', (e) => this.handleOptionsWheel(e), { passive: false });
 
     this.dropdown.appendChild(this.optionsList);
 
@@ -93,6 +97,8 @@ export class DomRenderer {
   }
 
   public render(state: ThekSelectState, filteredOptions: ThekSelectOption[]): void {
+    this.lastState = state;
+    this.lastFilteredOptions = filteredOptions;
     this.control.setAttribute('aria-expanded', state.isOpen.toString());
     this.dropdown.hidden = !state.isOpen;
     this.wrapper.classList.toggle('thek-open', state.isOpen);
@@ -170,19 +176,15 @@ export class DomRenderer {
     }
   }
 
-  private renderOptionsContent(state: ThekSelectState, filteredOptions: ThekSelectOption[]): void {
+  private renderOptionsContent(
+    state: ThekSelectState,
+    filteredOptions: ThekSelectOption[],
+    alignFocused: boolean = true,
+    preservedScrollTop?: number
+  ): void {
     this.optionsList.innerHTML = '';
     const vField = this.config.valueField;
-
-    if (state.focusedIndex >= 0 && state.focusedIndex < filteredOptions.length) {
-      if (this.config.searchable) {
-        this.input.setAttribute('aria-activedescendant', `${this.id}-opt-${state.focusedIndex}`);
-      }
-    } else {
-      if (this.config.searchable) {
-        this.input.removeAttribute('aria-activedescendant');
-      }
-    }
+    const dField = this.config.displayField;
 
     if (state.isLoading && filteredOptions.length === 0) {
       const li = document.createElement('li');
@@ -192,46 +194,61 @@ export class DomRenderer {
       return;
     }
 
-    filteredOptions.forEach((option, index) => {
-      const li = document.createElement('li');
-      li.className = 'thek-option';
-      li.id = `${this.id}-opt-${index}`;
-      const isSelected = state.selectedValues.includes(option[vField]);
-      
-      if (option.disabled) li.classList.add('thek-disabled');
-      if (isSelected) li.classList.add('thek-selected');
-      if (state.focusedIndex === index) li.classList.add('thek-focused');
-      
-      li.setAttribute('role', 'option');
-      li.setAttribute('aria-selected', isSelected.toString());
+    const canCreate =
+      this.config.canCreate &&
+      state.inputValue &&
+      !filteredOptions.some(
+        o => o[dField] && o[dField].toString().toLowerCase() === state.inputValue.toLowerCase()
+      );
+    const shouldVirtualize =
+      this.config.virtualize &&
+      filteredOptions.length >= this.config.virtualThreshold &&
+      !canCreate;
+    const itemHeight = Math.max(20, this.config.virtualItemHeight);
+    const overscan = Math.max(0, this.config.virtualOverscan);
 
-      if (this.config.multiple) {
-        const checkbox = document.createElement('div');
-        checkbox.className = 'thek-checkbox';
-        if (isSelected) {
-          checkbox.innerHTML = '<i class="fa-solid fa-check"></i>';
+    if (shouldVirtualize) {
+      const viewportHeight = this.optionsList.clientHeight || 240;
+      if (alignFocused && state.focusedIndex >= 0 && state.focusedIndex < filteredOptions.length) {
+        const focusedTop = state.focusedIndex * itemHeight;
+        const focusedBottom = focusedTop + itemHeight;
+        const currentTop = this.optionsList.scrollTop;
+        const currentBottom = currentTop + viewportHeight;
+        if (focusedTop < currentTop) {
+          this.optionsList.scrollTop = focusedTop;
+        } else if (focusedBottom > currentBottom) {
+          this.optionsList.scrollTop = focusedBottom - viewportHeight;
         }
-        li.appendChild(checkbox);
       }
 
-      const label = document.createElement('span');
-      label.className = 'thek-option-label';
-      const content = this.config.renderOption(option);
-      if (content instanceof HTMLElement) {
-        label.appendChild(content);
-      } else {
-        label.textContent = content;
-      }
-      li.appendChild(label);
+      const scrollTop = preservedScrollTop ?? this.optionsList.scrollTop;
+      const start = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
+      const end = Math.min(
+        filteredOptions.length,
+        Math.ceil((scrollTop + viewportHeight) / itemHeight) + overscan
+      );
 
-      li.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.callbacks.onSelect(option);
+      if (start > 0) {
+        this.optionsList.appendChild(this.createSpacer(start * itemHeight));
+      }
+
+      for (let index = start; index < end; index++) {
+        this.optionsList.appendChild(this.createOptionItem(filteredOptions[index], index, state, vField));
+      }
+
+      if (end < filteredOptions.length) {
+        this.optionsList.appendChild(this.createSpacer((filteredOptions.length - end) * itemHeight));
+      }
+
+      if (typeof preservedScrollTop === 'number') {
+        this.optionsList.scrollTop = preservedScrollTop;
+      }
+    } else {
+      filteredOptions.forEach((option, index) => {
+        this.optionsList.appendChild(this.createOptionItem(option, index, state, vField));
       });
-      this.optionsList.appendChild(li);
-    });
+    }
 
-    const dField = this.config.displayField;
     const exactMatch = filteredOptions.some(o => 
         o[dField] && o[dField].toString().toLowerCase() === state.inputValue.toLowerCase()
     );
@@ -252,6 +269,94 @@ export class DomRenderer {
       li.className = 'thek-option thek-no-results';
       li.textContent = 'No results found';
       this.optionsList.appendChild(li);
+    }
+
+    const activeDescendantId =
+      state.focusedIndex >= 0 &&
+      state.focusedIndex < filteredOptions.length &&
+      !!document.getElementById(`${this.id}-opt-${state.focusedIndex}`)
+        ? `${this.id}-opt-${state.focusedIndex}`
+        : null;
+    if (this.config.searchable) {
+      if (activeDescendantId) {
+        this.input.setAttribute('aria-activedescendant', activeDescendantId);
+      } else {
+        this.input.removeAttribute('aria-activedescendant');
+      }
+    }
+  }
+
+  private createSpacer(height: number): HTMLLIElement {
+    const spacer = document.createElement('li');
+    spacer.style.height = `${height}px`;
+    spacer.style.padding = '0';
+    spacer.style.margin = '0';
+    spacer.style.listStyle = 'none';
+    spacer.setAttribute('aria-hidden', 'true');
+    return spacer;
+  }
+
+  private createOptionItem(
+    option: ThekSelectOption,
+    index: number,
+    state: ThekSelectState,
+    valueField: string
+  ): HTMLLIElement {
+    const li = document.createElement('li');
+    li.className = 'thek-option';
+    li.id = `${this.id}-opt-${index}`;
+    const isSelected = state.selectedValues.includes(option[valueField]);
+
+    if (option.disabled) li.classList.add('thek-disabled');
+    if (isSelected) li.classList.add('thek-selected');
+    if (state.focusedIndex === index) li.classList.add('thek-focused');
+
+    li.setAttribute('role', 'option');
+    li.setAttribute('aria-selected', isSelected.toString());
+
+    if (this.config.multiple) {
+      const checkbox = document.createElement('div');
+      checkbox.className = 'thek-checkbox';
+      if (isSelected) {
+        checkbox.innerHTML = '<i class="fa-solid fa-check"></i>';
+      }
+      li.appendChild(checkbox);
+    }
+
+    const label = document.createElement('span');
+    label.className = 'thek-option-label';
+    const content = this.config.renderOption(option);
+    if (content instanceof HTMLElement) {
+      label.appendChild(content);
+    } else {
+      label.textContent = content;
+    }
+    li.appendChild(label);
+
+    li.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.callbacks.onSelect(option);
+    });
+    return li;
+  }
+
+  private handleOptionsScroll(): void {
+    if (!this.config.virtualize || !this.lastState) return;
+    const scrollTop = this.optionsList.scrollTop;
+    this.renderOptionsContent(this.lastState, this.lastFilteredOptions, false, scrollTop);
+  }
+
+  private handleOptionsWheel(e: WheelEvent): void {
+    if (!this.config.virtualize) return;
+    const list = this.optionsList;
+    const atTop = list.scrollTop <= 0;
+    const atBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 1;
+    const scrollingUp = e.deltaY < 0;
+    const scrollingDown = e.deltaY > 0;
+
+    if ((scrollingUp && !atTop) || (scrollingDown && !atBottom)) {
+      e.preventDefault();
+      list.scrollTop += e.deltaY;
     }
   }
 

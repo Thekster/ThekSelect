@@ -21,12 +21,12 @@
 }
 
 [data-theme='gray'] {
-    --page-bg: #f3f4f6;
-    --container-bg: #ffffff;
-    --sidebar-bg: #1f2937;
+    --page-bg: #c6c7c8;
+    --container-bg: #bbb;
+    --sidebar-bg: #374151;
     --brand-color: #111827;
-    --accent: #f9fafb;
-    --sidebar-text: #9ca3af;
+    --accent: #e5e7eb;
+    --sidebar-text: #d1d5db;
     --text-main: #111827;
     --text-muted: #4b5563;
     --border-color: #d1d5db;
@@ -295,6 +295,44 @@ h2 i { color: var(--text-muted); font-size: 1rem; }
 .btn-danger:hover {
     background: #fef2f2;
     border-color: #ef4444;
+}
+
+.configurator-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    align-items: start;
+}
+
+.configurator-settings {
+    grid-column: span 2;
+}
+
+.configurator-settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.configurator-preview {
+    grid-column: span 2;
+}
+
+@media (max-width: 1100px) {
+    .configurator-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .configurator-settings,
+    .configurator-preview {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 700px) {
+    .configurator-settings-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 900px) {

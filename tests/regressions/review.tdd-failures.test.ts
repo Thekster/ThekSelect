@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ThekSelect } from '../src/core/thekselect';
+import { ThekSelect } from '../../src/core/thekselect';
 
 function flush(ms: number = 0): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -129,3 +129,4 @@ describe('TDD: review hardening regressions', () => {
     expect(loadOptions).not.toHaveBeenCalled();
   });
 });
+

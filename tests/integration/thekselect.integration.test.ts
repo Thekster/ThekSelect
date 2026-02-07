@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ThekSelect } from '../src/core/thekselect';
+import { ThekSelect } from '../../src/core/thekselect';
 
 describe('ThekSelect', () => {
   let selectEl: HTMLSelectElement;
@@ -69,3 +69,4 @@ describe('ThekSelect', () => {
     expect(document.querySelectorAll('.thek-tag').length).toBe(2);
   });
 });
+

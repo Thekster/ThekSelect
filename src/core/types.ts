@@ -45,6 +45,10 @@ export interface ThekSelectConfig {
   displayField?: string;
   valueField?: string;
   maxOptions?: number | null;
+  virtualize?: boolean;
+  virtualItemHeight?: number;
+  virtualOverscan?: number;
+  virtualThreshold?: number;
   loadOptions?: (query: string) => Promise<ThekSelectOption[]>;
   renderOption?: (option: ThekSelectOption) => string | HTMLElement;
   renderSelection?: (option: ThekSelectOption) => string | HTMLElement;

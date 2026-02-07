@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ThekSelect } from '../src/core/thekselect';
+import { ThekSelect } from '../../src/core/thekselect';
 
 describe('ThekSelect Drag and Drop', () => {
   let container: HTMLDivElement;
@@ -40,3 +40,4 @@ describe('ThekSelect Drag and Drop', () => {
     expect(newValue).toEqual(['2', '3', '1']);
   });
 });
+

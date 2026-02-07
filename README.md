@@ -1,18 +1,18 @@
 # ThekSelect
 
-A lightweight, framework-agnostic, and accessible select library with native Drag-and-Drop support and robust object-based theming.
+A lightweight, framework-agnostic, and accessible select library with native drag-and-drop tag reordering and object-based theming.
 
 ## Features
 
-- **Headless Core**: Logic and state are separated from the UI for maximum flexibility.
-- **Searchable**: Real-time filtering of options with built-in debounce.
-- **Multi-select & Tagging**: Support for multiple selections with reorderable tags.
-- **Custom Tag Creation**: Allow users to create new options on the fly.
-- **Remote Data Loading**: Fetch options from APIs with ease.
-- **Object-based Theming**: Fully customizable appearance via configuration objects.
-- **Native Drag-and-Drop**: Reorder selected tags using HTML5 DnD.
-- **Accessible**: WAI-ARIA compliant and keyboard navigable.
-- **Responsive Sizing**: Built-in support for `sm`, `md`, and `lg` variants.
+- Headless core with renderer/state separation
+- Search with debounce support
+- Single and multi-select modes
+- User-created tags (`canCreate`)
+- Remote async options (`loadOptions`)
+- Rich theming via object config
+- Native HTML5 drag-and-drop for selected tags
+- Keyboard-friendly and ARIA-aware behavior
+- Size variants: `sm`, `md`, `lg`
 
 ## Installation
 
@@ -20,120 +20,170 @@ A lightweight, framework-agnostic, and accessible select library with native Dra
 npm install thekselect
 ```
 
-## Usage
+## Quick Start
 
-### Basic Initialization
-
-```javascript
+```js
 import { ThekSelect } from 'thekselect';
 
-// Initialize using a selector or element
 const select = ThekSelect.init('#my-select', {
-  placeholder: 'Select an option...',
+  placeholder: 'Select an option...'
 });
 ```
 
-### Multi-select with Custom Tags
+### Large Datasets (Virtualization)
 
-```javascript
-const ts = ThekSelect.init('#container', {
-  multiple: true,
-  canCreate: true,
-  options: [
-    { value: '1', label: 'Option 1' },
-    { value: '2', label: 'Option 2' }
-  ]
+```js
+ThekSelect.init('#big-list', {
+  options: hugeOptions,
+  searchable: true,
+  virtualize: true,
+  virtualThreshold: 80,
+  virtualItemHeight: 40,
+  virtualOverscan: 4
 });
 ```
 
-### Remote Data Loading
+### Global Defaults (App-wide)
 
-```javascript
-const ts = ThekSelect.init('#remote-select', {
-  loadOptions: async (query) => {
-    const response = await fetch(`https://api.example.com/search?q=${query}`);
-    const data = await response.json();
-    // Return objects mapping to your valueField/displayField
-    return data.map(item => ({ value: item.id, label: item.name }));
-  },
-  debounce: 500
+```js
+import { ThekSelect } from 'thekselect';
+
+ThekSelect.setDefaults({
+  size: 'md',
+  theme: { primary: '#0f172a' },
+  virtualize: true
 });
+
+// Uses global defaults
+ThekSelect.init('#first');
+
+// Instance options still override globals
+ThekSelect.init('#second', { size: 'lg' });
+
+// Optional cleanup (tests, app teardown, etc.)
+ThekSelect.resetDefaults();
 ```
 
-## Configuration Options
+## Development (Repo)
+
+```bash
+npm install
+npm test
+```
+
+### Scripts
+
+| Script | Purpose |
+| --- | --- |
+| `npm run dev` | Start Vite dev server for local development/showcase. |
+| `npm run build` | Build library outputs into `dist/` and emit types. |
+| `npm run preview` | Preview built output with Vite. Optional for library development. |
+| `npm test` | Run test suite in watch mode. |
+| `npm run coverage` | Run tests with coverage report. |
+
+Notes:
+- `preview` is optional for day-to-day library work.
+- For this repo, tests are the primary correctness check when bundle preview is unavailable.
+
+## Showcase
+
+The demo page is `showcase/index.html` and is intended to run through Vite during development.
+
+```bash
+npm run dev
+```
+
+Then open the local URL printed by Vite.
+
+## Configuration
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `options` | `Option[]` | `[]` | Initial list of options. |
-| `multiple` | `boolean` | `false` | Enable multi-selection. |
-| `searchable` | `boolean` | `true` | Enable search filtering. |
-| `disabled` | `boolean` | `false` | Disable the control. |
+| `options` | `ThekSelectOption[]` | `[]` | Initial options list. |
+| `multiple` | `boolean` | `false` | Enable multi-select mode. |
+| `searchable` | `boolean` | `true` | Enable search input and filtering. |
+| `disabled` | `boolean` | `false` | Disable interaction. |
 | `placeholder` | `string` | `'Select...'` | Placeholder text. |
-| `canCreate` | `boolean` | `false` | Allow creating new options. |
-| `createText` | `string` | `"Create '{%t}'..."` | Text for creation option. `{%t}` is replaced by input. |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size of the control. |
+| `canCreate` | `boolean` | `false` | Allow creating new options from input. |
+| `createText` | `string` | `"Create '{%t}'..."` | Create row label template (`{%t}` = typed text). |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size. |
 | `debounce` | `number` | `300` | Debounce delay for `loadOptions`. |
-| `maxSelectedLabels` | `number` | `3` | Number of tags to show before collapsing to summary. |
-| `displayField` | `string` | `'label'` | Property name to use for display text. |
-| `valueField` | `string` | `'value'` | Property name to use for internal value. |
-| `maxOptions` | `number \| null` | `null` | Limit the number of items displayed in dropdown. |
-| `theme` | `Object` | `{}` | Custom theme object (primary, bgSurface, borderRadius, etc.). |
-| `loadOptions` | `Function` | `undefined` | Async function to fetch remote options. |
-| `renderOption` | `Function` | `(o) => o[displayField]` | Custom rendering for dropdown options. |
-| `renderSelection` | `Function` | `(o) => o[displayField]` | Custom rendering for selected items. |
+| `maxSelectedLabels` | `number` | `3` | Max visible tags before summary text. |
+| `displayField` | `string` | `'label'` | Field used for rendering text. |
+| `valueField` | `string` | `'value'` | Field used as internal value key. |
+| `maxOptions` | `number \| null` | `null` | Limit rendered dropdown items. |
+| `virtualize` | `boolean` | `false` | Enable virtualized option rendering for large lists. |
+| `virtualItemHeight` | `number` | `40` | Row height (px) used by virtualization calculations. |
+| `virtualOverscan` | `number` | `4` | Extra rows rendered above and below viewport. |
+| `virtualThreshold` | `number` | `80` | Minimum option count before virtualization activates. |
+| `theme` | `ThekSelectTheme` | `{}` | Theme override object. |
+| `loadOptions` | `(query) => Promise<ThekSelectOption[]>` | `undefined` | Async loader for remote search. |
+| `renderOption` | `(option) => string \| HTMLElement` | `(o) => o[displayField]` | Custom dropdown renderer. |
+| `renderSelection` | `(option) => string \| HTMLElement` | `(o) => o[displayField]` | Custom selected-item renderer. |
 
-### Theming Example
+## Option Shape
 
-```javascript
-const select = ThekSelect.init('#themed-select', {
-  theme: {
-    primary: '#8b5cf6',
-    bgSurface: '#faf5ff',
-    textMain: '#5b21b6',
-    fontFamily: '"Inter", sans-serif',
-    borderRadius: '12px'
-  }
-});
+```ts
+interface ThekSelectOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+  selected?: boolean;
+  data?: any;
+  [key: string]: any;
+}
 ```
 
-### Custom Fields & Data Example
+When using custom fields (`valueField`, `displayField`), keep `value` and `label` available if you share the same option objects across default and custom-field instances.
 
-```javascript
-const select = ThekSelect.init('#custom-fields', {
-  displayField: 'name',
-  valueField: 'id',
-  options: [
-    { id: '1', name: 'John Doe', data: { role: 'Admin' } },
-    { id: '2', name: 'Jane Smith', data: { role: 'User' } }
-  ],
-  renderOption: (opt) => {
-    // Can return string or HTMLElement
-    return `<div><strong>${opt.name}</strong> <small>(${opt.data.role})</small></div>`;
-  }
-});
-```
+## API Methods
 
-## Methods
-
-- `getValue()`: Returns the selected value (string) or values (array).
-- `getSelectedOptions()`: Returns the full data objects for current selection.
-- `setValue(value, silent = false)`: Programmatically sets the selection.
-- `setTheme(theme)`: Updates the theme dynamically.
-- `setSize(size)`: Updates the component size ('sm', 'md', 'lg') dynamically.
-- `setMaxOptions(limit)`: Updates the dropdown item limit dynamically.
-- `setRenderOption(callback)`: Updates the rendering function dynamically.
-- `on(event, callback)`: Subscribe to events.
-- `destroy()`: Removes the library instance and restores the original element.
+- `getValue()`: Return selected value (`string`) or values (`string[]`).
+- `getSelectedOptions()`: Return full selected option objects.
+- `setValue(value, silent = false)`: Set current selection programmatically.
+- `setTheme(theme)`: Update theme at runtime.
+- `setSize(size)`: Update size (`sm`, `md`, `lg`) at runtime.
+- `setMaxOptions(limit)`: Update dropdown item limit.
+- `setRenderOption(callback)`: Update option rendering function.
+- `ThekSelect.setDefaults(defaults)`: Set global defaults for future instances.
+- `ThekSelect.resetDefaults()`: Clear global defaults.
+- `on(event, callback)`: Subscribe to component events.
+- `destroy()`: Tear down and restore original element.
 
 ## Events
 
-- `change`: Triggered when selection changes. Returns current value(s).
-- `open`: Triggered when dropdown opens.
-- `close`: Triggered when dropdown closes.
-- `search`: Triggered on user input. Returns search query.
-- `tagAdded`: Triggered when a tag is added. Returns the option object.
-- `tagRemoved`: Triggered when a tag is removed. Returns the option object.
-- `reordered`: Triggered when tags are reordered via drag-and-drop.
+- `change`: Selection changed (value or values).
+- `open`: Dropdown opened.
+- `close`: Dropdown closed.
+- `search`: Search input changed.
+- `tagAdded`: Tag added in multi mode.
+- `tagRemoved`: Tag removed in multi mode.
+- `reordered`: Selected tags reordered by drag-and-drop.
+
+## Troubleshooting
+
+### `Error: spawn EPERM` on `npm run dev`, `npm run build`, or `npm run preview` (Windows)
+
+This is typically an environment policy/permissions issue around spawning build tooling (e.g. esbuild), not a ThekSelect API issue.
+
+Recommended checks:
+
+1. Reinstall dependencies:
+
+```bash
+rmdir /s /q node_modules
+npm install
+```
+
+2. Verify esbuild binary can execute:
+
+```bash
+node_modules\\@esbuild\\win32-x64\\esbuild.exe --version
+```
+
+3. If blocked, review antivirus/EDR/AppLocker/Windows Security rules for child-process execution from your workspace.
+
+4. Use `npm test` to continue validating behavior while fixing build environment constraints.
 
 ## License
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ThekSelect } from '../src/core/thekselect';
+import { ThekSelect } from '../../src/core/thekselect';
 
 describe('ThekSelect Remote loading', () => {
   let container: HTMLDivElement;
@@ -63,3 +63,4 @@ describe('ThekSelect Remote loading', () => {
     expect(document.querySelector('.thek-option')?.textContent).toBe('One');
   });
 });
+

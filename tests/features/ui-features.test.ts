@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ThekSelect } from '../src/core/thekselect';
+import { ThekSelect } from '../../src/core/thekselect';
 
 describe('ThekSelect UI Features', () => {
   let selectEl: HTMLSelectElement;
@@ -62,4 +62,28 @@ describe('ThekSelect UI Features', () => {
     const spinner = document.querySelector('.fa-circle-notch');
     expect(spinner).toBeTruthy();
   });
+
+  it('should virtualize options when enabled for large datasets', () => {
+    document.body.innerHTML = `<div id="virtual"></div>`;
+    const options = Array.from({ length: 1000 }, (_, i) => ({
+      value: `v_${i + 1}`,
+      label: `Option ${i + 1}`
+    }));
+
+    ThekSelect.init('#virtual', {
+      options,
+      virtualize: true,
+      virtualThreshold: 80,
+      virtualItemHeight: 40,
+      virtualOverscan: 4
+    });
+
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    control.click();
+
+    const renderedOptions = document.querySelectorAll('.thek-option').length;
+    expect(renderedOptions).toBeGreaterThan(0);
+    expect(renderedOptions).toBeLessThan(1000);
+  });
 });
+
