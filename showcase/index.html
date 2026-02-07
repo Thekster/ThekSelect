@@ -383,9 +383,44 @@ ThekSelect.init('#el', { size: 'sm', multiple: true });</pre>
                         </table>
                     </div>
 
-                    <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color);">Theme Object</h3>
-                    <div style="background: var(--sidebar-bg); padding: 12px; border-radius: 8px; font-family: monospace; font-size: 0.75rem;">
-                        { primary, bgSurface, bgPanel, border, textMain, fontFamily, borderRadius, heightSm, heightMd, heightLg, itemPadding }
+                    <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color);">Events</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border-color);">
+                                    <th style="padding: 8px;">Event</th>
+                                    <th style="padding: 8px;">Payload</th>
+                                    <th style="padding: 8px;">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">change</td>
+                                    <td style="padding: 8px;">value | values[]</td>
+                                    <td style="padding: 8px;">Selection changed.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">open / close</td>
+                                    <td style="padding: 8px;">null</td>
+                                    <td style="padding: 8px;">Dropdown visibility toggled.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">search</td>
+                                    <td style="padding: 8px;">string</td>
+                                    <td style="padding: 8px;">User is typing in search.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">tagAdded / removed</td>
+                                    <td style="padding: 8px;">Option</td>
+                                    <td style="padding: 8px;">Specific tag interaction (multi-select).</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 8px; font-weight: 600;">reordered</td>
+                                    <td style="padding: 8px;">values[]</td>
+                                    <td style="padding: 8px;">Tags reordered via drag-and-drop.</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
