@@ -19,8 +19,8 @@ export class StateManager<T extends object> {
     this.state = { ...this.state, ...newState };
 
     // Simple check if state changed (shallow)
-    const hasChanged = Object.keys(newState).some(
-      (key) => (newState as any)[key] !== (oldState as any)[key]
+    const hasChanged = (Object.keys(newState) as Array<keyof T>).some(
+      (key) => newState[key] !== oldState[key]
     );
 
     if (hasChanged) {

@@ -5,10 +5,10 @@ import {
   ThekSelectState,
   ThekSelectEvent
 } from './types.js';
-import { debounce } from '../utils/debounce.js';
-import { generateId, escapeHtml } from '../utils/dom.js';
+import { debounce, DebouncedFunction } from '../utils/debounce.js';
+import { generateId } from '../utils/dom.js';
 
-const NOOP_LOAD_OPTIONS = async () => [];
+const NOOP_LOAD_OPTIONS = async (): Promise<ThekSelectOption[]> => [];
 
 export class ThekSelect {
   private config: Required<ThekSelectConfig>;
@@ -23,6 +23,7 @@ export class ThekSelect {
   private eventListeners: Map<string, Set<Function>> = new Map();
   private originalElement: HTMLElement;
   private documentClickListener!: (e: MouseEvent) => void;
+  private currentRequestId: string | null = null;
 
   private constructor(element: string | HTMLElement, config: ThekSelectConfig = {}) {
     const el = typeof element === 'string' ? document.querySelector(element) : element;
@@ -55,7 +56,7 @@ export class ThekSelect {
       createText: "Create '{%t}'...",
       size: 'md',
       debounce: 300,
-      loadOptions: NOOP_LOAD_OPTIONS as any,
+      loadOptions: NOOP_LOAD_OPTIONS,
       renderOption: (o: ThekSelectOption) => o.label,
       renderSelection: (o: ThekSelectOption) => o.label,
     };
@@ -76,13 +77,24 @@ export class ThekSelect {
   }
 
   private getInitialState(): ThekSelectState {
-    const selectedValues = this.config.multiple
-      ? this.config.options.filter(o => o.selected).map(o => o.value)
-      : (this.config.options.find(o => o.selected)?.value ? [this.config.options.find(o => o.selected)!.value] : []);
+    let selectedValues: string[] = [];
+    let selectedOptions: ThekSelectOption[] = [];
+
+    if (this.config.multiple) {
+      selectedOptions = this.config.options.filter(o => o.selected);
+      selectedValues = selectedOptions.map(o => o.value);
+    } else {
+      const selected = this.config.options.find(o => o.selected);
+      if (selected) {
+        selectedOptions = [selected];
+        selectedValues = [selected.value];
+      }
+    }
 
     return {
       options: this.config.options,
       selectedValues,
+      selectedOptions,
       isOpen: false,
       focusedIndex: -1,
       inputValue: '',
@@ -166,7 +178,7 @@ export class ThekSelect {
     document.addEventListener('click', this.documentClickListener);
   }
 
-  private handleSearch!: (query: string) => void;
+  private handleSearch!: DebouncedFunction<(query: string) => void>;
 
   private setupHandleSearch(): void {
     this.handleSearch = debounce(async (query: string) => {
@@ -174,14 +186,21 @@ export class ThekSelect {
       const isRemote = this.config.loadOptions && this.config.loadOptions !== NOOP_LOAD_OPTIONS;
       if (isRemote) {
         if (query.length > 0) {
+          const requestId = generateId();
+          this.currentRequestId = requestId;
           this.stateManager.setState({ isLoading: true });
           try {
             const options = await this.config.loadOptions(query);
-            this.stateManager.setState({ options, isLoading: false, focusedIndex: 0 });
+            if (this.currentRequestId === requestId) {
+              this.stateManager.setState({ options, isLoading: false, focusedIndex: 0 });
+            }
           } catch (error) {
-            this.stateManager.setState({ isLoading: false });
+            if (this.currentRequestId === requestId) {
+              this.stateManager.setState({ isLoading: false });
+            }
           }
         } else {
+          this.currentRequestId = null;
           // Reset options if search is cleared in remote mode
           this.stateManager.setState({ options: this.config.options, focusedIndex: -1 });
         }
@@ -268,20 +287,29 @@ export class ThekSelect {
     if (option.disabled) return;
 
     let newSelectedValues: string[];
+    let newSelectedOptions: ThekSelectOption[];
+
     if (this.config.multiple) {
       if (state.selectedValues.includes(option.value)) {
         newSelectedValues = state.selectedValues.filter(v => v !== option.value);
+        newSelectedOptions = state.selectedOptions.filter(o => o.value !== option.value);
         this.emit('tagRemoved', option);
       } else {
         newSelectedValues = [...state.selectedValues, option.value];
+        newSelectedOptions = [...state.selectedOptions, option];
         this.emit('tagAdded', option);
       }
     } else {
       newSelectedValues = [option.value];
+      newSelectedOptions = [option];
       this.closeDropdown();
     }
 
-    this.stateManager.setState({ selectedValues: newSelectedValues, inputValue: '' });
+    this.stateManager.setState({
+      selectedValues: newSelectedValues,
+      selectedOptions: newSelectedOptions,
+      inputValue: ''
+    });
     this.input.value = '';
     this.syncOriginalElement(newSelectedValues);
     this.emit('change', newSelectedValues);
@@ -301,12 +329,21 @@ export class ThekSelect {
   private removeLastSelection(): void {
     const state = this.stateManager.getState();
     const newSelectedValues = [...state.selectedValues];
+    const newSelectedOptions = [...state.selectedOptions];
+
     const removedValue = newSelectedValues.pop();
+    const removedOption = newSelectedOptions.pop();
+
     if (removedValue) {
-      const option = state.options.find(o => o.value === removedValue);
-      this.stateManager.setState({ selectedValues: newSelectedValues });
+      // Safety check to ensure we popped the corresponding option
+      // In normal operation they are synced, but let's be safe or just trust index match
+
+      this.stateManager.setState({
+        selectedValues: newSelectedValues,
+        selectedOptions: newSelectedOptions
+      });
       this.syncOriginalElement(newSelectedValues);
-      if (option) this.emit('tagRemoved', option);
+      if (removedOption) this.emit('tagRemoved', removedOption);
       this.emit('change', newSelectedValues);
     }
   }
@@ -339,8 +376,9 @@ export class ThekSelect {
   private renderSelectionContent(state: ThekSelectState): void {
     this.selectionContainer.innerHTML = '';
     if (this.config.multiple) {
-      state.selectedValues.forEach((val, index) => {
-        const option = state.options.find(o => o.value === val) || { value: val, label: val };
+      state.selectedOptions.forEach((option, index) => {
+        // Use selectedOptions directly
+        const val = option.value;
         const tag = document.createElement('span');
         tag.className = 'thek-tag';
         tag.draggable = true;
@@ -350,7 +388,7 @@ export class ThekSelect {
         if (content instanceof HTMLElement) {
           tag.appendChild(content);
         } else {
-          tag.innerHTML = content;
+          tag.textContent = content;
         }
         const removeBtn = document.createElement('span');
         removeBtn.className = 'thek-tag-remove';
@@ -365,18 +403,15 @@ export class ThekSelect {
       });
       this.input.placeholder = state.selectedValues.length > 0 ? '' : this.config.placeholder;
     } else {
-      const val = state.selectedValues[0];
-      if (val && !state.isOpen) {
-        const option = state.options.find(o => o.value === val);
-        if (option) {
-          const content = this.config.renderSelection(option);
-          if (content instanceof HTMLElement) {
-            this.selectionContainer.appendChild(content);
-          } else {
-            this.selectionContainer.innerHTML = content;
-          }
-          this.input.placeholder = '';
+      const option = state.selectedOptions[0];
+      if (option && !state.isOpen) {
+        const content = this.config.renderSelection(option);
+        if (content instanceof HTMLElement) {
+          this.selectionContainer.appendChild(content);
+        } else {
+            this.selectionContainer.textContent = content;
         }
+        this.input.placeholder = '';
       } else {
         this.input.placeholder = this.config.placeholder;
       }
@@ -413,7 +448,7 @@ export class ThekSelect {
       if (content instanceof HTMLElement) {
         li.appendChild(content);
       } else {
-        li.innerHTML = content;
+        li.textContent = content;
       }
       li.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -425,8 +460,10 @@ export class ThekSelect {
     if (this.config.canCreate && state.inputValue && !exactMatch) {
       const li = document.createElement('li');
       li.className = 'thek-option thek-create';
-      const text = this.config.createText.replace('{%t}', escapeHtml(state.inputValue));
-      li.innerHTML = text;
+      // We render createText as textContent to be safe.
+      // We manually replace {%t} with the input value.
+      const text = this.config.createText.replace('{%t}', state.inputValue);
+      li.textContent = text;
       if (state.focusedIndex === filteredOptions.length) li.classList.add('thek-focused');
       li.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -444,7 +481,7 @@ export class ThekSelect {
 
   private setupTagDnd(tag: HTMLElement): void {
     tag.addEventListener('dragstart', (e) => {
-      e.dataTransfer?.setData('text/plain', tag.dataset.index!);
+      e.dataTransfer?.setData('text/plain', tag.dataset.value!);
       tag.classList.add('thek-dragging');
     });
     tag.addEventListener('dragend', () => {
@@ -460,20 +497,38 @@ export class ThekSelect {
     tag.addEventListener('drop', (e) => {
       e.preventDefault();
       tag.classList.remove('thek-drag-over');
-      const fromIndex = parseInt(e.dataTransfer?.getData('text/plain') || '-1');
-      const toIndex = parseInt(tag.dataset.index!);
-      if (fromIndex !== -1 && fromIndex !== toIndex) {
-        this.reorderTags(fromIndex, toIndex);
+      const fromValue = e.dataTransfer?.getData('text/plain');
+      const toValue = tag.dataset.value!;
+      if (fromValue && fromValue !== toValue) {
+        this.reorderTagsByValue(fromValue, toValue);
       }
     });
+  }
+
+  private reorderTagsByValue(fromValue: string, toValue: string): void {
+    const state = this.stateManager.getState();
+    const fromIndex = state.selectedValues.indexOf(fromValue);
+    const toIndex = state.selectedValues.indexOf(toValue);
+    if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
+      this.reorderTags(fromIndex, toIndex);
+    }
   }
 
   private reorderTags(from: number, to: number): void {
     const state = this.stateManager.getState();
     const newSelectedValues = [...state.selectedValues];
-    const [movedItem] = newSelectedValues.splice(from, 1);
-    newSelectedValues.splice(to, 0, movedItem);
-    this.stateManager.setState({ selectedValues: newSelectedValues });
+    const newSelectedOptions = [...state.selectedOptions];
+
+    const [movedVal] = newSelectedValues.splice(from, 1);
+    newSelectedValues.splice(to, 0, movedVal);
+
+    const [movedOpt] = newSelectedOptions.splice(from, 1);
+    newSelectedOptions.splice(to, 0, movedOpt);
+
+    this.stateManager.setState({
+      selectedValues: newSelectedValues,
+      selectedOptions: newSelectedOptions
+    });
     this.syncOriginalElement(newSelectedValues);
     this.emit('reordered', newSelectedValues);
     this.emit('change', newSelectedValues);
@@ -499,12 +554,25 @@ export class ThekSelect {
 
   public setValue(value: string | string[]): void {
     const values = Array.isArray(value) ? value : [value];
-    this.stateManager.setState({ selectedValues: values });
+
+    // We also need to update selectedOptions.
+    // We try to find them in current options.
+    // If not found, we create a placeholder option (legacy behavior fallback for setValue)
+    const state = this.stateManager.getState();
+    const newSelectedOptions = values.map(val => {
+      return state.options.find(o => o.value === val) || { value: val, label: val };
+    });
+
+    this.stateManager.setState({
+      selectedValues: values,
+      selectedOptions: newSelectedOptions
+    });
     this.syncOriginalElement(values);
     this.emit('change', values);
   }
 
   public destroy(): void {
+    this.handleSearch.cancel();
     if (this.wrapper.parentNode) {
       this.wrapper.parentNode.removeChild(this.wrapper);
     }

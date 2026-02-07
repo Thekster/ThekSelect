@@ -29,7 +29,7 @@ describe('ThekSelect Drag and Drop', () => {
     // Simulate drop: tag 0 dropped onto tag 2
     const dropEvent = new CustomEvent('drop', { bubbles: true }) as any;
     dropEvent.dataTransfer = {
-      getData: vi.fn().mockReturnValue('0')
+      getData: vi.fn().mockReturnValue('1') // return value, not index
     };
     dropEvent.preventDefault = vi.fn();
 

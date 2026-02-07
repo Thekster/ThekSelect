@@ -15,7 +15,7 @@ export interface ThekSelectConfig {
   disabled?: boolean;
   placeholder?: string;
   canCreate?: boolean;
-  createText?: string; // Default "Create '{%t}'..."
+  createText?: string;
   size?: ThekSelectSize;
   debounce?: number;
   loadOptions?: (query: string) => Promise<ThekSelectOption[]>;
@@ -26,6 +26,7 @@ export interface ThekSelectConfig {
 export interface ThekSelectState {
   options: ThekSelectOption[];
   selectedValues: string[];
+  selectedOptions: ThekSelectOption[]; // Added for data integrity
   isOpen: boolean;
   focusedIndex: number;
   inputValue: string;
