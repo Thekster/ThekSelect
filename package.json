@@ -16,6 +16,9 @@
   "files": [
     "dist"
   ],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "type": "module",
   "main": "./dist/thekselect.umd.cjs",
   "module": "./dist/thekselect.js",
