@@ -1,6 +1,8 @@
 # Release Notes
 
-## Unreleased (2026-02-07)
+## Unreleased
+
+## 1.0.0 (2026-03-28)
 
 ### Added
 
