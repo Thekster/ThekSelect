@@ -286,11 +286,11 @@ export const BASE_STYLES = `:root {
 let injected = false;
 
 export function injectStyles() {
-    if (injected || typeof document === 'undefined') return;
-    
-    const style = document.createElement('style');
-    style.id = 'thekselect-base-styles';
-    style.textContent = BASE_STYLES;
-    document.head.appendChild(style);
-    injected = true;
+  if (injected || typeof document === 'undefined') return;
+
+  const style = document.createElement('style');
+  style.id = 'thekselect-base-styles';
+  style.textContent = BASE_STYLES;
+  document.head.appendChild(style);
+  injected = true;
 }

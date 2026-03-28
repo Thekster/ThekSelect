@@ -19,7 +19,7 @@ describe('ThekSelect canCreate', () => {
     input.value = 'New Item';
     input.dispatchEvent(new Event('input'));
 
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const createOption = document.querySelector('.thek-option.thek-create');
     expect(createOption).toBeTruthy();
@@ -29,4 +29,3 @@ describe('ThekSelect canCreate', () => {
     expect(ts.getValue()).toBe('New Item');
   });
 });
-

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { ThekSelect } from '../../src/core/thekselect';
 
 describe('ThekSelect', () => {
@@ -15,13 +15,13 @@ describe('ThekSelect', () => {
   });
 
   it('should initialize and hide the original select', () => {
-    const ts = ThekSelect.init(selectEl);
+    ThekSelect.init(selectEl);
     expect(selectEl.style.display).toBe('none');
     expect(document.querySelector('.thek-select')).toBeTruthy();
   });
 
   it('should show options when clicked', () => {
-    const ts = ThekSelect.init(selectEl);
+    ThekSelect.init(selectEl);
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
 
@@ -42,21 +42,21 @@ describe('ThekSelect', () => {
   });
 
   it('should filter options based on input', async () => {
-    const ts = ThekSelect.init(selectEl, { debounce: 0 });
+    ThekSelect.init(selectEl, { debounce: 0 });
     const input = document.querySelector('.thek-input') as HTMLInputElement;
     input.value = 'Option 1';
     input.dispatchEvent(new Event('input'));
 
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     const options = document.querySelectorAll('.thek-option');
-    expect(Array.from(options).some(opt => opt.textContent === 'Option 1')).toBe(true);
-    expect(Array.from(options).some(opt => opt.textContent === 'Option 2')).toBe(false);
+    expect(Array.from(options).some((opt) => opt.textContent === 'Option 1')).toBe(true);
+    expect(Array.from(options).some((opt) => opt.textContent === 'Option 2')).toBe(false);
   });
 
   it('should support multi-select', () => {
     selectEl.multiple = true;
-    Array.from(selectEl.options).forEach(opt => opt.selected = false);
+    Array.from(selectEl.options).forEach((opt) => (opt.selected = false));
     const ts = ThekSelect.init(selectEl);
 
     let options = document.querySelectorAll('.thek-option');
@@ -69,4 +69,3 @@ describe('ThekSelect', () => {
     expect(document.querySelectorAll('.thek-tag').length).toBe(2);
   });
 });
-

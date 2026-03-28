@@ -27,10 +27,12 @@ describe('ThekSelect Drag and Drop', () => {
     expect((tags[0] as HTMLElement).dataset.value).toBe('1');
 
     // Simulate drop: tag 0 dropped onto tag 2
-    const dropEvent = new CustomEvent('drop', { bubbles: true }) as any;
-    dropEvent.dataTransfer = {
-      getData: vi.fn().mockReturnValue('0')
-    };
+    const dropEvent = new CustomEvent('drop', { bubbles: true }) as unknown as DragEvent;
+    Object.defineProperty(dropEvent, 'dataTransfer', {
+      value: {
+        getData: vi.fn().mockReturnValue('0')
+      }
+    });
     dropEvent.preventDefault = vi.fn();
 
     tags[2].dispatchEvent(dropEvent);
@@ -40,4 +42,3 @@ describe('ThekSelect Drag and Drop', () => {
     expect(newValue).toEqual(['2', '3', '1']);
   });
 });
-

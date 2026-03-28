@@ -15,7 +15,7 @@ describe('ThekSelect Remote loading', () => {
       { value: 'r2', label: 'Remote 2' }
     ]);
 
-    const ts = ThekSelect.init(container, {
+    ThekSelect.init(container, {
       loadOptions,
       debounce: 0
     });
@@ -25,7 +25,7 @@ describe('ThekSelect Remote loading', () => {
     input.dispatchEvent(new Event('input'));
 
     // Wait for debounce and promise
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     expect(loadOptions).toHaveBeenCalledWith('rem');
 
@@ -35,13 +35,13 @@ describe('ThekSelect Remote loading', () => {
   });
 
   it('should show loading state', async () => {
-    let resolvePromise: any;
-    const promise = new Promise(resolve => {
-        resolvePromise = resolve;
+    let resolvePromise: (value: { value: string; label: string }[]) => void;
+    const promise = new Promise<{ value: string; label: string }[]>((resolve) => {
+      resolvePromise = resolve;
     });
     const loadOptions = vi.fn().mockReturnValue(promise);
 
-    const ts = ThekSelect.init(container, {
+    ThekSelect.init(container, {
       loadOptions,
       debounce: 0
     });
@@ -50,17 +50,16 @@ describe('ThekSelect Remote loading', () => {
     input.value = 'l';
     input.dispatchEvent(new Event('input'));
 
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const loading = document.querySelector('.thek-loading');
     expect(loading).toBeTruthy();
     expect(loading?.textContent).toBe('Loading...');
 
     resolvePromise([{ value: '1', label: 'One' }]);
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     expect(document.querySelector('.thek-loading')).toBeNull();
     expect(document.querySelector('.thek-option')?.textContent).toBe('One');
   });
 });
-

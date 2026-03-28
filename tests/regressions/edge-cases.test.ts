@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ThekSelect } from '../../src/core/thekselect';
 
 describe('ThekSelect Edge Cases', () => {
@@ -15,10 +15,10 @@ describe('ThekSelect Edge Cases', () => {
   });
 
   it('should handle initialization with empty options', () => {
-    const ts = ThekSelect.init(container, { options: [] });
+    ThekSelect.init(container, { options: [] });
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
-    
+
     const noResults = document.querySelector('.thek-no-results');
     expect(noResults).toBeTruthy();
     expect(noResults?.textContent).toBe('No results found');
@@ -26,7 +26,7 @@ describe('ThekSelect Edge Cases', () => {
 
   it('should handle options with special characters and HTML (XSS check)', () => {
     const dangerousLabel = '<img src=x onerror=alert(1)>';
-    const ts = ThekSelect.init(container, {
+    ThekSelect.init(container, {
       options: [{ value: 'danger', label: dangerousLabel }]
     });
 
@@ -40,7 +40,7 @@ describe('ThekSelect Edge Cases', () => {
 
   it('should handle extremely long labels gracefully', () => {
     const longLabel = 'A'.repeat(1000);
-    const ts = ThekSelect.init(container, {
+    ThekSelect.init(container, {
       options: [{ value: 'long', label: longLabel }]
     });
 
@@ -59,18 +59,18 @@ describe('ThekSelect Edge Cases', () => {
 
     // Should not crash, might just set the value text or ignore
     ts.setValue('999');
-    
+
     // Depending on implementation, it might show '999' or nothing.
     // In multi-select it handles unknown values by creating a dummy option object.
     expect(ts.getValue()).toBe('999');
   });
 
   it('should handle missing displayField properties in data', () => {
-    const ts = ThekSelect.init(container, {
+    ThekSelect.init(container, {
       displayField: 'name',
       valueField: 'id',
       options: [
-        { id: '1' } as any // Missing 'name'
+        { id: '1' } as unknown as { id: string; name?: string } // Missing 'name'
       ]
     });
 
@@ -79,19 +79,18 @@ describe('ThekSelect Edge Cases', () => {
 
     const option = document.querySelector('.thek-option-label');
     // Should probably render undefined or empty string, but NOT crash
-    expect(option?.textContent).toBeFalsy(); 
+    expect(option?.textContent).toBeFalsy();
   });
-  
+
   it('should safely destroy the instance', () => {
     const ts = ThekSelect.init(container, {});
-    
+
     expect(document.querySelector('.thek-select')).toBeTruthy();
     expect(document.querySelector('.thek-dropdown')).toBeTruthy();
-    
+
     ts.destroy();
-    
+
     expect(document.querySelector('.thek-select')).toBeFalsy(); // wrapper removed
     expect(document.querySelector('.thek-dropdown')).toBeFalsy();
   });
 });
-

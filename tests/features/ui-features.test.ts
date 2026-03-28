@@ -18,7 +18,7 @@ describe('ThekSelect UI Features', () => {
   });
 
   it('should render checkboxes in multiple mode', () => {
-    const ts = ThekSelect.init(selectEl, { multiple: true });
+    ThekSelect.init(selectEl, { multiple: true });
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
 
@@ -27,12 +27,12 @@ describe('ThekSelect UI Features', () => {
   });
 
   it('should show summary text when maxSelectedLabels is exceeded', () => {
-    const ts = ThekSelect.init(selectEl, { multiple: true, maxSelectedLabels: 2 });
-    
+    ThekSelect.init(selectEl, { multiple: true, maxSelectedLabels: 2 });
+
     const options = document.querySelectorAll('.thek-option');
     (options[0] as HTMLElement).click();
     (options[1] as HTMLElement).click();
-    
+
     // 2 items selected, should still show tags if maxSelectedLabels is 2
     expect(document.querySelectorAll('.thek-tag').length).toBe(2);
     expect(document.querySelector('.thek-summary-text')).toBeNull();
@@ -46,10 +46,12 @@ describe('ThekSelect UI Features', () => {
   });
 
   it('should show loading spinner when isLoading is true', async () => {
-    const ts = ThekSelect.init(selectEl, { 
-        loadOptions: async () => {
-            return new Promise(resolve => setTimeout(() => resolve([{ value: 'r1', label: 'Remote 1' }]), 100));
-        }
+    ThekSelect.init(selectEl, {
+      loadOptions: async () => {
+        return new Promise((resolve) =>
+          setTimeout(() => resolve([{ value: 'r1', label: 'Remote 1' }]), 100)
+        );
+      }
     });
 
     const input = document.querySelector('.thek-input') as HTMLInputElement;
@@ -57,7 +59,7 @@ describe('ThekSelect UI Features', () => {
     input.dispatchEvent(new Event('input'));
 
     // Wait for debounce
-    await new Promise(resolve => setTimeout(resolve, 400));
+    await new Promise((resolve) => setTimeout(resolve, 400));
 
     const spinner = document.querySelector('.fa-circle-notch');
     expect(spinner).toBeTruthy();
@@ -86,4 +88,3 @@ describe('ThekSelect UI Features', () => {
     expect(renderedOptions).toBeLessThan(1000);
   });
 });
-

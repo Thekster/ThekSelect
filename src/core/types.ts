@@ -1,14 +1,14 @@
-export interface ThekSelectOption {
+export interface ThekSelectOption<T = unknown> {
   value: string;
   label: string;
   disabled?: boolean;
   selected?: boolean;
-  data?: any;
-  [key: string]: any;
+  data?: T;
+  [key: string]: unknown;
 }
 
-export interface ThekSelectConfig {
-  options?: ThekSelectOption[];
+export interface ThekSelectConfig<T = unknown> {
+  options?: ThekSelectOption<T>[];
   multiple?: boolean;
   searchable?: boolean;
   disabled?: boolean;
@@ -25,15 +25,15 @@ export interface ThekSelectConfig {
   virtualItemHeight?: number;
   virtualOverscan?: number;
   virtualThreshold?: number;
-  loadOptions?: (query: string) => Promise<ThekSelectOption[]>;
-  renderOption?: (option: ThekSelectOption) => string | HTMLElement;
-  renderSelection?: (option: ThekSelectOption) => string | HTMLElement;
+  loadOptions?: (query: string) => Promise<ThekSelectOption<T>[]>;
+  renderOption?: (option: ThekSelectOption<T>) => string | HTMLElement;
+  renderSelection?: (option: ThekSelectOption<T>) => string | HTMLElement;
 }
 
-export interface ThekSelectState {
-  options: ThekSelectOption[];
+export interface ThekSelectState<T = unknown> {
+  options: ThekSelectOption<T>[];
   selectedValues: string[];
-  selectedOptionsByValue: Record<string, ThekSelectOption>;
+  selectedOptionsByValue: Record<string, ThekSelectOption<T>>;
   isOpen: boolean;
   focusedIndex: number;
   inputValue: string;

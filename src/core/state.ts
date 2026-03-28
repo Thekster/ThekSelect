@@ -1,5 +1,3 @@
-import { ThekSelectState } from './types.js';
-
 export type StateListener<T> = (state: T) => void;
 
 export class StateManager<T extends object> {
@@ -19,9 +17,16 @@ export class StateManager<T extends object> {
     this.state = { ...this.state, ...newState };
 
     // Simple check if state changed (shallow)
-    const hasChanged = Object.keys(newState).some(
-      (key) => (newState as any)[key] !== (oldState as any)[key]
-    );
+    const hasChanged = Object.keys(newState).some((key) => {
+      const val = (newState as Record<string, unknown>)[key];
+      const oldVal = (oldState as Record<string, unknown>)[key];
+
+      if (Array.isArray(val) && Array.isArray(oldVal)) {
+        return val.length !== oldVal.length || val.some((item, index) => item !== oldVal[index]);
+      }
+
+      return val !== oldVal;
+    });
 
     if (hasChanged) {
       this.notify();

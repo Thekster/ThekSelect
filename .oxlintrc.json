@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "rules": {
+    "typescript/no-explicit-any": "error"
+  },
+  "plugins": ["typescript", "vue", "unicorn", "oxc"],
+  "categories": {
+    "correctness": "warn"
+  },
+  "env": {
+    "builtin": true
+  },
+  "ignorePatterns": [
+    "node_modules/**",
+    "dist/**",
+    "coverage/**",
+    "playwright-report/**",
+    ".vite/**"
+  ],
+  "overrides": [
+    {
+      "files": ["src/**/*.{ts,tsx,vue}", "env.d.ts", "*.config.ts", "*.config.mts"]
+    }
+  ]
+}

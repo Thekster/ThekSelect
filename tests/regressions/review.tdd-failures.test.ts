@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ThekSelect } from '../../src/core/thekselect';
 
 function flush(ms: number = 0): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 describe('TDD: review hardening regressions', () => {
@@ -33,17 +33,17 @@ describe('TDD: review hardening regressions', () => {
   });
 
   it('keeps the newest remote search results when requests resolve out of order', async () => {
-    let resolveA!: (value: any[]) => void;
-    let resolveAB!: (value: any[]) => void;
+    let resolveA!: (value: { value: string; label: string }[]) => void;
+    let resolveAB!: (value: { value: string; label: string }[]) => void;
 
     const loadOptions = vi.fn((query: string) => {
       if (query === 'a') {
-        return new Promise<any[]>(resolve => {
+        return new Promise<{ value: string; label: string }[]>((resolve) => {
           resolveA = resolve;
         });
       }
       if (query === 'ab') {
-        return new Promise<any[]>(resolve => {
+        return new Promise<{ value: string; label: string }[]>((resolve) => {
           resolveAB = resolve;
         });
       }
@@ -68,7 +68,9 @@ describe('TDD: review hardening regressions', () => {
     resolveA([{ value: 'a-1', label: 'A Result' }]);
     await flush(10);
 
-    const labels = Array.from(document.querySelectorAll('.thek-option-label')).map(el => el.textContent);
+    const labels = Array.from(document.querySelectorAll('.thek-option-label')).map(
+      (el) => el.textContent
+    );
     expect(labels).toContain('AB Result');
     expect(labels).not.toContain('A Result');
   });
@@ -129,4 +131,3 @@ describe('TDD: review hardening regressions', () => {
     expect(loadOptions).not.toHaveBeenCalled();
   });
 });
-

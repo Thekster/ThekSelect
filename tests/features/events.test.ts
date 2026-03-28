@@ -55,14 +55,14 @@ describe('ThekSelect Events', () => {
     input.dispatchEvent(new Event('input'));
 
     // Debounce is 0, but still async
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
     expect(onSearch).toHaveBeenCalledWith('test');
   });
 
   it('should emit tagAdded and tagRemoved events in multi-select', () => {
     selectEl.multiple = true;
     // Clear initial selection that JSDOM might have set
-    Array.from(selectEl.options).forEach(opt => opt.selected = false);
+    Array.from(selectEl.options).forEach((opt) => (opt.selected = false));
 
     const ts = ThekSelect.init(selectEl);
     const onTagAdded = vi.fn();
@@ -83,4 +83,3 @@ describe('ThekSelect Events', () => {
     expect(onTagRemoved).toHaveBeenCalledWith(expect.objectContaining({ value: '1' }));
   });
 });
-

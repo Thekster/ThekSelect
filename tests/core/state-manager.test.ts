@@ -27,4 +27,3 @@ describe('StateManager', () => {
     expect(listener).not.toHaveBeenCalled();
   });
 });
-

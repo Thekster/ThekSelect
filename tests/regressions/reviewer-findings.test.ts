@@ -23,7 +23,10 @@ describe('Reviewer findings regressions', () => {
       options: [{ value: '1', label: 'One' }]
     });
 
-    const positionSpy = vi.spyOn((ts as any).renderer, 'positionDropdown');
+    const positionSpy = vi.spyOn(
+      (ts as unknown as { renderer: { positionDropdown: () => void } }).renderer,
+      'positionDropdown'
+    );
     positionSpy.mockClear();
 
     ts.destroy();
@@ -35,10 +38,13 @@ describe('Reviewer findings regressions', () => {
   });
 
   it('clears loading state when query becomes empty in remote mode', async () => {
-    let resolvePending!: (options: any[]) => void;
-    const loadOptions = vi.fn(() => new Promise<any[]>((resolve) => {
-      resolvePending = resolve;
-    }));
+    let resolvePending!: (options: { value: string; label: string }[]) => void;
+    const loadOptions = vi.fn(
+      () =>
+        new Promise<{ value: string; label: string }[]>((resolve) => {
+          resolvePending = resolve;
+        })
+    );
 
     ThekSelect.init(container, { loadOptions, debounce: 0 });
 
@@ -78,7 +84,7 @@ describe('Reviewer findings regressions', () => {
         { value: '2', label: 'Two' }
       ]
     });
-    single.setValue(['1', '2'] as any);
+    single.setValue(['1', '2'] as unknown as string);
     expect(single.getValue()).toBe('1');
 
     single.destroy();
@@ -107,10 +113,12 @@ describe('Reviewer findings regressions', () => {
     });
 
     const firstTag = document.querySelector('.thek-tag') as HTMLElement;
-    const badDrop = new CustomEvent('drop', { bubbles: true }) as any;
-    badDrop.dataTransfer = {
-      getData: vi.fn().mockReturnValue('99')
-    };
+    const badDrop = new CustomEvent('drop', { bubbles: true }) as unknown as DragEvent;
+    Object.defineProperty(badDrop, 'dataTransfer', {
+      value: {
+        getData: vi.fn().mockReturnValue('99')
+      }
+    });
     badDrop.preventDefault = vi.fn();
 
     firstTag.dispatchEvent(badDrop);
@@ -161,7 +169,10 @@ describe('Reviewer findings regressions', () => {
     });
 
     const onChange = vi.fn();
-    const unsubscribe = (ts as any).on('change', onChange);
+    const unsubscribe = (ts as unknown as { on: (event: string, cb: () => void) => () => void }).on(
+      'change',
+      onChange
+    );
 
     expect(typeof unsubscribe).toBe('function');
 

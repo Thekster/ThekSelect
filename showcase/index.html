@@ -1,115 +1,153 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ThekSelect | Modern Headless Select</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../src/themes/base.css">
-    <link rel="stylesheet" href="../src/themes/dark.css">
-    <link rel="stylesheet" href="../src/themes/forest.css">
-    <link rel="stylesheet" href="../src/themes/red.css">
-    <link rel="stylesheet" href="../src/themes/blue.css">
-    <link rel="stylesheet" href="../src/themes/gray.css">
-    <link rel="stylesheet" href="../src/themes/bootstrap.css">
-    <link rel="stylesheet" href="../src/themes/tailwind.css">
-    <link rel="stylesheet" href="../src/themes/material.css">
-    <link rel="stylesheet" href="./testpage.css">
-</head>
-<body>
-
-<div class="showcase-toolbar">
-    <div class="toolbar-group">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../src/themes/base.css" />
+    <link rel="stylesheet" href="../src/themes/dark.css" />
+    <link rel="stylesheet" href="../src/themes/forest.css" />
+    <link rel="stylesheet" href="../src/themes/red.css" />
+    <link rel="stylesheet" href="../src/themes/blue.css" />
+    <link rel="stylesheet" href="../src/themes/gray.css" />
+    <link rel="stylesheet" href="../src/themes/bootstrap.css" />
+    <link rel="stylesheet" href="../src/themes/tailwind.css" />
+    <link rel="stylesheet" href="../src/themes/material.css" />
+    <link rel="stylesheet" href="./testpage.css" />
+  </head>
+  <body>
+    <div class="showcase-toolbar">
+      <div class="toolbar-group">
         <label for="page-theme-select">Page Theme</label>
         <select id="page-theme-select">
-            <option value="light" selected>Light</option>
-            <option value="dark">Dark</option>
+          <option value="light" selected>Light</option>
+          <option value="dark">Dark</option>
         </select>
-    </div>
-    <div class="toolbar-group">
+      </div>
+      <div class="toolbar-group">
         <label for="thek-theme-select">ThekSelect Theme</label>
         <select id="thek-theme-select">
-            <option value="base" selected>Base</option>
-            <option value="dark">Dark</option>
-            <option value="forest">Forest</option>
-            <option value="red">Red</option>
-            <option value="blue">Blue</option>
-            <option value="gray">Gray</option>
-            <option value="bootstrap">Bootstrap</option>
-            <option value="tailwind">Tailwind</option>
-            <option value="material">Material</option>
+          <option value="base" selected>Base</option>
+          <option value="dark">Dark</option>
+          <option value="forest">Forest</option>
+          <option value="red">Red</option>
+          <option value="blue">Blue</option>
+          <option value="gray">Gray</option>
+          <option value="bootstrap">Bootstrap</option>
+          <option value="tailwind">Tailwind</option>
+          <option value="material">Material</option>
         </select>
+      </div>
     </div>
-</div>
 
-<div class="app-container">
-    <aside>
+    <div class="app-container">
+      <aside>
         <div class="logo">
-            <i class="fa-solid fa-layer-group"></i>
-            ThekSelect
+          <i class="fa-solid fa-layer-group"></i>
+          ThekSelect
         </div>
 
         <nav>
-            <ul>
-                <li><a href="#docs">Quick Docs</a></li>
-                <li><a href="#basic" class="active">Basic Select</a></li>
-                <li><a href="#multi">Multi & Tagging</a></li>
-                <li><a href="#creation">Tag Creation</a></li>
-                <li><a href="#remote">Remote Loading</a></li>
-                <li><a href="#virtualization">Virtualization</a></li>
-                <li><a href="#sizing">Custom Sizing</a></li>
-                <li><a href="#fields">Custom Fields</a></li>
-                <li><a href="#api">API Methods</a></li>
-                <li><a href="#properties">Properties</a></li>
-                <li><a href="#configurator">Configurator</a></li>
-            </ul>
+          <ul>
+            <li><a href="#docs">Quick Docs</a></li>
+            <li><a href="#basic" class="active">Basic Select</a></li>
+            <li><a href="#multi">Multi & Tagging</a></li>
+            <li><a href="#creation">Tag Creation</a></li>
+            <li><a href="#remote">Remote Loading</a></li>
+            <li><a href="#virtualization">Virtualization</a></li>
+            <li><a href="#sizing">Custom Sizing</a></li>
+            <li><a href="#fields">Custom Fields</a></li>
+            <li><a href="#api">API Methods</a></li>
+            <li><a href="#properties">Properties</a></li>
+            <li><a href="#configurator">Configurator</a></li>
+          </ul>
         </nav>
-    </aside>
+      </aside>
 
-    <main>
+      <main>
         <h1>ThekSelect</h1>
-        <p class="description">A lightweight, framework-agnostic select library built for modern interfaces. Accessible, customizable, and developer-friendly.</p>
+        <p class="description">
+          A lightweight, framework-agnostic select library built for modern interfaces. Accessible,
+          customizable, and developer-friendly.
+        </p>
 
         <section id="docs">
-            <h2><i class="fa-solid fa-book"></i> Quick Docs</h2>
-            <div class="demo-card">
-                <div class="demo-content">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                        <div>
-                            <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color);">Run Locally</h3>
-                            <pre style="margin: 0 0 16px 0;">npm install
-npm run dev</pre>
-                            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">
-                                Use <code>npm run preview</code> only when you want to preview the built output.
-                            </p>
-                        </div>
-                        <div>
-                            <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color);">Keyboard & Interaction</h3>
-                            <ul style="margin: 0; padding-left: 18px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
-                                <li><strong>Arrow keys</strong>: move focus in the dropdown.</li>
-                                <li><strong>Enter</strong>: select focused option.</li>
-                                <li><strong>Esc</strong>: close the dropdown.</li>
-                                <li><strong>Backspace</strong> in multi mode: remove last selected tag.</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div style="margin-top: 16px; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.78rem; color: var(--text-muted);">
-                        Remote demo note: the GitHub search example depends on network availability and API rate limits.
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px;">
-                        <div>
-                            <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color);">Initialize From Existing &lt;select&gt;</h3>
-                            <pre style="margin: 0;">&lt;select id="country-select" multiple&gt;
+          <h2><i class="fa-solid fa-book"></i> Quick Docs</h2>
+          <div class="demo-card">
+            <div class="demo-content">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px">
+                <div>
+                  <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color)">
+                    Run Locally
+                  </h3>
+                  <pre style="margin: 0 0 16px 0">
+npm install
+npm run dev</pre
+                  >
+                  <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0">
+                    Use <code>npm run preview</code> only when you want to preview the built output.
+                  </p>
+                </div>
+                <div>
+                  <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color)">
+                    Keyboard & Interaction
+                  </h3>
+                  <ul
+                    style="
+                      margin: 0;
+                      padding-left: 18px;
+                      font-size: 0.8rem;
+                      color: var(--text-muted);
+                      line-height: 1.5;
+                    "
+                  >
+                    <li><strong>Arrow keys</strong>: move focus in the dropdown.</li>
+                    <li><strong>Enter</strong>: select focused option.</li>
+                    <li><strong>Esc</strong>: close the dropdown.</li>
+                    <li><strong>Backspace</strong> in multi mode: remove last selected tag.</li>
+                  </ul>
+                </div>
+              </div>
+              <div
+                style="
+                  margin-top: 16px;
+                  padding: 10px 12px;
+                  border: 1px solid var(--border-color);
+                  border-radius: 8px;
+                  font-size: 0.78rem;
+                  color: var(--text-muted);
+                "
+              >
+                Remote demo note: the GitHub search example depends on network availability and API
+                rate limits.
+              </div>
+              <div
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px"
+              >
+                <div>
+                  <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color)">
+                    Initialize From Existing &lt;select&gt;
+                  </h3>
+                  <pre style="margin: 0">
+&lt;select id="country-select" multiple&gt;
   &lt;option value="us" selected&gt;United States&lt;/option&gt;
   &lt;option value="de"&gt;Germany&lt;/option&gt;
   &lt;option value="jp" disabled&gt;Japan (disabled)&lt;/option&gt;
 &lt;/select&gt;
 
-ThekSelect.init('#country-select');</pre>
-                        </div>
-                        <div>
-                            <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color);">Global Defaults</h3>
-                            <pre style="margin: 0;">&lt;div id="first"&gt;&lt;/div&gt;
+ThekSelect.init('#country-select');</pre
+                  >
+                </div>
+                <div>
+                  <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color)">
+                    Global Defaults
+                  </h3>
+                  <pre style="margin: 0">
+&lt;div id="first"&gt;&lt;/div&gt;
 &lt;div id="second"&gt;&lt;/div&gt;
 
 ThekSelect.setDefaults({
@@ -119,38 +157,70 @@ ThekSelect.setDefaults({
 
 ThekSelect.init('#first');
 ThekSelect.init('#second', { height: 52 });
-ThekSelect.resetDefaults();</pre>
-                        </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px;">
-                        <div>
-                            <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color);">Live: Existing &lt;select&gt;</h3>
-                            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Countries (native options)</label>
-                            <select id="quick-country-select" multiple>
-                                <option value="us" selected>United States</option>
-                                <option value="de">Germany</option>
-                                <option value="jp" disabled>Japan (disabled)</option>
-                                <option value="tr">Turkey</option>
-                            </select>
-                            <button class="toggle-code" onclick="toggleCode(this)" style="margin-top: 10px;">Show Code</button>
-                            <div class="code-snippet">
-<pre>&lt;select id="quick-country-select" multiple&gt;
+ThekSelect.resetDefaults();</pre
+                  >
+                </div>
+              </div>
+              <div
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px"
+              >
+                <div>
+                  <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color)">
+                    Live: Existing &lt;select&gt;
+                  </h3>
+                  <label
+                    style="
+                      display: block;
+                      font-size: 0.8rem;
+                      font-weight: 600;
+                      margin-bottom: 8px;
+                      color: var(--text-muted);
+                    "
+                    >Countries (native options)</label
+                  >
+                  <select id="quick-country-select" multiple>
+                    <option value="us" selected>United States</option>
+                    <option value="de">Germany</option>
+                    <option value="jp" disabled>Japan (disabled)</option>
+                    <option value="tr">Turkey</option>
+                  </select>
+                  <button class="toggle-code" onclick="toggleCode(this)" style="margin-top: 10px">
+                    Show Code
+                  </button>
+                  <div class="code-snippet">
+                    <pre>
+&lt;select id="quick-country-select" multiple&gt;
   &lt;option value="us" selected&gt;United States&lt;/option&gt;
   &lt;option value="de"&gt;Germany&lt;/option&gt;
   &lt;option value="jp" disabled&gt;Japan (disabled)&lt;/option&gt;
 &lt;/select&gt;
 
-ThekSelect.init('#quick-country-select');</pre>
-                            </div>
-                        </div>
-                        <div>
-                            <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color);">Live: Global Defaults</h3>
-                            <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Default height vs override</label>
-                            <div id="quick-defaults-first" style="margin-bottom: 10px;"></div>
-                            <div id="quick-defaults-second"></div>
-                            <button class="toggle-code" onclick="toggleCode(this)" style="margin-top: 10px;">Show Code</button>
-                            <div class="code-snippet">
-<pre>const demoOptions = [
+ThekSelect.init('#quick-country-select');</pre
+                    >
+                  </div>
+                </div>
+                <div>
+                  <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color)">
+                    Live: Global Defaults
+                  </h3>
+                  <label
+                    style="
+                      display: block;
+                      font-size: 0.8rem;
+                      font-weight: 600;
+                      margin-bottom: 8px;
+                      color: var(--text-muted);
+                    "
+                    >Default height vs override</label
+                  >
+                  <div id="quick-defaults-first" style="margin-bottom: 10px"></div>
+                  <div id="quick-defaults-second"></div>
+                  <button class="toggle-code" onclick="toggleCode(this)" style="margin-top: 10px">
+                    Show Code
+                  </button>
+                  <div class="code-snippet">
+                    <pre>
+const demoOptions = [
   { value: 'alpha', label: 'Alpha' },
   { value: 'beta', label: 'Beta' }
 ];
@@ -158,13 +228,17 @@ ThekSelect.init('#quick-country-select');</pre>
 ThekSelect.setDefaults({ height: 44 });
 ThekSelect.init('#quick-defaults-first', { options: demoOptions });
 ThekSelect.init('#quick-defaults-second', { options: demoOptions, height: 56 });
-ThekSelect.resetDefaults();</pre>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="margin-top: 16px;">
-                        <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color);">Browser Usage (Script Tag)</h3>
-                        <pre style="margin: 0;">&lt;link rel="stylesheet" href="./dist/css/base.css" /&gt;
+ThekSelect.resetDefaults();</pre
+                    >
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top: 16px">
+                <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--brand-color)">
+                  Browser Usage (Script Tag)
+                </h3>
+                <pre style="margin: 0">
+&lt;link rel="stylesheet" href="./dist/css/base.css" /&gt;
 &lt;script src="./dist/thekselect.umd.min.cjs"&gt;&lt;/script&gt;
 
 &lt;select id="my-select"&gt;
@@ -175,29 +249,40 @@ ThekSelect.resetDefaults();</pre>
 &lt;script&gt;
   const { ThekSelect } = window.ThekSelect;
   ThekSelect.init('#my-select');
-&lt;/script&gt;</pre>
-                    </div>
-                </div>
+&lt;/script&gt;</pre
+                >
+              </div>
             </div>
+          </div>
         </section>
 
         <section id="basic">
-            <h2><i class="fa-solid fa-square-check"></i> Basic Usage</h2>
-            <div class="demo-card">
-                <div class="demo-content">
-                    <div style="max-width: 400px;">
-                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Pick a framework</label>
-                        <select id="basic-select">
-                            <option value="react">React</option>
-                            <option value="vue">Vue.js</option>
-                            <option value="angular">Angular</option>
-                            <option value="svelte">Svelte</option>
-                            <option value="solid">SolidJS</option>
-                        </select>
-                    </div>
-                    <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
-                    <div class="code-snippet">
-<pre>&lt;select id="basic-select"&gt;
+          <h2><i class="fa-solid fa-square-check"></i> Basic Usage</h2>
+          <div class="demo-card">
+            <div class="demo-content">
+              <div style="max-width: 400px">
+                <label
+                  style="
+                    display: block;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    margin-bottom: 8px;
+                    color: var(--text-muted);
+                  "
+                  >Pick a framework</label
+                >
+                <select id="basic-select">
+                  <option value="react">React</option>
+                  <option value="vue">Vue.js</option>
+                  <option value="angular">Angular</option>
+                  <option value="svelte">Svelte</option>
+                  <option value="solid">SolidJS</option>
+                </select>
+              </div>
+              <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
+              <div class="code-snippet">
+                <pre>
+&lt;select id="basic-select"&gt;
   &lt;option value="react"&gt;React&lt;/option&gt;
   &lt;option value="vue"&gt;Vue.js&lt;/option&gt;
   &lt;option value="angular"&gt;Angular&lt;/option&gt;
@@ -205,50 +290,74 @@ ThekSelect.resetDefaults();</pre>
 
 ThekSelect.init('#basic-select', {
   placeholder: 'Select a framework...'
-});</pre>
-                    </div>
-                </div>
+});</pre
+                >
+              </div>
             </div>
+          </div>
         </section>
 
         <section id="multi">
-            <h2><i class="fa-solid fa-tags"></i> Multi-select & Tagging</h2>
-            <div class="demo-card">
-                <div class="demo-content">
-                    <div style="max-width: 500px;">
-                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Select multiple technologies</label>
-                        <select id="multi-select" multiple>
-                            <option value="ts" selected>TypeScript</option>
-                            <option value="js" selected>JavaScript</option>
-                            <option value="node">Node.js</option>
-                            <option value="python">Python</option>
-                            <option value="go">Go</option>
-                            <option value="rust">Rust</option>
-                        </select>
-                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Try dragging tags to reorder them.</p>
-                    </div>
-                    <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
-                    <div class="code-snippet">
-<pre>ThekSelect.init('#multi-select', {
+          <h2><i class="fa-solid fa-tags"></i> Multi-select & Tagging</h2>
+          <div class="demo-card">
+            <div class="demo-content">
+              <div style="max-width: 500px">
+                <label
+                  style="
+                    display: block;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    margin-bottom: 8px;
+                    color: var(--text-muted);
+                  "
+                  >Select multiple technologies</label
+                >
+                <select id="multi-select" multiple>
+                  <option value="ts" selected>TypeScript</option>
+                  <option value="js" selected>JavaScript</option>
+                  <option value="node">Node.js</option>
+                  <option value="python">Python</option>
+                  <option value="go">Go</option>
+                  <option value="rust">Rust</option>
+                </select>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px">
+                  Try dragging tags to reorder them.
+                </p>
+              </div>
+              <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
+              <div class="code-snippet">
+                <pre>
+ThekSelect.init('#multi-select', {
   multiple: true,
   maxSelectedLabels: 3
-});</pre>
-                    </div>
-                </div>
+});</pre
+                >
+              </div>
             </div>
+          </div>
         </section>
 
         <section id="creation">
-            <h2><i class="fa-solid fa-plus"></i> Tag Creation</h2>
-            <div class="demo-card">
-                <div class="demo-content">
-                    <div style="max-width: 500px;">
-                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Add custom skills</label>
-                        <div id="create-container"></div>
-                    </div>
-                    <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
-                    <div class="code-snippet">
-<pre>ThekSelect.init('#create-container', {
+          <h2><i class="fa-solid fa-plus"></i> Tag Creation</h2>
+          <div class="demo-card">
+            <div class="demo-content">
+              <div style="max-width: 500px">
+                <label
+                  style="
+                    display: block;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    margin-bottom: 8px;
+                    color: var(--text-muted);
+                  "
+                  >Add custom skills</label
+                >
+                <div id="create-container"></div>
+              </div>
+              <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
+              <div class="code-snippet">
+                <pre>
+ThekSelect.init('#create-container', {
   canCreate: true,
   multiple: true,
   createText: "Add skill: '{%t}'",
@@ -256,46 +365,70 @@ ThekSelect.init('#basic-select', {
     { value: 'design', label: 'Design' },
     { value: 'marketing', label: 'Marketing' }
   ]
-});</pre>
-                    </div>
-                </div>
+});</pre
+                >
+              </div>
             </div>
+          </div>
         </section>
 
         <section id="remote">
-            <h2><i class="fa-solid fa-cloud-arrow-down"></i> Remote Data</h2>
-            <div class="demo-card">
-                <div class="demo-content">
-                    <div style="max-width: 500px;">
-                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Search GitHub Users</label>
-                        <div id="remote-container"></div>
-                    </div>
-                    <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
-                    <div class="code-snippet">
-<pre>ThekSelect.init('#remote-container', {
+          <h2><i class="fa-solid fa-cloud-arrow-down"></i> Remote Data</h2>
+          <div class="demo-card">
+            <div class="demo-content">
+              <div style="max-width: 500px">
+                <label
+                  style="
+                    display: block;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    margin-bottom: 8px;
+                    color: var(--text-muted);
+                  "
+                  >Search GitHub Users</label
+                >
+                <div id="remote-container"></div>
+              </div>
+              <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
+              <div class="code-snippet">
+                <pre>
+ThekSelect.init('#remote-container', {
   loadOptions: async (query) => {
     const res = await fetch(`https://api.github.com/search/users?q=${query}`);
     const data = await res.json();
     return data.items.map(u => ({ value: u.id, label: u.login }));
   }
-});</pre>
-                    </div>
-                </div>
+});</pre
+                >
+              </div>
             </div>
+          </div>
         </section>
 
         <section id="virtualization">
-            <h2><i class="fa-solid fa-layer-group"></i> Virtualized Large List</h2>
-            <div class="demo-card">
-                <div class="demo-content">
-                    <div style="max-width: 500px;">
-                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">5,000 options with virtualization enabled</label>
-                        <div id="virtual-container"></div>
-                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">Type to filter, use arrow keys to navigate, and keep scrolling smooth.</p>
-                    </div>
-                    <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
-                    <div class="code-snippet">
-<pre>&lt;div id="virtual-container"&gt;&lt;/div&gt;
+          <h2><i class="fa-solid fa-layer-group"></i> Virtualized Large List</h2>
+          <div class="demo-card">
+            <div class="demo-content">
+              <div style="max-width: 500px">
+                <label
+                  style="
+                    display: block;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    margin-bottom: 8px;
+                    color: var(--text-muted);
+                  "
+                  >5,000 options with virtualization enabled</label
+                >
+                <div id="virtual-container"></div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px">
+                  Type to filter, use arrow keys to navigate, and keep scrolling smooth.
+                </p>
+              </div>
+              <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
+              <div class="code-snippet">
+                <pre>
+&lt;div id="virtual-container"&gt;&lt;/div&gt;
 
 const bigOptions = Array.from({ length: 5000 }, (_, i) => ({
   value: `opt_${i + 1}`,
@@ -309,578 +442,910 @@ ThekSelect.init('#virtual-container', {
   virtualThreshold: 80,
   virtualItemHeight: 40,
   virtualOverscan: 4
-});</pre>
-                    </div>
-                </div>
+});</pre
+                >
+              </div>
             </div>
+          </div>
         </section>
 
         <section id="sizing">
-            <h2><i class="fa-solid fa-up-right-and-down-left-from-center"></i> Custom Sizing</h2>
-            <div class="demo-card">
-                <div class="demo-content">
-                    <div style="display: flex; flex-direction: column; gap: 24px;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: end;">
-                            <div>
-                                <span class="badge" style="margin-bottom: 8px;">Small (sm) - Single</span>
-                                <div id="size-sm"></div>
-                            </div>
-                            <div>
-                                <span class="badge" style="margin-bottom: 8px;">Small (sm) - Multi</span>
-                                <div id="size-sm-multi"></div>
-                            </div>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: end;">
-                            <div>
-                                <span class="badge" style="margin-bottom: 8px;">Medium (md) - Single</span>
-                                <div id="size-md"></div>
-                            </div>
-                            <div>
-                                <span class="badge" style="margin-bottom: 8px;">Medium (md) - Multi</span>
-                                <div id="size-md-multi"></div>
-                            </div>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: end;">
-                            <div>
-                                <span class="badge" style="margin-bottom: 8px;">Large (lg) - Single</span>
-                                <div id="size-lg"></div>
-                            </div>
-                            <div>
-                                <span class="badge" style="margin-bottom: 8px;">Large (lg) - Multi</span>
-                                <div id="size-lg-multi"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
-                    <div class="code-snippet">
-<pre>// height accepts number(px) or CSS string
-ThekSelect.init('#el', { height: 36, multiple: true });</pre>
-                    </div>
+          <h2><i class="fa-solid fa-up-right-and-down-left-from-center"></i> Custom Sizing</h2>
+          <div class="demo-card">
+            <div class="demo-content">
+              <div style="display: flex; flex-direction: column; gap: 24px">
+                <div
+                  style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: end"
+                >
+                  <div>
+                    <span class="badge" style="margin-bottom: 8px">Small (sm) - Single</span>
+                    <div id="size-sm"></div>
+                  </div>
+                  <div>
+                    <span class="badge" style="margin-bottom: 8px">Small (sm) - Multi</span>
+                    <div id="size-sm-multi"></div>
+                  </div>
                 </div>
+                <div
+                  style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: end"
+                >
+                  <div>
+                    <span class="badge" style="margin-bottom: 8px">Medium (md) - Single</span>
+                    <div id="size-md"></div>
+                  </div>
+                  <div>
+                    <span class="badge" style="margin-bottom: 8px">Medium (md) - Multi</span>
+                    <div id="size-md-multi"></div>
+                  </div>
+                </div>
+                <div
+                  style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: end"
+                >
+                  <div>
+                    <span class="badge" style="margin-bottom: 8px">Large (lg) - Single</span>
+                    <div id="size-lg"></div>
+                  </div>
+                  <div>
+                    <span class="badge" style="margin-bottom: 8px">Large (lg) - Multi</span>
+                    <div id="size-lg-multi"></div>
+                  </div>
+                </div>
+              </div>
+              <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
+              <div class="code-snippet">
+                <pre>
+// height accepts number(px) or CSS string
+ThekSelect.init('#el', { height: 36, multiple: true });</pre
+                >
+              </div>
             </div>
+          </div>
         </section>
 
         <section id="fields">
-            <h2><i class="fa-solid fa-database"></i> Custom Fields</h2>
-            <div class="demo-card">
-                <div class="demo-content">
-                    <div style="max-width: 500px;">
-                        <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Using 'id' and 'name' instead of 'value' and 'label'</label>
-                        <div id="fields-container"></div>
-                    </div>
-                    <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
-                    <div class="code-snippet">
-<pre>ThekSelect.init('#fields-container', {
+          <h2><i class="fa-solid fa-database"></i> Custom Fields</h2>
+          <div class="demo-card">
+            <div class="demo-content">
+              <div style="max-width: 500px">
+                <label
+                  style="
+                    display: block;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    margin-bottom: 8px;
+                    color: var(--text-muted);
+                  "
+                  >Using 'id' and 'name' instead of 'value' and 'label'</label
+                >
+                <div id="fields-container"></div>
+              </div>
+              <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
+              <div class="code-snippet">
+                <pre>
+ThekSelect.init('#fields-container', {
   displayField: 'name',
   valueField: 'id',
   options: [
     { id: 'usr_1', name: 'John Doe' },
     { id: 'usr_2', name: 'Jane Smith' }
   ]
-});</pre>
-                    </div>
-                </div>
+});</pre
+                >
+              </div>
             </div>
+          </div>
         </section>
 
         <section id="api">
-            <h2><i class="fa-solid fa-terminal"></i> API Methods</h2>
-            <div class="demo-card">
-                <div class="demo-content">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
-                        <div>
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Target Instance</label>
-                            <div id="api-target-container"></div>
-                            <div style="margin-top: 12px; display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" id="api-multiple-toggle">
-                                <label for="api-multiple-toggle" style="font-size: 0.8rem; cursor: pointer;">Enable Multiple</label>
-                            </div>
-                            <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
-                                <label style="font-size: 0.8rem;">Max Items:</label>
-                                <input type="number" id="api-max-options" placeholder="All" style="width: 60px; padding: 4px; border: 1px solid var(--border-color); border-radius: 4px;">
-                            </div>
-                        </div>
-                        <div style="display: flex; flex-direction: column; gap: 12px;">
-                            <div>
-                                <button id="btn-getvalue" class="api-btn">getValue()</button>
-                                <span id="getvalue-output" style="margin-left: 8px; font-family: monospace; font-size: 0.8rem; color: var(--brand-color);"></span>
-                            </div>
-                            <div>
-                                <button id="btn-getobjects" class="api-btn">getSelectedOptions()</button>
-                                <div id="getobjects-output" style="margin-top: 4px; font-family: monospace; font-size: 0.75rem; color: var(--text-muted); background: var(--sidebar-bg); padding: 8px; border-radius: 4px; white-space: pre; display: none;"></div>
-                            </div>
-                            <div style="display: flex; gap: 8px;">
-                                <input type="text" id="setvalue-input" placeholder="Value to set..." style="flex: 1; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px;">
-                                <div style="display: flex; align-items: center; gap: 4px;">
-                                    <input type="checkbox" id="setvalue-silent">
-                                    <label for="setvalue-silent" style="font-size: 0.75rem;">Silent</label>
-                                </div>
-                                <button id="btn-setvalue" class="api-btn">setValue()</button>
-                            </div>
-                            <div style="display: flex; gap: 8px;">
-                                <button id="btn-destroy" class="api-btn btn-danger">destroy()</button>
-                                <button id="btn-reinit" class="api-btn">Re-initialize</button>
-                            </div>
-                        </div>
-                    </div>
+          <h2><i class="fa-solid fa-terminal"></i> API Methods</h2>
+          <div class="demo-card">
+            <div class="demo-content">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px">
+                <div>
+                  <label
+                    style="
+                      display: block;
+                      font-size: 0.85rem;
+                      font-weight: 600;
+                      margin-bottom: 8px;
+                      color: var(--text-muted);
+                    "
+                    >Target Instance</label
+                  >
+                  <div id="api-target-container"></div>
+                  <div style="margin-top: 12px; display: flex; align-items: center; gap: 8px">
+                    <input type="checkbox" id="api-multiple-toggle" />
+                    <label for="api-multiple-toggle" style="font-size: 0.8rem; cursor: pointer"
+                      >Enable Multiple</label
+                    >
+                  </div>
+                  <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px">
+                    <label style="font-size: 0.8rem">Max Items:</label>
+                    <input
+                      type="number"
+                      id="api-max-options"
+                      placeholder="All"
+                      style="
+                        width: 60px;
+                        padding: 4px;
+                        border: 1px solid var(--border-color);
+                        border-radius: 4px;
+                      "
+                    />
+                  </div>
                 </div>
+                <div style="display: flex; flex-direction: column; gap: 12px">
+                  <div>
+                    <button id="btn-getvalue" class="api-btn">getValue()</button>
+                    <span
+                      id="getvalue-output"
+                      style="
+                        margin-left: 8px;
+                        font-family: monospace;
+                        font-size: 0.8rem;
+                        color: var(--brand-color);
+                      "
+                    ></span>
+                  </div>
+                  <div>
+                    <button id="btn-getobjects" class="api-btn">getSelectedOptions()</button>
+                    <div
+                      id="getobjects-output"
+                      style="
+                        margin-top: 4px;
+                        font-family: monospace;
+                        font-size: 0.75rem;
+                        color: var(--text-muted);
+                        background: var(--sidebar-bg);
+                        padding: 8px;
+                        border-radius: 4px;
+                        white-space: pre;
+                        display: none;
+                      "
+                    ></div>
+                  </div>
+                  <div style="display: flex; gap: 8px">
+                    <input
+                      type="text"
+                      id="setvalue-input"
+                      placeholder="Value to set..."
+                      style="
+                        flex: 1;
+                        padding: 6px;
+                        border: 1px solid var(--border-color);
+                        border-radius: 4px;
+                      "
+                    />
+                    <div style="display: flex; align-items: center; gap: 4px">
+                      <input type="checkbox" id="setvalue-silent" />
+                      <label for="setvalue-silent" style="font-size: 0.75rem">Silent</label>
+                    </div>
+                    <button id="btn-setvalue" class="api-btn">setValue()</button>
+                  </div>
+                  <div style="display: flex; gap: 8px">
+                    <button id="btn-destroy" class="api-btn btn-danger">destroy()</button>
+                    <button id="btn-reinit" class="api-btn">Re-initialize</button>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </section>
 
         <section id="properties">
-            <h2><i class="fa-solid fa-list-ul"></i> Properties & Methods</h2>
-            <div class="demo-card">
-                <div class="demo-content">
-                    <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color);">Configuration Options</h3>
-                    <div style="overflow-x: auto; margin-bottom: 24px;">
-                        <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
-                            <thead>
-                                <tr style="border-bottom: 2px solid var(--border-color);">
-                                    <th style="padding: 8px;">Property</th>
-                                    <th style="padding: 8px;">Type</th>
-                                    <th style="padding: 8px;">Default</th>
-                                    <th style="padding: 8px;">Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">options</td>
-                                    <td style="padding: 8px;">Option[]</td>
-                                    <td style="padding: 8px;">[]</td>
-                                    <td style="padding: 8px;">List of selectable option objects.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">multiple</td>
-                                    <td style="padding: 8px;">boolean</td>
-                                    <td style="padding: 8px;">false</td>
-                                    <td style="padding: 8px;">Enables multi-select with removable tags.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">height</td>
-                                    <td style="padding: 8px;">number | string</td>
-                                    <td style="padding: 8px;">40</td>
-                                    <td style="padding: 8px;">Control height (`number` = px, or CSS value string).</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">displayField</td>
-                                    <td style="padding: 8px;">string</td>
-                                    <td style="padding: 8px;">'label'</td>
-                                    <td style="padding: 8px;">Field used for visible option text.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">valueField</td>
-                                    <td style="padding: 8px;">string</td>
-                                    <td style="padding: 8px;">'value'</td>
-                                    <td style="padding: 8px;">Field used as the internal selected value key.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">maxOptions</td>
-                                    <td style="padding: 8px;">number | null</td>
-                                    <td style="padding: 8px;">null</td>
-                                    <td style="padding: 8px;">Limits rendered filtered options (`null` = unlimited).</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+          <h2><i class="fa-solid fa-list-ul"></i> Properties & Methods</h2>
+          <div class="demo-card">
+            <div class="demo-content">
+              <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color)">
+                Configuration Options
+              </h3>
+              <div style="overflow-x: auto; margin-bottom: 24px">
+                <table
+                  style="
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 0.8rem;
+                    text-align: left;
+                  "
+                >
+                  <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color)">
+                      <th style="padding: 8px">Property</th>
+                      <th style="padding: 8px">Type</th>
+                      <th style="padding: 8px">Default</th>
+                      <th style="padding: 8px">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">options</td>
+                      <td style="padding: 8px">Option[]</td>
+                      <td style="padding: 8px">[]</td>
+                      <td style="padding: 8px">List of selectable option objects.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">multiple</td>
+                      <td style="padding: 8px">boolean</td>
+                      <td style="padding: 8px">false</td>
+                      <td style="padding: 8px">Enables multi-select with removable tags.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">height</td>
+                      <td style="padding: 8px">number | string</td>
+                      <td style="padding: 8px">40</td>
+                      <td style="padding: 8px">
+                        Control height (`number` = px, or CSS value string).
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">displayField</td>
+                      <td style="padding: 8px">string</td>
+                      <td style="padding: 8px">'label'</td>
+                      <td style="padding: 8px">Field used for visible option text.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">valueField</td>
+                      <td style="padding: 8px">string</td>
+                      <td style="padding: 8px">'value'</td>
+                      <td style="padding: 8px">Field used as the internal selected value key.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">maxOptions</td>
+                      <td style="padding: 8px">number | null</td>
+                      <td style="padding: 8px">null</td>
+                      <td style="padding: 8px">
+                        Limits rendered filtered options (`null` = unlimited).
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
-                    <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color);">Theme Object Properties</h3>
-                    <div style="overflow-x: auto; margin-bottom: 24px;">
-                        <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
-                            <thead>
-                                <tr style="border-bottom: 2px solid var(--border-color);">
-                                    <th style="padding: 8px;">Property</th>
-                                    <th style="padding: 8px;">Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">primary</td>
-                                    <td style="padding: 8px;">Main accent color (borders, focus, checkboxes).</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">bgSurface</td>
-                                    <td style="padding: 8px;">Background color of the control and dropdown.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">bgPanel</td>
-                                    <td style="padding: 8px;">Hover color for options and tag background.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">textMain</td>
-                                    <td style="padding: 8px;">Primary text color.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">textMuted</td>
-                                    <td style="padding: 8px;">Color for placeholders and secondary text.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">borderRadius</td>
-                                    <td style="padding: 8px;">Corner rounding (e.g., '8px', '0px').</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">fontFamily</td>
-                                    <td style="padding: 8px;">Typography stack for the component.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">height[Sm|Md|Lg]</td>
-                                    <td style="padding: 8px;">Explicit heights for each size tier.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">itemPadding</td>
-                                    <td style="padding: 8px;">Padding for dropdown items (e.g., '8px 12px').</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+              <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color)">
+                Theme Object Properties
+              </h3>
+              <div style="overflow-x: auto; margin-bottom: 24px">
+                <table
+                  style="
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 0.8rem;
+                    text-align: left;
+                  "
+                >
+                  <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color)">
+                      <th style="padding: 8px">Property</th>
+                      <th style="padding: 8px">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">primary</td>
+                      <td style="padding: 8px">Main accent color (borders, focus, checkboxes).</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">bgSurface</td>
+                      <td style="padding: 8px">Background color of the control and dropdown.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">bgPanel</td>
+                      <td style="padding: 8px">Hover color for options and tag background.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">textMain</td>
+                      <td style="padding: 8px">Primary text color.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">textMuted</td>
+                      <td style="padding: 8px">Color for placeholders and secondary text.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">borderRadius</td>
+                      <td style="padding: 8px">Corner rounding (e.g., '8px', '0px').</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">fontFamily</td>
+                      <td style="padding: 8px">Typography stack for the component.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">height[Sm|Md|Lg]</td>
+                      <td style="padding: 8px">Explicit heights for each size tier.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">itemPadding</td>
+                      <td style="padding: 8px">Padding for dropdown items (e.g., '8px 12px').</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
-                    <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color);">Public Methods</h3>
-                    <div style="overflow-x: auto; margin-bottom: 24px;">
-                        <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
-                            <thead>
-                                <tr style="border-bottom: 2px solid var(--border-color);">
-                                    <th style="padding: 8px;">Method</th>
-                                    <th style="padding: 8px;">Parameters</th>
-                                    <th style="padding: 8px;">Returns</th>
-                                    <th style="padding: 8px;">Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">getValue()</td>
-                                    <td style="padding: 8px;">none</td>
-                                    <td style="padding: 8px;">string \| string[] \| undefined</td>
-                                    <td style="padding: 8px;">Returns selected value(s).</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">getSelectedOptions()</td>
-                                    <td style="padding: 8px;">none</td>
-                                    <td style="padding: 8px;">Option \| Option[] \| undefined</td>
-                                    <td style="padding: 8px;">Returns full option data objects.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">setValue(val, silent)</td>
-                                    <td style="padding: 8px;">val: string \| string[], silent?: boolean</td>
-                                    <td style="padding: 8px;">void</td>
-                                    <td style="padding: 8px;">Sets value. silent (default:false) triggers event.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">setHeight(height)</td>
-                                    <td style="padding: 8px;">height: number \| string</td>
-                                    <td style="padding: 8px;">void</td>
-                                    <td style="padding: 8px;">Sets instance control height (`number` = px).</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">setMaxOptions(limit)</td>
-                                    <td style="padding: 8px;">limit: number \| null</td>
-                                    <td style="padding: 8px;">void</td>
-                                    <td style="padding: 8px;">Caps rendered filtered options (`null` for unlimited).</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">setRenderOption(fn)</td>
-                                    <td style="padding: 8px;">fn: (option) => string \| HTMLElement</td>
-                                    <td style="padding: 8px;">void</td>
-                                    <td style="padding: 8px;">Overrides option row rendering.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">on(event, cb)</td>
-                                    <td style="padding: 8px;">event: string, cb: (payload) => void</td>
-                                    <td style="padding: 8px;">() => void</td>
-                                    <td style="padding: 8px;">Subscribes to events and returns unsubscribe callback.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">destroy()</td>
-                                    <td style="padding: 8px;">none</td>
-                                    <td style="padding: 8px;">void</td>
-                                    <td style="padding: 8px;">Cleans up instance and reverts DOM.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+              <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color)">
+                Public Methods
+              </h3>
+              <div style="overflow-x: auto; margin-bottom: 24px">
+                <table
+                  style="
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 0.8rem;
+                    text-align: left;
+                  "
+                >
+                  <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color)">
+                      <th style="padding: 8px">Method</th>
+                      <th style="padding: 8px">Parameters</th>
+                      <th style="padding: 8px">Returns</th>
+                      <th style="padding: 8px">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">getValue()</td>
+                      <td style="padding: 8px">none</td>
+                      <td style="padding: 8px">string \| string[] \| undefined</td>
+                      <td style="padding: 8px">Returns selected value(s).</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">getSelectedOptions()</td>
+                      <td style="padding: 8px">none</td>
+                      <td style="padding: 8px">Option \| Option[] \| undefined</td>
+                      <td style="padding: 8px">Returns full option data objects.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">setValue(val, silent)</td>
+                      <td style="padding: 8px">val: string \| string[], silent?: boolean</td>
+                      <td style="padding: 8px">void</td>
+                      <td style="padding: 8px">
+                        Sets value. silent (default:false) triggers event.
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">setHeight(height)</td>
+                      <td style="padding: 8px">height: number \| string</td>
+                      <td style="padding: 8px">void</td>
+                      <td style="padding: 8px">Sets instance control height (`number` = px).</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">setMaxOptions(limit)</td>
+                      <td style="padding: 8px">limit: number \| null</td>
+                      <td style="padding: 8px">void</td>
+                      <td style="padding: 8px">
+                        Caps rendered filtered options (`null` for unlimited).
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">setRenderOption(fn)</td>
+                      <td style="padding: 8px">fn: (option) => string \| HTMLElement</td>
+                      <td style="padding: 8px">void</td>
+                      <td style="padding: 8px">Overrides option row rendering.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">on(event, cb)</td>
+                      <td style="padding: 8px">event: string, cb: (payload) => void</td>
+                      <td style="padding: 8px">() => void</td>
+                      <td style="padding: 8px">
+                        Subscribes to events and returns unsubscribe callback.
+                      </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">destroy()</td>
+                      <td style="padding: 8px">none</td>
+                      <td style="padding: 8px">void</td>
+                      <td style="padding: 8px">Cleans up instance and reverts DOM.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
-                    <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color);">Events</h3>
-                    <div style="overflow-x: auto;">
-                        <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
-                            <thead>
-                                <tr style="border-bottom: 2px solid var(--border-color);">
-                                    <th style="padding: 8px;">Event</th>
-                                    <th style="padding: 8px;">Payload</th>
-                                    <th style="padding: 8px;">Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">change</td>
-                                    <td style="padding: 8px;">value | values[]</td>
-                                    <td style="padding: 8px;">Selection changed.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">open / close</td>
-                                    <td style="padding: 8px;">null</td>
-                                    <td style="padding: 8px;">Dropdown visibility toggled.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">search</td>
-                                    <td style="padding: 8px;">string</td>
-                                    <td style="padding: 8px;">User is typing in search.</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">tagAdded / removed</td>
-                                    <td style="padding: 8px;">Option</td>
-                                    <td style="padding: 8px;">Specific tag interaction (multi-select).</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid var(--border-color);">
-                                    <td style="padding: 8px; font-weight: 600;">reordered</td>
-                                    <td style="padding: 8px;">values[]</td>
-                                    <td style="padding: 8px;">Tags reordered via drag-and-drop.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+              <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--brand-color)">
+                Events
+              </h3>
+              <div style="overflow-x: auto">
+                <table
+                  style="
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 0.8rem;
+                    text-align: left;
+                  "
+                >
+                  <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color)">
+                      <th style="padding: 8px">Event</th>
+                      <th style="padding: 8px">Payload</th>
+                      <th style="padding: 8px">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">change</td>
+                      <td style="padding: 8px">value | values[]</td>
+                      <td style="padding: 8px">Selection changed.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">open / close</td>
+                      <td style="padding: 8px">null</td>
+                      <td style="padding: 8px">Dropdown visibility toggled.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">search</td>
+                      <td style="padding: 8px">string</td>
+                      <td style="padding: 8px">User is typing in search.</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">tagAdded / removed</td>
+                      <td style="padding: 8px">Option</td>
+                      <td style="padding: 8px">Specific tag interaction (multi-select).</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color)">
+                      <td style="padding: 8px; font-weight: 600">reordered</td>
+                      <td style="padding: 8px">values[]</td>
+                      <td style="padding: 8px">Tags reordered via drag-and-drop.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
+          </div>
         </section>
 
         <section id="configurator">
-            <h2><i class="fa-solid fa-sliders"></i> Theme Configurator</h2>
-            <div class="demo-card">
-                <div class="demo-content">
-                    <div class="configurator-grid">
-                        <div class="configurator-settings">
-                            <div class="configurator-settings-grid">
-                                <div>
-                            <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Ready Theme</label>
-                                <select id="config-preset" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
-                                    <option value="light">Light</option>
-                                    <option value="dark">Dark</option>
-                                    <option value="slate" selected>Slate (Default)</option>
-                                    <option value="ocean">Ocean</option>
-                                    <option value="sunset">Sunset</option>
-                                    <option value="forest">Forest</option>
-                                    <option value="mono">Mono Gray</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Primary Color</label>
-                                <select id="config-primary" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
-                                    <option value="#0f172a">Slate (Default)</option>
-                                    <option value="#38bdf8">Sky</option>
-                                    <option value="#4f46e5">Indigo</option>
-                                    <option value="#e11d48">Rose</option>
-                                    <option value="#059669">Emerald</option>
-                                    <option value="#d97706">Amber</option>
-                                    <option value="#7c3aed">Violet</option>
-                                    <option value="#2563eb">Blue</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Background Surface</label>
-                                <select id="config-bg" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
-                                    <option value="#ffffff">White</option>
-                                    <option value="#f8fafc">Light Gray</option>
-                                    <option value="#fff1f2">Soft Red</option>
-                                    <option value="#eff6ff">Soft Blue</option>
-                                    <option value="#f0fdf4">Soft Green</option>
-                                    <option value="#0f172a">Deep Slate</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Text Color</label>
-                                <select id="config-text" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
-                                    <option value="#0f172a">Slate Dark</option>
-                                    <option value="#ffffff">White</option>
-                                    <option value="#1e3a8a">Blue Dark</option>
-                                    <option value="#450a0a">Red Dark</option>
-                                    <option value="#064e3b">Green Dark</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Border Color</label>
-                                <select id="config-border" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
-                                    <option value="#e2e8f0">Light</option>
-                                    <option value="#cbd5e1">Medium</option>
-                                    <option value="#94a3b8">Dark</option>
-                                    <option value="#334155">Slate</option>
-                                    <option value="transparent">None</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Font Family</label>
-                                <select id="config-font" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
-                                    <option value="inherit">Inherit (Default)</option>
-                                    <option value="'Inter', sans-serif">Inter</option>
-                                    <option value="'Georgia', serif">Georgia</option>
-                                    <option value="'Courier New', monospace">Courier New</option>
-                                    <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
-                                </select>
-                            </div>
-                                </div>
-                                <div>
-                            <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Rounding</label>
-                                <select id="config-round" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
-                                    <option value="8px">Default (8px)</option>
-                                    <option value="0px">Sharp (0px)</option>
-                                    <option value="4px">Slight (4px)</option>
-                                    <option value="12px">Rounded (12px)</option>
-                                    <option value="24px">Extra (24px)</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Base Height (MD)</label>
-                                <input type="number" id="config-height" value="40" min="24" max="80" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
-                            </div>
-                            <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Item Padding</label>
-                                <select id="config-padding" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
-                                    <option value="8px 10px">Default</option>
-                                    <option value="4px 8px">Compact</option>
-                                    <option value="12px 16px">Relaxed</option>
-                                    <option value="16px 20px">Airy</option>
-                                </select>
-                            </div>
-                            <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 6px;">Render Mode</label>
-                                <select id="config-render" style="width: 100%; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; background: white;">
-                                    <option value="default">Default</option>
-                                    <option value="custom">Custom (Icons)</option>
-                                </select>
-                            </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="configurator-preview">
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted);">Live Preview</label>
-                            <div id="config-preview-container"></div>
-                            
-                            <div style="margin-top: 24px; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 0.75rem;">
-                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
-                                    <div style="color: var(--text-muted);">Generated CSS Theme:</div>
-                                    <button id="copy-theme-css" class="api-btn" style="padding: 4px 8px; font-size: 0.72rem;">Copy CSS</button>
-                                </div>
-                                <div id="config-json-output" style="white-space: pre; overflow-x: auto;"></div>
-                            </div>
-                        </div>
+          <h2><i class="fa-solid fa-sliders"></i> Theme Configurator</h2>
+          <div class="demo-card">
+            <div class="demo-content">
+              <div class="configurator-grid">
+                <div class="configurator-settings">
+                  <div class="configurator-settings-grid">
+                    <div>
+                      <div style="margin-bottom: 16px">
+                        <label
+                          style="
+                            display: block;
+                            font-size: 0.8rem;
+                            font-weight: 600;
+                            margin-bottom: 6px;
+                          "
+                          >Ready Theme</label
+                        >
+                        <select
+                          id="config-preset"
+                          style="
+                            width: 100%;
+                            padding: 6px;
+                            border: 1px solid var(--border-color);
+                            border-radius: 4px;
+                            background: white;
+                          "
+                        >
+                          <option value="light">Light</option>
+                          <option value="dark">Dark</option>
+                          <option value="slate" selected>Slate (Default)</option>
+                          <option value="ocean">Ocean</option>
+                          <option value="sunset">Sunset</option>
+                          <option value="forest">Forest</option>
+                          <option value="mono">Mono Gray</option>
+                        </select>
+                      </div>
+                      <div style="margin-bottom: 16px">
+                        <label
+                          style="
+                            display: block;
+                            font-size: 0.8rem;
+                            font-weight: 600;
+                            margin-bottom: 6px;
+                          "
+                          >Primary Color</label
+                        >
+                        <select
+                          id="config-primary"
+                          style="
+                            width: 100%;
+                            padding: 6px;
+                            border: 1px solid var(--border-color);
+                            border-radius: 4px;
+                            background: white;
+                          "
+                        >
+                          <option value="#0f172a">Slate (Default)</option>
+                          <option value="#38bdf8">Sky</option>
+                          <option value="#4f46e5">Indigo</option>
+                          <option value="#e11d48">Rose</option>
+                          <option value="#059669">Emerald</option>
+                          <option value="#d97706">Amber</option>
+                          <option value="#7c3aed">Violet</option>
+                          <option value="#2563eb">Blue</option>
+                        </select>
+                      </div>
+                      <div style="margin-bottom: 16px">
+                        <label
+                          style="
+                            display: block;
+                            font-size: 0.8rem;
+                            font-weight: 600;
+                            margin-bottom: 6px;
+                          "
+                          >Background Surface</label
+                        >
+                        <select
+                          id="config-bg"
+                          style="
+                            width: 100%;
+                            padding: 6px;
+                            border: 1px solid var(--border-color);
+                            border-radius: 4px;
+                            background: white;
+                          "
+                        >
+                          <option value="#ffffff">White</option>
+                          <option value="#f8fafc">Light Gray</option>
+                          <option value="#fff1f2">Soft Red</option>
+                          <option value="#eff6ff">Soft Blue</option>
+                          <option value="#f0fdf4">Soft Green</option>
+                          <option value="#0f172a">Deep Slate</option>
+                        </select>
+                      </div>
+                      <div style="margin-bottom: 16px">
+                        <label
+                          style="
+                            display: block;
+                            font-size: 0.8rem;
+                            font-weight: 600;
+                            margin-bottom: 6px;
+                          "
+                          >Text Color</label
+                        >
+                        <select
+                          id="config-text"
+                          style="
+                            width: 100%;
+                            padding: 6px;
+                            border: 1px solid var(--border-color);
+                            border-radius: 4px;
+                            background: white;
+                          "
+                        >
+                          <option value="#0f172a">Slate Dark</option>
+                          <option value="#ffffff">White</option>
+                          <option value="#1e3a8a">Blue Dark</option>
+                          <option value="#450a0a">Red Dark</option>
+                          <option value="#064e3b">Green Dark</option>
+                        </select>
+                      </div>
+                      <div style="margin-bottom: 16px">
+                        <label
+                          style="
+                            display: block;
+                            font-size: 0.8rem;
+                            font-weight: 600;
+                            margin-bottom: 6px;
+                          "
+                          >Border Color</label
+                        >
+                        <select
+                          id="config-border"
+                          style="
+                            width: 100%;
+                            padding: 6px;
+                            border: 1px solid var(--border-color);
+                            border-radius: 4px;
+                            background: white;
+                          "
+                        >
+                          <option value="#e2e8f0">Light</option>
+                          <option value="#cbd5e1">Medium</option>
+                          <option value="#94a3b8">Dark</option>
+                          <option value="#334155">Slate</option>
+                          <option value="transparent">None</option>
+                        </select>
+                      </div>
+                      <div style="margin-bottom: 16px">
+                        <label
+                          style="
+                            display: block;
+                            font-size: 0.8rem;
+                            font-weight: 600;
+                            margin-bottom: 6px;
+                          "
+                          >Font Family</label
+                        >
+                        <select
+                          id="config-font"
+                          style="
+                            width: 100%;
+                            padding: 6px;
+                            border: 1px solid var(--border-color);
+                            border-radius: 4px;
+                            background: white;
+                          "
+                        >
+                          <option value="inherit">Inherit (Default)</option>
+                          <option value="'Inter', sans-serif">Inter</option>
+                          <option value="'Georgia', serif">Georgia</option>
+                          <option value="'Courier New', monospace">Courier New</option>
+                          <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                        </select>
+                      </div>
                     </div>
+                    <div>
+                      <div style="margin-bottom: 16px">
+                        <label
+                          style="
+                            display: block;
+                            font-size: 0.8rem;
+                            font-weight: 600;
+                            margin-bottom: 6px;
+                          "
+                          >Rounding</label
+                        >
+                        <select
+                          id="config-round"
+                          style="
+                            width: 100%;
+                            padding: 6px;
+                            border: 1px solid var(--border-color);
+                            border-radius: 4px;
+                            background: white;
+                          "
+                        >
+                          <option value="8px">Default (8px)</option>
+                          <option value="0px">Sharp (0px)</option>
+                          <option value="4px">Slight (4px)</option>
+                          <option value="12px">Rounded (12px)</option>
+                          <option value="24px">Extra (24px)</option>
+                        </select>
+                      </div>
+                      <div style="margin-bottom: 16px">
+                        <label
+                          style="
+                            display: block;
+                            font-size: 0.8rem;
+                            font-weight: 600;
+                            margin-bottom: 6px;
+                          "
+                          >Base Height (MD)</label
+                        >
+                        <input
+                          type="number"
+                          id="config-height"
+                          value="40"
+                          min="24"
+                          max="80"
+                          style="
+                            width: 100%;
+                            padding: 6px;
+                            border: 1px solid var(--border-color);
+                            border-radius: 4px;
+                            background: white;
+                          "
+                        />
+                      </div>
+                      <div style="margin-bottom: 16px">
+                        <label
+                          style="
+                            display: block;
+                            font-size: 0.8rem;
+                            font-weight: 600;
+                            margin-bottom: 6px;
+                          "
+                          >Item Padding</label
+                        >
+                        <select
+                          id="config-padding"
+                          style="
+                            width: 100%;
+                            padding: 6px;
+                            border: 1px solid var(--border-color);
+                            border-radius: 4px;
+                            background: white;
+                          "
+                        >
+                          <option value="8px 10px">Default</option>
+                          <option value="4px 8px">Compact</option>
+                          <option value="12px 16px">Relaxed</option>
+                          <option value="16px 20px">Airy</option>
+                        </select>
+                      </div>
+                      <div style="margin-bottom: 16px">
+                        <label
+                          style="
+                            display: block;
+                            font-size: 0.8rem;
+                            font-weight: 600;
+                            margin-bottom: 6px;
+                          "
+                          >Render Mode</label
+                        >
+                        <select
+                          id="config-render"
+                          style="
+                            width: 100%;
+                            padding: 6px;
+                            border: 1px solid var(--border-color);
+                            border-radius: 4px;
+                            background: white;
+                          "
+                        >
+                          <option value="default">Default</option>
+                          <option value="custom">Custom (Icons)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+                <div class="configurator-preview">
+                  <label
+                    style="
+                      display: block;
+                      font-size: 0.85rem;
+                      font-weight: 600;
+                      margin-bottom: 8px;
+                      color: var(--text-muted);
+                    "
+                    >Live Preview</label
+                  >
+                  <div id="config-preview-container"></div>
+
+                  <div
+                    style="
+                      margin-top: 24px;
+                      padding: 12px;
+                      border-radius: 8px;
+                      font-family: monospace;
+                      font-size: 0.75rem;
+                    "
+                  >
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 8px;
+                        margin-bottom: 4px;
+                      "
+                    >
+                      <div style="color: var(--text-muted)">Generated CSS Theme:</div>
+                      <button
+                        id="copy-theme-css"
+                        class="api-btn"
+                        style="padding: 4px 8px; font-size: 0.72rem"
+                      >
+                        Copy CSS
+                      </button>
+                    </div>
+                    <div id="config-json-output" style="white-space: pre; overflow-x: auto"></div>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </section>
-    </main>
-</div>
+      </main>
+    </div>
 
-<script type="module">
-    import { ThekSelect } from '../src/index.ts';
+    <script type="module">
+      import { ThekSelect } from '../src/index.ts';
 
-    window.toggleCode = (btn) => {
+      window.toggleCode = (btn) => {
         const snippet = btn.nextElementSibling;
         snippet.classList.toggle('visible');
         btn.textContent = snippet.classList.contains('visible') ? 'Hide Code' : 'Show Code';
-    };
+      };
 
-    const instances = [];
-    const pageThemeSelect = document.getElementById('page-theme-select');
-    const thekThemeSelect = document.getElementById('thek-theme-select');
+      const instances = [];
+      const pageThemeSelect = document.getElementById('page-theme-select');
+      const thekThemeSelect = document.getElementById('thek-theme-select');
 
-    const registerInstance = (instance) => {
+      const registerInstance = (instance) => {
         instances.push(instance);
-    };
+      };
 
-    const applyThekTheme = (theme) => {
-        const supportedThemes = ['dark', 'forest', 'red', 'blue', 'gray', 'bootstrap', 'tailwind', 'material'];
+      const applyThekTheme = (theme) => {
+        const supportedThemes = [
+          'dark',
+          'forest',
+          'red',
+          'blue',
+          'gray',
+          'bootstrap',
+          'tailwind',
+          'material'
+        ];
         const resolvedTheme = supportedThemes.includes(theme) ? theme : 'base';
         if (resolvedTheme === 'base') {
-            document.documentElement.removeAttribute('data-thek-theme');
+          document.documentElement.removeAttribute('data-thek-theme');
         } else {
-            document.documentElement.setAttribute('data-thek-theme', resolvedTheme);
+          document.documentElement.setAttribute('data-thek-theme', resolvedTheme);
         }
         thekThemeSelect.value = resolvedTheme;
-    };
+      };
 
-    const applyPageTheme = (theme) => {
+      const applyPageTheme = (theme) => {
         const resolvedTheme = theme === 'dark' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-showcase-theme', resolvedTheme);
         pageThemeSelect.value = resolvedTheme;
-    };
+      };
 
-    pageThemeSelect.addEventListener('change', (e) => {
+      pageThemeSelect.addEventListener('change', (e) => {
         applyPageTheme(e.target.value);
-    });
-    thekThemeSelect.addEventListener('change', (e) => {
+      });
+      thekThemeSelect.addEventListener('change', (e) => {
         applyThekTheme(e.target.value);
-    });
+      });
 
-    // Basic
-    const basic = ThekSelect.init('#basic-select', {
+      // Basic
+      const basic = ThekSelect.init('#basic-select', {
         placeholder: 'Select framework...'
-    });
-    registerInstance(basic);
+      });
+      registerInstance(basic);
 
-    // Quick docs: initialize from existing native select
-    const quickCountry = ThekSelect.init('#quick-country-select');
-    registerInstance(quickCountry);
+      // Quick docs: initialize from existing native select
+      const quickCountry = ThekSelect.init('#quick-country-select');
+      registerInstance(quickCountry);
 
-    // Quick docs: global defaults demo
-    const quickDefaultsOptions = [
+      // Quick docs: global defaults demo
+      const quickDefaultsOptions = [
         { value: 'alpha', label: 'Alpha' },
         { value: 'beta', label: 'Beta' },
         { value: 'gamma', label: 'Gamma' }
-    ];
-    ThekSelect.setDefaults({ height: 44 });
-    const quickDefaultsFirst = ThekSelect.init('#quick-defaults-first', {
+      ];
+      ThekSelect.setDefaults({ height: 44 });
+      const quickDefaultsFirst = ThekSelect.init('#quick-defaults-first', {
         options: quickDefaultsOptions,
         placeholder: 'Uses global height (44px)'
-    });
-    const quickDefaultsSecond = ThekSelect.init('#quick-defaults-second', {
+      });
+      const quickDefaultsSecond = ThekSelect.init('#quick-defaults-second', {
         options: quickDefaultsOptions,
         height: 56,
         placeholder: 'Overrides to 56px'
-    });
-    ThekSelect.resetDefaults();
-    registerInstance(quickDefaultsFirst);
-    registerInstance(quickDefaultsSecond);
+      });
+      ThekSelect.resetDefaults();
+      registerInstance(quickDefaultsFirst);
+      registerInstance(quickDefaultsSecond);
 
-    // Multi
-    const multi = ThekSelect.init('#multi-select', {
+      // Multi
+      const multi = ThekSelect.init('#multi-select', {
         multiple: true,
         maxSelectedLabels: 3
-    });
-    registerInstance(multi);
+      });
+      registerInstance(multi);
 
-    // Creation
-    const create = ThekSelect.init('#create-container', {
+      // Creation
+      const create = ThekSelect.init('#create-container', {
         canCreate: true,
         multiple: true,
         options: [
-            { value: 'design', label: 'Design' },
-            { value: 'marketing', label: 'Marketing' }
+          { value: 'design', label: 'Design' },
+          { value: 'marketing', label: 'Marketing' }
         ],
         createText: "Add skill: '{%t}'"
-    });
-    registerInstance(create);
+      });
+      registerInstance(create);
 
-    // Remote
-    const remote = ThekSelect.init('#remote-container', {
+      // Remote
+      const remote = ThekSelect.init('#remote-container', {
         searchable: true,
         placeholder: 'Type a GitHub username...',
         loadOptions: async (query) => {
-            if (!query) return [];
-            try {
-                const res = await fetch(`https://api.github.com/search/users?q=${query}&per_page=10`);
-                const data = await res.json();
-                return (data.items || []).map(u => ({ value: u.login, label: u.login }));
-            } catch (e) {
-                return [];
-            }
+          if (!query) return [];
+          try {
+            const res = await fetch(`https://api.github.com/search/users?q=${query}&per_page=10`);
+            const data = await res.json();
+            return (data.items || []).map((u) => ({ value: u.login, label: u.login }));
+          } catch (e) {
+            return [];
+          }
         }
-    });
-    registerInstance(remote);
+      });
+      registerInstance(remote);
 
-    // Virtualization
-    const bigOptions = Array.from({ length: 5000 }, (_, i) => ({
+      // Virtualization
+      const bigOptions = Array.from({ length: 5000 }, (_, i) => ({
         value: `opt_${i + 1}`,
         label: `Option ${i + 1}`
-    }));
-    const virtualized = ThekSelect.init('#virtual-container', {
+      }));
+      const virtualized = ThekSelect.init('#virtual-container', {
         options: bigOptions,
         searchable: true,
         placeholder: 'Search large list...',
@@ -888,232 +1353,272 @@ ThekSelect.init('#el', { height: 36, multiple: true });</pre>
         virtualThreshold: 80,
         virtualItemHeight: 40,
         virtualOverscan: 4
-    });
-    registerInstance(virtualized);
+      });
+      registerInstance(virtualized);
 
-    // Sizing
-    const options = [
+      // Sizing
+      const options = [
         { value: '1', label: 'Option 1' },
         { value: '2', label: 'Option 2' },
         { value: '3', label: 'Option 3' }
-    ];
-    registerInstance(ThekSelect.init('#size-sm', { height: 32, options, placeholder: 'Small size' }));
-    registerInstance(ThekSelect.init('#size-md', { height: 40, options, placeholder: 'Medium size' }));
-    registerInstance(ThekSelect.init('#size-lg', { height: 48, options, placeholder: 'Large size' }));
+      ];
+      registerInstance(
+        ThekSelect.init('#size-sm', { height: 32, options, placeholder: 'Small size' })
+      );
+      registerInstance(
+        ThekSelect.init('#size-md', { height: 40, options, placeholder: 'Medium size' })
+      );
+      registerInstance(
+        ThekSelect.init('#size-lg', { height: 48, options, placeholder: 'Large size' })
+      );
 
-    // Multi-select sizing
-    const smMulti = ThekSelect.init('#size-sm-multi', { height: 32, multiple: true, options, placeholder: 'Small multi' });
-    const mdMulti = ThekSelect.init('#size-md-multi', { height: 40, multiple: true, options, placeholder: 'Medium multi' });
-    const lgMulti = ThekSelect.init('#size-lg-multi', { height: 48, multiple: true, options, placeholder: 'Large multi' });
-    
-    smMulti.setValue(['1', '2']);
-    mdMulti.setValue(['1', '2']);
-    lgMulti.setValue(['1', '2']);
+      // Multi-select sizing
+      const smMulti = ThekSelect.init('#size-sm-multi', {
+        height: 32,
+        multiple: true,
+        options,
+        placeholder: 'Small multi'
+      });
+      const mdMulti = ThekSelect.init('#size-md-multi', {
+        height: 40,
+        multiple: true,
+        options,
+        placeholder: 'Medium multi'
+      });
+      const lgMulti = ThekSelect.init('#size-lg-multi', {
+        height: 48,
+        multiple: true,
+        options,
+        placeholder: 'Large multi'
+      });
 
-    registerInstance(smMulti);
-    registerInstance(mdMulti);
-    registerInstance(lgMulti);
+      smMulti.setValue(['1', '2']);
+      mdMulti.setValue(['1', '2']);
+      lgMulti.setValue(['1', '2']);
 
-    // Custom Fields
-    const fieldOptions = [
+      registerInstance(smMulti);
+      registerInstance(mdMulti);
+      registerInstance(lgMulti);
+
+      // Custom Fields
+      const fieldOptions = [
         { id: 'usr_1', name: 'John Doe', role: 'Admin' },
         { id: 'usr_2', name: 'Jane Smith', role: 'Editor' },
         { id: 'usr_3', name: 'Bob Wilson', role: 'User' }
-    ];
-    registerInstance(ThekSelect.init('#fields-container', {
-        displayField: 'name',
-        valueField: 'id',
-        options: fieldOptions,
-        placeholder: 'Select a user...'
-    }));
+      ];
+      registerInstance(
+        ThekSelect.init('#fields-container', {
+          displayField: 'name',
+          valueField: 'id',
+          options: fieldOptions,
+          placeholder: 'Select a user...'
+        })
+      );
 
-    // API Methods
-    let apiInstance = null;
-    const initApiInstance = () => {
+      // API Methods
+      let apiInstance = null;
+      const initApiInstance = () => {
         const isMultiple = document.getElementById('api-multiple-toggle').checked;
         const maxOptVal = document.getElementById('api-max-options').value;
         const maxOptions = maxOptVal ? parseInt(maxOptVal) : null;
 
         apiInstance = ThekSelect.init('#api-target-container', {
-            multiple: isMultiple,
-            maxOptions: maxOptions,
-            options: [
-                { value: '1', label: 'API Option 1' },
-                { value: '2', label: 'API Option 2' },
-                { value: '3', label: 'API Option 3' },
-                { value: '4', label: 'API Option 4' },
-                { value: '5', label: 'API Option 5' }
-            ],
-            placeholder: 'API testing...'
+          multiple: isMultiple,
+          maxOptions: maxOptions,
+          options: [
+            { value: '1', label: 'API Option 1' },
+            { value: '2', label: 'API Option 2' },
+            { value: '3', label: 'API Option 3' },
+            { value: '4', label: 'API Option 4' },
+            { value: '5', label: 'API Option 5' }
+          ],
+          placeholder: 'API testing...'
         });
         registerInstance(apiInstance);
-    };
-    initApiInstance();
+      };
+      initApiInstance();
 
-    document.getElementById('api-multiple-toggle').addEventListener('change', () => {
+      document.getElementById('api-multiple-toggle').addEventListener('change', () => {
         if (apiInstance) apiInstance.destroy();
         initApiInstance();
-    });
+      });
 
-    document.getElementById('api-max-options').addEventListener('input', (e) => {
+      document.getElementById('api-max-options').addEventListener('input', (e) => {
         const val = e.target.value;
         apiInstance.setMaxOptions(val ? parseInt(val) : null);
-    });
+      });
 
-    document.getElementById('btn-getvalue').addEventListener('click', () => {
+      document.getElementById('btn-getvalue').addEventListener('click', () => {
         const val = apiInstance.getValue();
         document.getElementById('getvalue-output').textContent = `=> ${JSON.stringify(val)}`;
-    });
+      });
 
-    document.getElementById('btn-getobjects').addEventListener('click', () => {
+      document.getElementById('btn-getobjects').addEventListener('click', () => {
         const objs = apiInstance.getSelectedOptions();
         const out = document.getElementById('getobjects-output');
         out.style.display = 'block';
         out.textContent = `=> ${JSON.stringify(objs, null, 2)}`;
-    });
+      });
 
-    document.getElementById('btn-setvalue').addEventListener('click', () => {
+      document.getElementById('btn-setvalue').addEventListener('click', () => {
         const val = document.getElementById('setvalue-input').value;
         const silent = document.getElementById('setvalue-silent').checked;
         apiInstance.setValue(val, silent);
-    });
+      });
 
-    document.getElementById('btn-destroy').addEventListener('click', () => {
+      document.getElementById('btn-destroy').addEventListener('click', () => {
         apiInstance.destroy();
         const idx = instances.indexOf(apiInstance);
         if (idx > -1) instances.splice(idx, 1);
-    });
+      });
 
-    document.getElementById('btn-reinit').addEventListener('click', () => {
-        try { apiInstance.destroy(); } catch(e) {}
+      document.getElementById('btn-reinit').addEventListener('click', () => {
+        try {
+          apiInstance.destroy();
+        } catch (e) {}
         initApiInstance();
-    });
+      });
 
-    // Configurator
-    const optionsWithMetadata = [
+      // Configurator
+      const optionsWithMetadata = [
         { value: '1', label: 'User Profile', data: { icon: 'fa-user', desc: 'Account settings' } },
-        { value: '2', label: 'Security', data: { icon: 'fa-shield-halved', desc: 'Password & Auth' } },
-        { value: '3', label: 'Integrations', data: { icon: 'fa-puzzle-piece', desc: 'Connected apps' } },
-        { value: '4', label: 'Billing', data: { icon: 'fa-credit-card', desc: 'Subscription plans' } }
-    ];
+        {
+          value: '2',
+          label: 'Security',
+          data: { icon: 'fa-shield-halved', desc: 'Password & Auth' }
+        },
+        {
+          value: '3',
+          label: 'Integrations',
+          data: { icon: 'fa-puzzle-piece', desc: 'Connected apps' }
+        },
+        {
+          value: '4',
+          label: 'Billing',
+          data: { icon: 'fa-credit-card', desc: 'Subscription plans' }
+        }
+      ];
 
-    const configPreview = ThekSelect.init('#config-preview-container', {
+      const configPreview = ThekSelect.init('#config-preview-container', {
         placeholder: 'Custom preview...',
         options: optionsWithMetadata,
         multiple: true
-    });
-    registerInstance(configPreview);
+      });
+      registerInstance(configPreview);
 
-    const applyThemeToPreviewInstance = (theme) => {
-        const targetElements = [configPreview.renderer?.wrapper, configPreview.renderer?.dropdown].filter(Boolean);
+      const applyThemeToPreviewInstance = (theme) => {
+        const targetElements = [
+          configPreview.renderer?.wrapper,
+          configPreview.renderer?.dropdown
+        ].filter(Boolean);
         const cssVarMap = {
-            primary: '--thek-primary',
-            primaryLight: '--thek-primary-light',
-            bgSurface: '--thek-bg-surface',
-            bgPanel: '--thek-bg-panel',
-            border: '--thek-border',
-            textMain: '--thek-text-main',
-            fontFamily: '--thek-font-family',
-            borderRadius: '--thek-border-radius',
-            heightSm: '--thek-height-sm',
-            heightMd: '--thek-height-md',
-            heightLg: '--thek-height-lg',
-            itemPadding: '--thek-item-padding'
+          primary: '--thek-primary',
+          primaryLight: '--thek-primary-light',
+          bgSurface: '--thek-bg-surface',
+          bgPanel: '--thek-bg-panel',
+          border: '--thek-border',
+          textMain: '--thek-text-main',
+          fontFamily: '--thek-font-family',
+          borderRadius: '--thek-border-radius',
+          heightSm: '--thek-height-sm',
+          heightMd: '--thek-height-md',
+          heightLg: '--thek-height-lg',
+          itemPadding: '--thek-item-padding'
         };
 
         targetElements.forEach((el) => {
-            Object.entries(cssVarMap).forEach(([key, cssVar]) => {
-                const value = theme[key];
-                if (value) {
-                    el.style.setProperty(cssVar, value);
-                } else {
-                    el.style.removeProperty(cssVar);
-                }
-            });
+          Object.entries(cssVarMap).forEach(([key, cssVar]) => {
+            const value = theme[key];
+            if (value) {
+              el.style.setProperty(cssVar, value);
+            } else {
+              el.style.removeProperty(cssVar);
+            }
+          });
         });
-    };
+      };
 
-    const CONFIG_PRESETS = {
+      const CONFIG_PRESETS = {
         light: {
-            primary: '#0f172a',
-            bgSurface: '#ffffff',
-            textMain: '#0f172a',
-            border: '#e2e8f0',
-            fontFamily: 'inherit',
-            borderRadius: '8px',
-            height: 40,
-            padding: '8px 10px',
-            render: 'default'
+          primary: '#0f172a',
+          bgSurface: '#ffffff',
+          textMain: '#0f172a',
+          border: '#e2e8f0',
+          fontFamily: 'inherit',
+          borderRadius: '8px',
+          height: 40,
+          padding: '8px 10px',
+          render: 'default'
         },
         dark: {
-            primary: '#38bdf8',
-            bgSurface: '#0f172a',
-            textMain: '#ffffff',
-            border: '#334155',
-            fontFamily: 'inherit',
-            borderRadius: '8px',
-            height: 40,
-            padding: '8px 10px',
-            render: 'default'
+          primary: '#38bdf8',
+          bgSurface: '#0f172a',
+          textMain: '#ffffff',
+          border: '#334155',
+          fontFamily: 'inherit',
+          borderRadius: '8px',
+          height: 40,
+          padding: '8px 10px',
+          render: 'default'
         },
         slate: {
-            primary: '#0f172a',
-            bgSurface: '#ffffff',
-            textMain: '#0f172a',
-            border: '#e2e8f0',
-            fontFamily: 'inherit',
-            borderRadius: '8px',
-            height: 40,
-            padding: '8px 10px',
-            render: 'default'
+          primary: '#0f172a',
+          bgSurface: '#ffffff',
+          textMain: '#0f172a',
+          border: '#e2e8f0',
+          fontFamily: 'inherit',
+          borderRadius: '8px',
+          height: 40,
+          padding: '8px 10px',
+          render: 'default'
         },
         ocean: {
-            primary: '#2563eb',
-            bgSurface: '#eff6ff',
-            textMain: '#1e3a8a',
-            border: '#60a5fa',
-            fontFamily: "'Inter', sans-serif",
-            borderRadius: '12px',
-            height: 42,
-            padding: '8px 10px',
-            render: 'custom'
+          primary: '#2563eb',
+          bgSurface: '#eff6ff',
+          textMain: '#1e3a8a',
+          border: '#60a5fa',
+          fontFamily: "'Inter', sans-serif",
+          borderRadius: '12px',
+          height: 42,
+          padding: '8px 10px',
+          render: 'custom'
         },
         sunset: {
-            primary: '#e11d48',
-            bgSurface: '#fff1f2',
-            textMain: '#450a0a',
-            border: '#cbd5e1',
-            fontFamily: "'Georgia', serif",
-            borderRadius: '12px',
-            height: 42,
-            padding: '12px 16px',
-            render: 'default'
+          primary: '#e11d48',
+          bgSurface: '#fff1f2',
+          textMain: '#450a0a',
+          border: '#cbd5e1',
+          fontFamily: "'Georgia', serif",
+          borderRadius: '12px',
+          height: 42,
+          padding: '12px 16px',
+          render: 'default'
         },
         forest: {
-            primary: '#059669',
-            bgSurface: '#f0fdf4',
-            textMain: '#064e3b',
-            border: '#4ade80',
-            fontFamily: "'Inter', sans-serif",
-            borderRadius: '8px',
-            height: 40,
-            padding: '8px 10px',
-            render: 'custom'
+          primary: '#059669',
+          bgSurface: '#f0fdf4',
+          textMain: '#064e3b',
+          border: '#4ade80',
+          fontFamily: "'Inter', sans-serif",
+          borderRadius: '8px',
+          height: 40,
+          padding: '8px 10px',
+          render: 'custom'
         },
         mono: {
-            primary: '#0f172a',
-            bgSurface: '#f8fafc',
-            textMain: '#0f172a',
-            border: '#94a3b8',
-            fontFamily: "'Courier New', monospace",
-            borderRadius: '4px',
-            height: 38,
-            padding: '4px 8px',
-            render: 'default'
+          primary: '#0f172a',
+          bgSurface: '#f8fafc',
+          textMain: '#0f172a',
+          border: '#94a3b8',
+          fontFamily: "'Courier New', monospace",
+          borderRadius: '4px',
+          height: 38,
+          padding: '4px 8px',
+          render: 'default'
         }
-    };
+      };
 
-    const applyConfigPreset = (presetKey) => {
+      const applyConfigPreset = (presetKey) => {
         const preset = CONFIG_PRESETS[presetKey];
         if (!preset) return;
         document.getElementById('config-primary').value = preset.primary;
@@ -1125,54 +1630,54 @@ ThekSelect.init('#el', { height: 36, multiple: true });</pre>
         document.getElementById('config-height').value = String(preset.height);
         document.getElementById('config-padding').value = preset.padding;
         document.getElementById('config-render').value = preset.render;
-    };
+      };
 
-    const escapeHtml = (value) =>
+      const escapeHtml = (value) =>
         String(value)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
 
-    const updateConfigurator = () => {
+      const updateConfigurator = () => {
         const baseHeight = parseInt(document.getElementById('config-height').value) || 40;
         const primary = document.getElementById('config-primary').value;
         const bgSurface = document.getElementById('config-bg').value;
         const textMain = document.getElementById('config-text').value;
         const border = document.getElementById('config-border').value;
         const theme = {
-            primary,
-            bgSurface,
-            textMain,
-            border,
-            fontFamily: document.getElementById('config-font').value,
-            borderRadius: document.getElementById('config-round').value,
-            heightMd: `${baseHeight}px`,
-            heightSm: `${Math.max(24, baseHeight - 8)}px`,
-            heightLg: `${baseHeight + 8}px`,
-            itemPadding: document.getElementById('config-padding').value,
-            primaryLight: `${primary}20`,
-            bgPanel: `${primary}10`,
-            bgSubtle: `${primary}08`,
-            borderStrong: border,
-            textMuted: textMain,
-            textInverse: '#ffffff',
-            danger: '#ef4444'
+          primary,
+          bgSurface,
+          textMain,
+          border,
+          fontFamily: document.getElementById('config-font').value,
+          borderRadius: document.getElementById('config-round').value,
+          heightMd: `${baseHeight}px`,
+          heightSm: `${Math.max(24, baseHeight - 8)}px`,
+          heightLg: `${baseHeight + 8}px`,
+          itemPadding: document.getElementById('config-padding').value,
+          primaryLight: `${primary}20`,
+          bgPanel: `${primary}10`,
+          bgSubtle: `${primary}08`,
+          borderStrong: border,
+          textMuted: textMain,
+          textInverse: '#ffffff',
+          danger: '#ef4444'
         };
         configPreview.setHeight(baseHeight);
         applyThemeToPreviewInstance(theme);
 
         const renderMode = document.getElementById('config-render').value;
         if (renderMode === 'custom') {
-            configPreview.setRenderOption((option) => {
-                if (!option.data) return option.label;
-                const wrapper = document.createElement('div');
-                wrapper.style.display = 'flex';
-                wrapper.style.alignItems = 'center';
-                wrapper.style.gap = '12px';
-                wrapper.style.padding = '4px 0';
-                wrapper.innerHTML = `
+          configPreview.setRenderOption((option) => {
+            if (!option.data) return option.label;
+            const wrapper = document.createElement('div');
+            wrapper.style.display = 'flex';
+            wrapper.style.alignItems = 'center';
+            wrapper.style.gap = '12px';
+            wrapper.style.padding = '4px 0';
+            wrapper.innerHTML = `
                     <div style="width: 32px; height: 32px; border-radius: 6px; background: ${theme.primaryLight}; color: ${theme.primary}; display: flex; align-items: center; justify-content: center; font-size: 0.9em;">
                         <i class="fa-solid ${option.data.icon}"></i>
                     </div>
@@ -1181,96 +1686,107 @@ ThekSelect.init('#el', { height: 36, multiple: true });</pre>
                         <span style="font-size: 0.75em; opacity: 0.6;">${option.data.desc}</span>
                     </div>
                 `;
-                return wrapper;
-            });
+            return wrapper;
+          });
         } else {
-            configPreview.setRenderOption((option) => option.label);
+          configPreview.setRenderOption((option) => option.label);
         }
 
         const themeVars = [
-            ['--thek-primary', theme.primary],
-            ['--thek-primary-light', theme.primaryLight],
-            ['--thek-bg-surface', theme.bgSurface],
-            ['--thek-bg-panel', theme.bgPanel],
-            ['--thek-bg-subtle', theme.bgSubtle],
-            ['--thek-border', theme.border],
-            ['--thek-border-strong', theme.borderStrong],
-            ['--thek-text-main', theme.textMain],
-            ['--thek-text-muted', theme.textMuted],
-            ['--thek-text-inverse', theme.textInverse],
-            ['--thek-danger', theme.danger],
-            ['--thek-font-family', theme.fontFamily],
-            ['--thek-border-radius', theme.borderRadius],
-            ['--thek-height-sm', theme.heightSm],
-            ['--thek-height-md', theme.heightMd],
-            ['--thek-height-lg', theme.heightLg],
-            ['--thek-item-padding', theme.itemPadding]
+          ['--thek-primary', theme.primary],
+          ['--thek-primary-light', theme.primaryLight],
+          ['--thek-bg-surface', theme.bgSurface],
+          ['--thek-bg-panel', theme.bgPanel],
+          ['--thek-bg-subtle', theme.bgSubtle],
+          ['--thek-border', theme.border],
+          ['--thek-border-strong', theme.borderStrong],
+          ['--thek-text-main', theme.textMain],
+          ['--thek-text-muted', theme.textMuted],
+          ['--thek-text-inverse', theme.textInverse],
+          ['--thek-danger', theme.danger],
+          ['--thek-font-family', theme.fontFamily],
+          ['--thek-border-radius', theme.borderRadius],
+          ['--thek-height-sm', theme.heightSm],
+          ['--thek-height-md', theme.heightMd],
+          ['--thek-height-lg', theme.heightLg],
+          ['--thek-item-padding', theme.itemPadding]
         ];
 
         const cssThemeSnippetHtml = [
-            `<span class="css-selector">:root</span> <span class="css-punct">{</span>`,
-            ...themeVars.map(([name, value]) =>
-                `  <span class="css-var">${escapeHtml(name)}</span><span class="css-punct">:</span> <span class="css-value">${escapeHtml(value)}</span><span class="css-punct">;</span>`
-            ),
-            `<span class="css-punct">}</span>`
+          `<span class="css-selector">:root</span> <span class="css-punct">{</span>`,
+          ...themeVars.map(
+            ([name, value]) =>
+              `  <span class="css-var">${escapeHtml(name)}</span><span class="css-punct">:</span> <span class="css-value">${escapeHtml(value)}</span><span class="css-punct">;</span>`
+          ),
+          `<span class="css-punct">}</span>`
         ].join('\n');
         document.getElementById('config-json-output').innerHTML = cssThemeSnippetHtml;
-    };
+      };
 
-    document.getElementById('copy-theme-css').addEventListener('click', async () => {
+      document.getElementById('copy-theme-css').addEventListener('click', async () => {
         const output = document.getElementById('config-json-output');
         const cssText = output.textContent || '';
         if (!cssText.trim()) return;
         try {
-            await navigator.clipboard.writeText(cssText);
+          await navigator.clipboard.writeText(cssText);
         } catch (_err) {
-            // Clipboard API might be unavailable in some contexts.
+          // Clipboard API might be unavailable in some contexts.
         }
-    });
+      });
 
-    const presetEl = document.getElementById('config-preset');
-    presetEl.addEventListener('change', (e) => {
+      const presetEl = document.getElementById('config-preset');
+      presetEl.addEventListener('change', (e) => {
         const value = e.target.value;
         applyConfigPreset(value);
         updateConfigurator();
-    });
+      });
 
-    ['config-primary', 'config-bg', 'config-text', 'config-border', 'config-font', 'config-round', 'config-height', 'config-padding', 'config-render'].forEach(id => {
+      [
+        'config-primary',
+        'config-bg',
+        'config-text',
+        'config-border',
+        'config-font',
+        'config-round',
+        'config-height',
+        'config-padding',
+        'config-render'
+      ].forEach((id) => {
         const el = document.getElementById(id);
         el.addEventListener('input', () => {
-            updateConfigurator();
+          updateConfigurator();
         });
         el.addEventListener('change', () => {
-            updateConfigurator();
+          updateConfigurator();
         });
-    });
-    applyConfigPreset('slate');
-    updateConfigurator();
+      });
+      applyConfigPreset('slate');
+      updateConfigurator();
 
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    applyPageTheme(prefersDark ? 'dark' : 'light');
-    applyThekTheme(thekThemeSelect.value);
+      const prefersDark =
+        window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyPageTheme(prefersDark ? 'dark' : 'light');
+      applyThekTheme(thekThemeSelect.value);
 
-    const sections = document.querySelectorAll('section');
-    const navLinks = document.querySelectorAll('nav a');
+      const sections = document.querySelectorAll('section');
+      const navLinks = document.querySelectorAll('nav a');
 
-    window.addEventListener('scroll', () => {
+      window.addEventListener('scroll', () => {
         let current = '';
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            if (pageYOffset >= sectionTop - 100) {
-                current = section.getAttribute('id');
-            }
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop;
+          if (pageYOffset >= sectionTop - 100) {
+            current = section.getAttribute('id');
+          }
         });
 
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${current}`) {
-                link.classList.add('active');
-            }
+        navLinks.forEach((link) => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+          }
         });
-    });
-</script>
-
-</body>
+      });
+    </script>
+  </body>
 </html>

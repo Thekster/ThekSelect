@@ -26,13 +26,13 @@ describe('ThekSelect Methods', () => {
 
   it('getValue and setValue should work for multi-select', () => {
     selectEl.multiple = true;
-    Array.from(selectEl.options).forEach(opt => opt.selected = false);
+    Array.from(selectEl.options).forEach((opt) => (opt.selected = false));
     const ts = ThekSelect.init(selectEl);
     expect(ts.getValue()).toEqual([]);
 
     ts.setValue(['1', '2']);
     expect(ts.getValue()).toEqual(['1', '2']);
-    expect(Array.from(selectEl.selectedOptions).map(o => o.value)).toEqual(['1', '2']);
+    expect(Array.from(selectEl.selectedOptions).map((o) => o.value)).toEqual(['1', '2']);
   });
 
   it('destroy should remove the wrapper and show the original element', () => {
@@ -44,4 +44,3 @@ describe('ThekSelect Methods', () => {
     expect(document.querySelector('.thek-select')).toBeNull();
   });
 });
-

@@ -16,7 +16,7 @@ export class DomRenderer {
   public input!: HTMLInputElement;
   public dropdown!: HTMLElement;
   public optionsList!: HTMLElement;
-  
+
   private lastState: ThekSelectState | null = null;
   private lastFilteredOptions: ThekSelectOption[] = [];
 
@@ -86,7 +86,7 @@ export class DomRenderer {
       this.input.autocomplete = 'off';
       this.input.placeholder = 'Search...';
       this.input.setAttribute('aria-autocomplete', 'list');
-      
+
       searchWrapper.appendChild(this.input);
       this.dropdown.appendChild(searchWrapper);
     } else {
@@ -99,14 +99,15 @@ export class DomRenderer {
     this.optionsList.id = `${this.id}-list`;
     this.optionsList.setAttribute('role', 'listbox');
     this.optionsList.addEventListener('scroll', () => this.handleOptionsScroll());
-    this.optionsList.addEventListener('wheel', (e) => this.handleOptionsWheel(e), { passive: false });
+    this.optionsList.addEventListener('wheel', (e) => this.handleOptionsWheel(e), {
+      passive: false
+    });
 
     this.dropdown.appendChild(this.optionsList);
 
     this.wrapper.appendChild(this.control);
     document.body.appendChild(this.dropdown);
     this.applyHeight(this.config.height);
-
   }
 
   public render(state: ThekSelectState, filteredOptions: ThekSelectOption[]): void {
@@ -115,9 +116,10 @@ export class DomRenderer {
     this.control.setAttribute('aria-expanded', state.isOpen.toString());
     this.dropdown.hidden = !state.isOpen;
     this.wrapper.classList.toggle('thek-open', state.isOpen);
-    
+
     if (state.isLoading) {
-      this.indicatorsContainer.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+      this.indicatorsContainer.innerHTML =
+        '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
     } else {
       this.indicatorsContainer.innerHTML = '<i class="fa-solid fa-chevron-down thek-arrow"></i>';
     }
@@ -145,13 +147,16 @@ export class DomRenderer {
           this.selectionContainer.appendChild(summary);
         } else {
           state.selectedValues.forEach((val, i) => {
-            const option = state.options.find(o => o[vField] === val) || state.selectedOptionsByValue[val] || { [vField]: val, [dField]: val } as any;
+            const option =
+              state.options.find((o) => o[vField] === val) ||
+              state.selectedOptionsByValue[val] ||
+              ({ [vField]: val, [dField]: val } as unknown as ThekSelectOption);
             const tag = document.createElement('span');
             tag.className = 'thek-tag';
             tag.draggable = true;
             tag.dataset.index = i.toString();
             tag.dataset.value = val;
-            
+
             const label = document.createElement('span');
             label.className = 'thek-tag-label';
             const content = this.config.renderSelection(option);
@@ -176,7 +181,8 @@ export class DomRenderer {
         }
       } else {
         const val = state.selectedValues[0];
-        const option = state.options.find(o => o[vField] === val) || state.selectedOptionsByValue[val];
+        const option =
+          state.options.find((o) => o[vField] === val) || state.selectedOptionsByValue[val];
         if (option) {
           const content = this.config.renderSelection(option);
           if (content instanceof HTMLElement) {
@@ -211,7 +217,7 @@ export class DomRenderer {
       this.config.canCreate &&
       state.inputValue &&
       !filteredOptions.some(
-        o => o[dField] && o[dField].toString().toLowerCase() === state.inputValue.toLowerCase()
+        (o) => o[dField] && o[dField].toString().toLowerCase() === state.inputValue.toLowerCase()
       );
     const shouldVirtualize =
       this.config.virtualize &&
@@ -246,11 +252,15 @@ export class DomRenderer {
       }
 
       for (let index = start; index < end; index++) {
-        this.optionsList.appendChild(this.createOptionItem(filteredOptions[index], index, state, vField));
+        this.optionsList.appendChild(
+          this.createOptionItem(filteredOptions[index], index, state, vField)
+        );
       }
 
       if (end < filteredOptions.length) {
-        this.optionsList.appendChild(this.createSpacer((filteredOptions.length - end) * itemHeight));
+        this.optionsList.appendChild(
+          this.createSpacer((filteredOptions.length - end) * itemHeight)
+        );
       }
 
       if (typeof preservedScrollTop === 'number') {
@@ -262,8 +272,8 @@ export class DomRenderer {
       });
     }
 
-    const exactMatch = filteredOptions.some(o => 
-        o[dField] && o[dField].toString().toLowerCase() === state.inputValue.toLowerCase()
+    const exactMatch = filteredOptions.some(
+      (o) => o[dField] && o[dField].toString().toLowerCase() === state.inputValue.toLowerCase()
     );
     if (this.config.canCreate && state.inputValue && !exactMatch) {
       const li = document.createElement('li');
@@ -317,7 +327,7 @@ export class DomRenderer {
     const li = document.createElement('li');
     li.className = 'thek-option';
     li.id = `${this.id}-opt-${index}`;
-    const isSelected = state.selectedValues.includes(option[valueField]);
+    const isSelected = state.selectedValues.includes(option[valueField] as string);
 
     if (option.disabled) li.classList.add('thek-disabled');
     if (isSelected) li.classList.add('thek-selected');
@@ -389,7 +399,7 @@ export class DomRenderer {
 
     let left = rect.left + scrollX;
     if (rect.left + width > viewportWidth) {
-      left = (viewportWidth - width - 10) + scrollX;
+      left = viewportWidth - width - 10 + scrollX;
     }
     if (left < scrollX + 10) {
       left = scrollX + 10;
@@ -426,12 +436,12 @@ export class DomRenderer {
   }
 
   public setHeight(height: number | string): void {
-    this.config.height = height as any;
+    this.config.height = height as unknown as string | number;
     this.applyHeight(height);
   }
 
   public updateConfig(newConfig: Partial<Required<ThekSelectConfig>>): void {
-      this.config = { ...this.config, ...newConfig };
+    this.config = { ...this.config, ...newConfig };
   }
 
   public destroy(): void {

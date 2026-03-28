@@ -20,7 +20,7 @@ export class ThekSelectEventEmitter {
     }
   }
 
-  emit(event: ThekSelectEvent, data: any): void {
+  emit(event: ThekSelectEvent, data: unknown): void {
     if (!this.listeners.has(event)) return;
     this.listeners.get(event)!.forEach((listener) => listener(data));
   }
