@@ -1,14 +1,14 @@
 import { ThekSelectConfig, ThekSelectOption, ThekSelectState } from './types.js';
 import { NOOP_LOAD_OPTIONS } from './config-utils.js';
 
-export function isRemoteMode(config: Required<ThekSelectConfig>): boolean {
+export function isRemoteMode<T = unknown>(config: Required<ThekSelectConfig<T>>): boolean {
   return config.loadOptions !== NOOP_LOAD_OPTIONS;
 }
 
-export function getFilteredOptions(
-  config: Required<ThekSelectConfig>,
-  state: ThekSelectState
-): ThekSelectOption[] {
+export function getFilteredOptions<T = unknown>(
+  config: Required<ThekSelectConfig<T>>,
+  state: ThekSelectState<T>
+): ThekSelectOption<T>[] {
   if (isRemoteMode(config) && state.inputValue) {
     return state.options;
   }
@@ -28,13 +28,13 @@ export function getFilteredOptions(
   return filtered;
 }
 
-export function mergeSelectedOptionsByValue(
+export function mergeSelectedOptionsByValue<T = unknown>(
   valueField: string,
   selectedValues: string[],
-  previous: Record<string, ThekSelectOption>,
-  latestOptions: ThekSelectOption[]
-): Record<string, ThekSelectOption> {
-  const byValueFromLatest: Record<string, ThekSelectOption> = {};
+  previous: Record<string, ThekSelectOption<T>>,
+  latestOptions: ThekSelectOption<T>[]
+): Record<string, ThekSelectOption<T>> {
+  const byValueFromLatest: Record<string, ThekSelectOption<T>> = {};
   latestOptions.forEach((option) => {
     const value = option[valueField];
     if (typeof value === 'string') {
@@ -42,7 +42,7 @@ export function mergeSelectedOptionsByValue(
     }
   });
 
-  const merged: Record<string, ThekSelectOption> = {};
+  const merged: Record<string, ThekSelectOption<T>> = {};
   selectedValues.forEach((value) => {
     const option = byValueFromLatest[value] || previous[value];
     if (option) {

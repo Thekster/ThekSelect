@@ -1,14 +1,14 @@
-export type DebouncedFn<T extends (...args: any[]) => any> = ((...args: Parameters<T>) => void) & {
+export type DebouncedFn<TArgs extends unknown[]> = ((...args: TArgs) => void) & {
   cancel: () => void;
 };
 
-export function debounce<T extends (...args: any[]) => any>(
-  fn: T,
+export function debounce<TArgs extends unknown[]>(
+  fn: (...args: TArgs) => void | Promise<void>,
   delay: number
-): DebouncedFn<T> {
+): DebouncedFn<TArgs> {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-  const debounced = ((...args: Parameters<T>) => {
+  const debounced = ((...args: TArgs) => {
     if (timeoutId !== null) {
       clearTimeout(timeoutId);
     }
@@ -16,7 +16,7 @@ export function debounce<T extends (...args: any[]) => any>(
       timeoutId = null;
       fn(...args);
     }, delay);
-  }) as DebouncedFn<T>;
+  }) as DebouncedFn<TArgs>;
 
   debounced.cancel = () => {
     if (timeoutId !== null) {

@@ -2,26 +2,26 @@ import { ThekSelectConfig, ThekSelectOption, ThekSelectState } from './types.js'
 
 type TagEvent = 'tagAdded' | 'tagRemoved';
 
-export interface SelectionUpdate {
+export interface SelectionUpdate<T = unknown> {
   selectedValues: string[];
-  selectedOptionsByValue: Record<string, ThekSelectOption>;
+  selectedOptionsByValue: Record<string, ThekSelectOption<T>>;
   inputValue?: string;
   tagEvent?: TagEvent;
-  tagOption?: ThekSelectOption;
+  tagOption?: ThekSelectOption<T>;
 }
 
-export function applySelection(
-  config: Required<ThekSelectConfig>,
-  state: ThekSelectState,
-  option: ThekSelectOption
-): SelectionUpdate {
+export function applySelection<T = unknown>(
+  config: Required<ThekSelectConfig<T>>,
+  state: ThekSelectState<T>,
+  option: ThekSelectOption<T>
+): SelectionUpdate<T> {
   const valueField = config.valueField;
-  const optionValue = option[valueField];
+  const optionValue = String(option[valueField]);
   const selectedOptionsByValue = { ...state.selectedOptionsByValue };
 
   if (config.multiple) {
     if (state.selectedValues.includes(optionValue)) {
-      const selectedValues = state.selectedValues.filter(v => v !== optionValue);
+      const selectedValues = state.selectedValues.filter((v) => v !== optionValue);
       delete selectedOptionsByValue[optionValue];
       return {
         selectedValues,
@@ -50,10 +50,10 @@ export function applySelection(
   };
 }
 
-export function createOptionFromLabel(
-  config: Required<ThekSelectConfig>,
+export function createOptionFromLabel<T = unknown>(
+  config: Required<ThekSelectConfig<T>>,
   label: string
-): ThekSelectOption {
+): ThekSelectOption<T> {
   const value = label;
   return {
     value,
@@ -63,13 +63,13 @@ export function createOptionFromLabel(
   };
 }
 
-export function removeLastSelection(
-  config: Required<ThekSelectConfig>,
-  state: ThekSelectState
+export function removeLastSelection<T = unknown>(
+  config: Required<ThekSelectConfig<T>>,
+  state: ThekSelectState<T>
 ): {
   selectedValues: string[];
-  selectedOptionsByValue: Record<string, ThekSelectOption>;
-  removedOption?: ThekSelectOption;
+  selectedOptionsByValue: Record<string, ThekSelectOption<T>>;
+  removedOption?: ThekSelectOption<T>;
 } {
   const valueField = config.valueField;
   const selectedValues = [...state.selectedValues];
@@ -79,7 +79,9 @@ export function removeLastSelection(
     return { selectedValues, selectedOptionsByValue };
   }
 
-  const removedOption = state.options.find(o => o[valueField] === removedValue) || selectedOptionsByValue[removedValue];
+  const removedOption =
+    state.options.find((o) => o[valueField] === removedValue) ||
+    selectedOptionsByValue[removedValue];
   delete selectedOptionsByValue[removedValue];
 
   return { selectedValues, selectedOptionsByValue, removedOption };
@@ -89,7 +91,13 @@ export function reorderSelectedValues(state: ThekSelectState, from: number, to: 
   if (!Number.isInteger(from) || !Number.isInteger(to)) {
     return [...state.selectedValues];
   }
-  if (from < 0 || to < 0 || from >= state.selectedValues.length || to >= state.selectedValues.length || from === to) {
+  if (
+    from < 0 ||
+    to < 0 ||
+    from >= state.selectedValues.length ||
+    to >= state.selectedValues.length ||
+    from === to
+  ) {
     return [...state.selectedValues];
   }
 
@@ -102,29 +110,31 @@ export function reorderSelectedValues(state: ThekSelectState, from: number, to: 
   return selectedValues;
 }
 
-export function resolveSelectedOptions(
-  config: Required<ThekSelectConfig>,
-  state: ThekSelectState
-): ThekSelectOption[] {
+export function resolveSelectedOptions<T = unknown>(
+  config: Required<ThekSelectConfig<T>>,
+  state: ThekSelectState<T>
+): ThekSelectOption<T>[] {
   const valueField = config.valueField;
   const displayField = config.displayField;
 
-  return state.selectedValues.map(value =>
-    state.options.find(o => o[valueField] === value) ||
-    state.selectedOptionsByValue[value] ||
-    ({ [valueField]: value, [displayField]: value } as ThekSelectOption)
+  return state.selectedValues.map(
+    (value) =>
+      state.options.find((o) => o[valueField] === value) ||
+      state.selectedOptionsByValue[value] ||
+      ({ value, label: value, [valueField]: value, [displayField]: value } as ThekSelectOption<T>)
   );
 }
 
-export function buildSelectedOptionsMapFromValues(
-  config: Required<ThekSelectConfig>,
-  state: ThekSelectState,
+export function buildSelectedOptionsMapFromValues<T = unknown>(
+  config: Required<ThekSelectConfig<T>>,
+  state: ThekSelectState<T>,
   values: string[]
-): Record<string, ThekSelectOption> {
+): Record<string, ThekSelectOption<T>> {
   const valueField = config.valueField;
-  const selectedOptionsByValue: Record<string, ThekSelectOption> = {};
+  const selectedOptionsByValue: Record<string, ThekSelectOption<T>> = {};
   values.forEach((value) => {
-    const option = state.options.find(o => o[valueField] === value) || state.selectedOptionsByValue[value];
+    const option =
+      state.options.find((o) => o[valueField] === value) || state.selectedOptionsByValue[value];
     if (option) {
       selectedOptionsByValue[value] = option;
     }

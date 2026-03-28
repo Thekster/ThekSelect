@@ -2,6 +2,20 @@
   "name": "thekselect",
   "version": "1.0.0",
   "description": "A headless, framework-agnostic select library with themes.",
+  "keywords": [
+    "accessible",
+    "aria",
+    "autocomplete",
+    "headless",
+    "multiselect",
+    "select",
+    "tagging"
+  ],
+  "license": "MIT",
+  "author": "Thekster",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "main": "./dist/thekselect.umd.cjs",
   "module": "./dist/thekselect.js",
@@ -19,35 +33,39 @@
     },
     "./css/*": "./dist/css/*"
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "dev": "vite --open /showcase/index.html",
     "build": "vite build && cross-env THEK_MINIFY=1 vite build --emptyOutDir false && tsc && shx mkdir -p dist/css && (shx cp -r src/themes/*.css dist/css || shx echo \"No theme CSS files to copy\")",
     "preview": "vite preview",
+    "lint": "oxlint .",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "release:check": "npm test -- --run && npm run build && npm pack --dry-run --cache .npm-cache",
+    "prepublishOnly": "npm run release:check"
   },
-  "keywords": [
-    "select",
-    "autocomplete",
-    "multiselect",
-    "tagging",
-    "headless",
-    "accessible",
-    "aria"
-  ],
-  "author": "",
-  "license": "MIT",
   "devDependencies": {
     "@types/node": "^25.2.1",
     "cross-env": "^10.1.0",
-    "jsdom": "^28.0.0",
+    "jsdom": "^29.0.1",
+    "oxfmt": "^0.42.0",
+    "oxlint": "^1.57.0",
     "shx": "^0.4.0",
     "terser": "^5.46.0",
-    "typescript": "^5.4.5",
-    "vite": "^7.3.1",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.3",
     "vitest": "^4.0.18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Thekster/ThekSelect.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Thekster/ThekSelect/issues"
+  },
+  "homepage": "https://github.com/Thekster/ThekSelect#readme",
+  "publishConfig": {
+    "access": "public"
   }
 }

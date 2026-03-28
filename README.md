@@ -19,6 +19,20 @@ A lightweight, framework-agnostic, and accessible select library with native dra
 npm install thekselect
 ```
 
+## Release
+
+To verify the published package locally:
+
+```bash
+npm run release:check
+```
+
+To publish through GitHub Actions:
+
+1. Add an `NPM_TOKEN` repository secret in GitHub.
+2. Bump `package.json` to the version you want to publish.
+3. Create a GitHub Release or run the `Publish to npm` workflow manually.
+
 ## CSS Themes
 
 Import one of the distributed theme files:
@@ -163,15 +177,16 @@ npm test
 
 ### Scripts
 
-| Script | Purpose |
-| --- | --- |
-| `npm run dev` | Start Vite dev server for local development/showcase. |
-| `npm run build` | Build library outputs into `dist/` and emit types. |
-| `npm run preview` | Preview built output with Vite. Optional for library development. |
-| `npm test` | Run test suite in watch mode. |
-| `npm run coverage` | Run tests with coverage report. |
+| Script             | Purpose                                                           |
+| ------------------ | ----------------------------------------------------------------- |
+| `npm run dev`      | Start Vite dev server for local development/showcase.             |
+| `npm run build`    | Build library outputs into `dist/` and emit types.                |
+| `npm run preview`  | Preview built output with Vite. Optional for library development. |
+| `npm test`         | Run test suite in watch mode.                                     |
+| `npm run coverage` | Run tests with coverage report.                                   |
 
 Notes:
+
 - `preview` is optional for day-to-day library work.
 - For this repo, tests are the primary correctness check when bundle preview is unavailable.
 
@@ -187,28 +202,28 @@ Then open the local URL printed by Vite.
 
 ## Configuration
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `options` | `ThekSelectOption[]` | `[]` | Initial options list. |
-| `multiple` | `boolean` | `false` | Enable multi-select mode. |
-| `searchable` | `boolean` | `true` | Enable search input and filtering. |
-| `disabled` | `boolean` | `false` | Disable interaction. |
-| `placeholder` | `string` | `'Select...'` | Placeholder text. |
-| `canCreate` | `boolean` | `false` | Allow creating new options from input. |
-| `createText` | `string` | `"Create '{%t}'..."` | Create row label template (`{%t}` = typed text). |
-| `height` | `number \| string` | `40` | Control control/dropdown input height (`number` = px). |
-| `debounce` | `number` | `300` | Debounce delay for `loadOptions`. |
-| `maxSelectedLabels` | `number` | `3` | Max visible tags before summary text. |
-| `displayField` | `string` | `'label'` | Field used for rendering text. |
-| `valueField` | `string` | `'value'` | Field used as internal value key. |
-| `maxOptions` | `number \| null` | `null` | Limit rendered dropdown items. |
-| `virtualize` | `boolean` | `false` | Enable virtualized option rendering for large lists. |
-| `virtualItemHeight` | `number` | `40` | Row height (px) used by virtualization calculations. |
-| `virtualOverscan` | `number` | `4` | Extra rows rendered above and below viewport. |
-| `virtualThreshold` | `number` | `80` | Minimum option count before virtualization activates. |
-| `loadOptions` | `(query) => Promise<ThekSelectOption[]>` | `undefined` | Async loader for remote search. |
-| `renderOption` | `(option) => string \| HTMLElement` | `(o) => o[displayField]` | Custom dropdown renderer. |
-| `renderSelection` | `(option) => string \| HTMLElement` | `(o) => o[displayField]` | Custom selected-item renderer. |
+| Option              | Type                                     | Default                  | Description                                            |
+| ------------------- | ---------------------------------------- | ------------------------ | ------------------------------------------------------ |
+| `options`           | `ThekSelectOption[]`                     | `[]`                     | Initial options list.                                  |
+| `multiple`          | `boolean`                                | `false`                  | Enable multi-select mode.                              |
+| `searchable`        | `boolean`                                | `true`                   | Enable search input and filtering.                     |
+| `disabled`          | `boolean`                                | `false`                  | Disable interaction.                                   |
+| `placeholder`       | `string`                                 | `'Select...'`            | Placeholder text.                                      |
+| `canCreate`         | `boolean`                                | `false`                  | Allow creating new options from input.                 |
+| `createText`        | `string`                                 | `"Create '{%t}'..."`     | Create row label template (`{%t}` = typed text).       |
+| `height`            | `number \| string`                       | `40`                     | Control control/dropdown input height (`number` = px). |
+| `debounce`          | `number`                                 | `300`                    | Debounce delay for `loadOptions`.                      |
+| `maxSelectedLabels` | `number`                                 | `3`                      | Max visible tags before summary text.                  |
+| `displayField`      | `string`                                 | `'label'`                | Field used for rendering text.                         |
+| `valueField`        | `string`                                 | `'value'`                | Field used as internal value key.                      |
+| `maxOptions`        | `number \| null`                         | `null`                   | Limit rendered dropdown items.                         |
+| `virtualize`        | `boolean`                                | `false`                  | Enable virtualized option rendering for large lists.   |
+| `virtualItemHeight` | `number`                                 | `40`                     | Row height (px) used by virtualization calculations.   |
+| `virtualOverscan`   | `number`                                 | `4`                      | Extra rows rendered above and below viewport.          |
+| `virtualThreshold`  | `number`                                 | `80`                     | Minimum option count before virtualization activates.  |
+| `loadOptions`       | `(query) => Promise<ThekSelectOption[]>` | `undefined`              | Async loader for remote search.                        |
+| `renderOption`      | `(option) => string \| HTMLElement`      | `(o) => o[displayField]` | Custom dropdown renderer.                              |
+| `renderSelection`   | `(option) => string \| HTMLElement`      | `(o) => o[displayField]` | Custom selected-item renderer.                         |
 
 ## Option Shape
 
@@ -223,14 +238,14 @@ interface ThekSelectOption {
 }
 ```
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `value` | `string` | Stable internal value used for selection state and emitted values. |
-| `label` | `string` | Default display text shown in dropdown and selected state. |
-| `disabled` | `boolean` | Prevents selecting the option when `true`. |
-| `selected` | `boolean` | Marks initial selection when options are provided at init time. |
-| `data` | `any` | Optional extra metadata for custom rendering and app logic. |
-| `[key: string]` | `any` | Allows custom fields for `displayField`/`valueField` mapping. |
+| Field           | Type      | Description                                                        |
+| --------------- | --------- | ------------------------------------------------------------------ |
+| `value`         | `string`  | Stable internal value used for selection state and emitted values. |
+| `label`         | `string`  | Default display text shown in dropdown and selected state.         |
+| `disabled`      | `boolean` | Prevents selecting the option when `true`.                         |
+| `selected`      | `boolean` | Marks initial selection when options are provided at init time.    |
+| `data`          | `any`     | Optional extra metadata for custom rendering and app logic.        |
+| `[key: string]` | `any`     | Allows custom fields for `displayField`/`valueField` mapping.      |
 
 When using custom fields (`valueField`, `displayField`), keep `value` and `label` available if you share the same option objects across default and custom-field instances.
 
@@ -249,22 +264,22 @@ When using custom fields (`valueField`, `displayField`), keep `value` and `label
 
 ## API Reference
 
-| Method | Parameters | Returns | Description |
-| --- | --- | --- | --- |
-| `getValue()` | none | `string \| string[] \| undefined` | Gets current selected value(s) from component state. |
-| `getSelectedOptions()` | none | `ThekSelectOption \| ThekSelectOption[] \| undefined` | Gets current selected option object(s). |
-| `setValue(value, silent?)` | `value: string \| string[]`, `silent?: boolean` | `void` | Sets selected value(s). In single mode keeps first value; in multi mode de-duplicates values. |
-| `setHeight(height)` | `height: number \| string` | `void` | Sets control height for the instance. Numeric input is treated as px. |
-| `setMaxOptions(limit)` | `limit: number \| null` | `void` | Limits filtered options rendered in dropdown (`null` disables limit). |
-| `setRenderOption(callback)` | `callback: (option) => string \| HTMLElement` | `void` | Overrides dropdown option rendering for this instance. |
-| `on(event, callback)` | `event: ThekSelectEvent`, `callback: (payload) => void` | `() => void` | Subscribes to an event and returns an unsubscribe function. |
-| `destroy()` | none | `void` | Removes generated DOM/listeners and restores original element visibility. |
+| Method                      | Parameters                                              | Returns                                               | Description                                                                                   |
+| --------------------------- | ------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `getValue()`                | none                                                    | `string \| string[] \| undefined`                     | Gets current selected value(s) from component state.                                          |
+| `getSelectedOptions()`      | none                                                    | `ThekSelectOption \| ThekSelectOption[] \| undefined` | Gets current selected option object(s).                                                       |
+| `setValue(value, silent?)`  | `value: string \| string[]`, `silent?: boolean`         | `void`                                                | Sets selected value(s). In single mode keeps first value; in multi mode de-duplicates values. |
+| `setHeight(height)`         | `height: number \| string`                              | `void`                                                | Sets control height for the instance. Numeric input is treated as px.                         |
+| `setMaxOptions(limit)`      | `limit: number \| null`                                 | `void`                                                | Limits filtered options rendered in dropdown (`null` disables limit).                         |
+| `setRenderOption(callback)` | `callback: (option) => string \| HTMLElement`           | `void`                                                | Overrides dropdown option rendering for this instance.                                        |
+| `on(event, callback)`       | `event: ThekSelectEvent`, `callback: (payload) => void` | `() => void`                                          | Subscribes to an event and returns an unsubscribe function.                                   |
+| `destroy()`                 | none                                                    | `void`                                                | Removes generated DOM/listeners and restores original element visibility.                     |
 
-| Static Method | Parameters | Returns | Description |
-| --- | --- | --- | --- |
-| `ThekSelect.init(element, config?)` | `element: string \| HTMLElement`, `config?: ThekSelectConfig` | `ThekSelect` | Creates and initializes a new instance. |
-| `ThekSelect.setDefaults(defaults)` | `defaults: Partial<ThekSelectConfig>` | `void` | Sets process-wide defaults for future instances. |
-| `ThekSelect.resetDefaults()` | none | `void` | Clears global defaults. |
+| Static Method                       | Parameters                                                    | Returns      | Description                                      |
+| ----------------------------------- | ------------------------------------------------------------- | ------------ | ------------------------------------------------ |
+| `ThekSelect.init(element, config?)` | `element: string \| HTMLElement`, `config?: ThekSelectConfig` | `ThekSelect` | Creates and initializes a new instance.          |
+| `ThekSelect.setDefaults(defaults)`  | `defaults: Partial<ThekSelectConfig>`                         | `void`       | Sets process-wide defaults for future instances. |
+| `ThekSelect.resetDefaults()`        | none                                                          | `void`       | Clears global defaults.                          |
 
 ## Events
 
