@@ -3,6 +3,7 @@
 ## Unreleased (2026-02-07)
 
 ### Added
+
 - New regression test suite for reviewer-identified failures:
   - global listener cleanup on `destroy`
   - remote loading state reset on empty query
@@ -15,8 +16,16 @@
 - Browser script-tag usage docs:
   - added no-bundler UMD example in `README.md`
   - added matching snippet in `showcase/index.html` Quick Docs
+- npm release workflow via GitHub Actions:
+  - added `.github/workflows/publish.yml`
+  - supports release-triggered and manual publishes
+  - publishes with npm provenance using `NPM_TOKEN`
+- Local publish safety checks:
+  - added `npm run release:check`
+  - added `prepublishOnly` to enforce test, build, and pack validation
 
 ### Changed
+
 - `on(event, callback)` now returns an unsubscribe function.
 - `getValue()` and `getSelectedOptions()` now explicitly support `undefined` in single-select mode when nothing is selected.
 - `setValue()` now normalizes inputs:
@@ -24,14 +33,18 @@
   - multi-select de-duplicates values
 
 ### Fixed
+
 - Removed leaked global `resize` and `scroll` listeners during `destroy()`.
 - Prevented stale remote loading spinner when input is cleared while a request is in flight.
 - Fixed initialization bug where selected empty-string (`""`) values were dropped.
 - Guarded reorder logic against invalid indices to avoid corrupting `selectedValues`.
 - Hardened create-row rendering to avoid HTML injection via `createText`.
 - Clamped negative `maxOptions` to `0` for deterministic filtering.
+- Fixed TypeScript build regressions in generic selection/config paths so `npm run build` completes successfully before publish.
+- Ensured packaged CSS theme exports are present in `dist/css` during release builds.
 
 ### Build
+
 - Build config now enables explicit minification for JS and CSS:
   - `build.minify = 'esbuild'`
   - `build.cssMinify = 'esbuild'`

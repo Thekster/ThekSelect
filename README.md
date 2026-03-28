@@ -21,17 +21,34 @@ npm install thekselect
 
 ## Release
 
-To verify the published package locally:
+Before publishing:
+
+1. Ensure the package name and version in `package.json` are correct.
+2. Add an `NPM_TOKEN` repository secret in GitHub.
+3. Push the commit you want to publish.
+
+Verify the package locally:
 
 ```bash
 npm run release:check
 ```
 
-To publish through GitHub Actions:
+Publish through GitHub Actions:
 
-1. Add an `NPM_TOKEN` repository secret in GitHub.
-2. Bump `package.json` to the version you want to publish.
-3. Create a GitHub Release or run the `Publish to npm` workflow manually.
+1. Bump `package.json` to the version you want to publish.
+2. Push the version commit to GitHub.
+3. Trigger one of these:
+   - Create and publish a GitHub Release.
+   - Open `Actions` -> `Publish to npm` -> `Run workflow`.
+
+Manual fallback from a local terminal:
+
+```bash
+npm run release:check
+npm publish --access public
+```
+
+`prepublishOnly` runs the same release checks before `npm publish`.
 
 ## CSS Themes
 
