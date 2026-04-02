@@ -48,6 +48,12 @@ export function buildConfig<T = unknown>(
     ...config
   };
 
+  // If loadOptions spread in as undefined (explicit override), fall back to NOOP so the
+  // component treats the instance as local mode instead of crashing on invocation.
+  if (typeof finalConfig.loadOptions !== 'function') {
+    finalConfig.loadOptions = NOOP_LOAD_OPTIONS as (query: string) => Promise<ThekSelectOption<T>[]>;
+  }
+
   const hasCustomRenderOption = !!(globalDefaults.renderOption || config.renderOption);
   const hasCustomRenderSelection = !!(globalDefaults.renderSelection || config.renderSelection);
 

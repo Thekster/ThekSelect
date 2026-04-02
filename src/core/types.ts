@@ -48,3 +48,13 @@ export type ThekSelectEvent =
   | 'tagAdded'
   | 'tagRemoved'
   | 'reordered';
+
+export interface ThekSelectEventPayloadMap<T = unknown> {
+  change: string | string[] | undefined;
+  open: null;
+  close: null;
+  search: string;
+  tagAdded: ThekSelectOption<T>;
+  tagRemoved: ThekSelectOption<T>;
+  reordered: string[];
+}

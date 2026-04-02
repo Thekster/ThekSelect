@@ -1,5 +1,11 @@
 import { StateManager } from './state.js';
-import { ThekSelectConfig, ThekSelectOption, ThekSelectState, ThekSelectEvent } from './types.js';
+import {
+  ThekSelectConfig,
+  ThekSelectOption,
+  ThekSelectState,
+  ThekSelectEvent,
+  ThekSelectEventPayloadMap
+} from './types.js';
 import { debounce, DebouncedFn } from '../utils/debounce.js';
 import { generateId } from '../utils/dom.js';
 import { injectStyles } from '../utils/styles.js';
@@ -25,13 +31,14 @@ export class ThekSelect<T = unknown> {
   private stateManager: StateManager<ThekSelectState<T>>;
   private renderer: DomRenderer;
   private id: string;
-  private events = new ThekSelectEventEmitter();
+  private events = new ThekSelectEventEmitter<T>();
   private originalElement: HTMLElement;
   private unsubscribeEvents: (() => void)[] = [];
   private unsubscribeState?: () => void;
   private remoteRequestId = 0;
   private isDestroyed = false;
   private focusTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private injectedOptionValues: Set<string> = new Set();
 
   private constructor(element: string | HTMLElement, config: ThekSelectConfig<T> = {}) {
     injectStyles();
@@ -84,6 +91,7 @@ export class ThekSelect<T = unknown> {
 
   private initialize(): void {
     this.renderer.createDom();
+    this.applyAccessibleName();
     this.setupListeners();
     this.unsubscribeState = this.stateManager.subscribe(() => this.render());
     this.render();
@@ -94,6 +102,37 @@ export class ThekSelect<T = unknown> {
         this.renderer.wrapper,
         this.originalElement.nextSibling
       );
+    }
+  }
+
+  private applyAccessibleName(): void {
+    const el = this.originalElement;
+    const control = this.renderer.control;
+
+    // 1. Explicit aria-labelledby on the original element takes priority
+    const existingLabelledBy = el.getAttribute('aria-labelledby');
+    if (existingLabelledBy) {
+      control.setAttribute('aria-labelledby', existingLabelledBy);
+      return;
+    }
+
+    // 2. aria-label on the original element
+    const ariaLabel = el.getAttribute('aria-label');
+    if (ariaLabel) {
+      control.setAttribute('aria-label', ariaLabel);
+      return;
+    }
+
+    // 3. <label for="id"> association
+    const id = el.id;
+    if (id) {
+      const label = document.querySelector<HTMLLabelElement>(`label[for="${id}"]`);
+      if (label) {
+        if (!label.id) {
+          label.id = `${id}-label`;
+        }
+        control.setAttribute('aria-labelledby', label.id);
+      }
     }
   }
 
@@ -112,6 +151,7 @@ export class ThekSelect<T = unknown> {
     }
 
     this.renderer.input.addEventListener('keydown', (e) => this.handleKeyDown(e));
+    this.renderer.control.addEventListener('keydown', (e) => this.handleKeyDown(e));
 
     this.unsubscribeEvents.push(
       globalEventManager.onClick((e: unknown) => {
@@ -209,7 +249,9 @@ export class ThekSelect<T = unknown> {
         break;
       case 'Enter':
         e.preventDefault();
-        if (state.focusedIndex >= 0 && state.focusedIndex < filteredOptions.length) {
+        if (!state.isOpen) {
+          this.openDropdown();
+        } else if (state.focusedIndex >= 0 && state.focusedIndex < filteredOptions.length) {
           this.handleSelect(filteredOptions[state.focusedIndex] as unknown as ThekSelectOption<T>);
         } else if (
           this.config.canCreate &&
@@ -217,6 +259,14 @@ export class ThekSelect<T = unknown> {
           state.focusedIndex === filteredOptions.length
         ) {
           this.handleCreate(state.inputValue);
+        }
+        break;
+      case ' ':
+        if ((e.target as HTMLElement).tagName !== 'INPUT') {
+          e.preventDefault();
+          if (!state.isOpen) {
+            this.openDropdown();
+          }
         }
         break;
       case 'Escape':
@@ -284,7 +334,7 @@ export class ThekSelect<T = unknown> {
     this.syncOriginalElement(update.selectedValues);
 
     if (update.tagEvent && update.tagOption) {
-      this.emit(update.tagEvent, update.tagOption);
+      this.emit(update.tagEvent, update.tagOption as ThekSelectOption<T>);
     }
     this.emit('change', this.getValue());
   }
@@ -313,7 +363,7 @@ export class ThekSelect<T = unknown> {
     this.syncOriginalElement(update.selectedValues);
 
     if (update.removedOption) {
-      this.emit('tagRemoved', update.removedOption);
+      this.emit('tagRemoved', update.removedOption as ThekSelectOption<T>);
     }
     this.emit('change', this.getValue());
   }
@@ -337,6 +387,7 @@ export class ThekSelect<T = unknown> {
         if (!Array.from(select.options).some((opt) => opt.value === val)) {
           const opt = new Option(val, val, true, true);
           select.add(opt);
+          this.injectedOptionValues.add(val);
         }
       });
       select.dispatchEvent(new Event('change', { bubbles: true }));
@@ -353,11 +404,14 @@ export class ThekSelect<T = unknown> {
     );
   }
 
-  public on(event: ThekSelectEvent, callback: Function): () => void {
+  public on<K extends ThekSelectEvent>(
+    event: K,
+    callback: (payload: ThekSelectEventPayloadMap<T>[K]) => void
+  ): () => void {
     return this.events.on(event, callback);
   }
 
-  private emit(event: ThekSelectEvent, data: unknown): void {
+  private emit<K extends ThekSelectEvent>(event: K, data: ThekSelectEventPayloadMap<T>[K]): void {
     this.events.emit(event, data);
   }
 
@@ -433,6 +487,13 @@ export class ThekSelect<T = unknown> {
     this.unsubscribeEvents.forEach((unsub) => unsub());
     this.unsubscribeEvents = [];
     this.renderer.destroy();
+    if (this.originalElement instanceof HTMLSelectElement && this.injectedOptionValues.size > 0) {
+      const select = this.originalElement;
+      Array.from(select.options)
+        .filter((opt) => this.injectedOptionValues.has(opt.value))
+        .forEach((opt) => select.remove(opt.index));
+      this.injectedOptionValues.clear();
+    }
     this.originalElement.style.display = '';
   }
 }

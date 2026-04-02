@@ -100,12 +100,31 @@ export const BASE_STYLES = `:root {
 }
 
 .thek-arrow {
-    font-size: 0.8em;
+    width: 0.8em;
+    height: 0.8em;
     transition: transform 0.2s ease;
+    flex-shrink: 0;
 }
 
 .thek-open .thek-arrow {
     transform: rotate(180deg);
+}
+
+.thek-search-icon {
+    width: 0.85em;
+    height: 0.85em;
+}
+
+@keyframes thek-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.thek-spinner {
+    width: 0.9em;
+    height: 0.9em;
+    animation: thek-spin 0.8s linear infinite;
+    flex-shrink: 0;
 }
 
 .thek-selection {
@@ -174,15 +193,18 @@ export const BASE_STYLES = `:root {
 .thek-search-wrapper {
     padding: 10px;
     border-bottom: 1px solid var(--thek-border);
-    position: relative;
     background-color: var(--thek-bg-surface);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .thek-input {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     border: 1px solid var(--thek-border);
     background: var(--thek-bg-surface);
-    padding: 8px 12px 8px 34px;
+    padding: 8px 12px;
     border-radius: calc(var(--thek-border-radius) - 2px);
     color: var(--thek-text-main);
     outline: none;
@@ -194,14 +216,6 @@ export const BASE_STYLES = `:root {
     border-color: var(--thek-primary);
 }
 
-.thek-search-icon {
-    position: absolute;
-    left: 22px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--thek-text-muted);
-    font-size: 0.85em;
-}
 
 .thek-options {
     list-style: none;

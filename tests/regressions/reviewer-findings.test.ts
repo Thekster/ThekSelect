@@ -53,13 +53,13 @@ describe('Reviewer findings regressions', () => {
     input.dispatchEvent(new Event('input'));
     await flush(10);
 
-    expect(document.querySelector('.fa-circle-notch')).toBeTruthy();
+    expect(document.querySelector('.thek-spinner')).toBeTruthy();
 
     input.value = '';
     input.dispatchEvent(new Event('input'));
     await flush(10);
 
-    expect(document.querySelector('.fa-circle-notch')).toBeFalsy();
+    expect(document.querySelector('.thek-spinner')).toBeFalsy();
 
     resolvePending([]);
     await flush(10);

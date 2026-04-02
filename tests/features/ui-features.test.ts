@@ -61,7 +61,7 @@ describe('ThekSelect UI Features', () => {
     // Wait for debounce
     await new Promise((resolve) => setTimeout(resolve, 400));
 
-    const spinner = document.querySelector('.fa-circle-notch');
+    const spinner = document.querySelector('.thek-spinner');
     expect(spinner).toBeTruthy();
   });
 

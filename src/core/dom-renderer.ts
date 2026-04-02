@@ -1,5 +1,14 @@
 import { ThekSelectConfig, ThekSelectState, ThekSelectOption } from './types.js';
 
+const SVG_CHEVRON =
+  '<svg class="thek-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>';
+
+const SVG_SEARCH =
+  '<svg class="thek-search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"/></svg>';
+
+const SVG_SPINNER =
+  '<svg class="thek-spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-dasharray="52" stroke-dashoffset="20" stroke-linecap="round"/></svg>';
+
 export interface RendererCallbacks {
   onSelect: (option: ThekSelectOption) => void;
   onCreate: (label: string) => void;
@@ -55,6 +64,7 @@ export class DomRenderer {
     this.control.setAttribute('aria-expanded', 'false');
     this.control.setAttribute('aria-haspopup', 'listbox');
     this.control.setAttribute('aria-controls', `${this.id}-list`);
+    this.control.setAttribute('tabindex', '0');
 
     this.selectionContainer = document.createElement('div');
     this.selectionContainer.className = 'thek-selection';
@@ -65,7 +75,7 @@ export class DomRenderer {
 
     this.indicatorsContainer = document.createElement('div');
     this.indicatorsContainer.className = 'thek-indicators';
-    this.indicatorsContainer.innerHTML = '<i class="fa-solid fa-chevron-down thek-arrow"></i>';
+    this.indicatorsContainer.innerHTML = SVG_CHEVRON;
 
     this.control.appendChild(this.selectionContainer);
     this.control.appendChild(this.placeholderElement);
@@ -78,7 +88,7 @@ export class DomRenderer {
     if (this.config.searchable) {
       const searchWrapper = document.createElement('div');
       searchWrapper.className = 'thek-search-wrapper';
-      searchWrapper.innerHTML = '<i class="fa-solid fa-magnifying-glass thek-search-icon"></i>';
+      searchWrapper.innerHTML = SVG_SEARCH;
 
       this.input = document.createElement('input');
       this.input.className = 'thek-input';
@@ -118,10 +128,9 @@ export class DomRenderer {
     this.wrapper.classList.toggle('thek-open', state.isOpen);
 
     if (state.isLoading) {
-      this.indicatorsContainer.innerHTML =
-        '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+      this.indicatorsContainer.innerHTML = SVG_SPINNER;
     } else {
-      this.indicatorsContainer.innerHTML = '<i class="fa-solid fa-chevron-down thek-arrow"></i>';
+      this.indicatorsContainer.innerHTML = SVG_CHEVRON;
     }
 
     this.renderSelectionContent(state);
@@ -406,7 +415,20 @@ export class DomRenderer {
     }
 
     this.dropdown.style.left = `${left}px`;
-    this.dropdown.style.top = `${rect.bottom + scrollY}px`;
+
+    const viewportHeight = window.innerHeight;
+    const dropdownHeight = this.optionsList.clientHeight || 240;
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    const flipUp = spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
+    this.dropdown.classList.toggle('thek-drop-up', flipUp);
+
+    if (flipUp) {
+      this.dropdown.style.top = `${rect.top + scrollY - dropdownHeight - 4}px`;
+    } else {
+      this.dropdown.style.top = `${rect.bottom + scrollY}px`;
+    }
   }
 
   private setupTagDnd(tag: HTMLElement): void {
