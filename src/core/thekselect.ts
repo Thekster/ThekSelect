@@ -7,9 +7,6 @@ import {
   ThekSelectEventPayloadMap
 } from './types.js';
 import { debounce, DebouncedFn } from '../utils/debounce.js';
-import { generateId } from '../utils/dom.js';
-import { injectStyles } from '../utils/styles.js';
-import { DomRenderer, RendererCallbacks } from './dom-renderer.js';
 import { buildConfig, buildInitialState } from './config-utils.js';
 import { getFilteredOptions, isRemoteMode, mergeSelectedOptionsByValue } from './options-logic.js';
 import {
@@ -21,164 +18,231 @@ import {
   resolveSelectedOptions
 } from './selection-logic.js';
 import { ThekSelectEventEmitter } from './event-emitter.js';
-
+import { DomRenderer, RendererCallbacks } from './dom-renderer.js';
+import { injectStyles } from '../utils/styles.js';
+import { generateId } from '../utils/dom.js';
 import { globalEventManager } from '../utils/event-manager.js';
+
+/** Returned by ThekSelect.init() — a headless core augmented with DOM-specific methods. */
+export type ThekSelectHandle<T = unknown> = ThekSelect<T> & {
+  setHeight(height: number | string): void;
+  setRenderOption(fn: (option: ThekSelectOption<T>) => string | HTMLElement): void;
+};
 
 export class ThekSelect<T = unknown> {
   private static globalDefaults: Partial<ThekSelectConfig> = {};
 
-  private config: Required<ThekSelectConfig<T>>;
-  private stateManager: StateManager<ThekSelectState<T>>;
-  private renderer: DomRenderer;
-  private id: string;
+  /** @internal Config is readable by DomRenderer. Do not reassign the reference. */
+  public readonly config: Required<ThekSelectConfig<T>>;
+  /** @internal accessible via cast in tests */
+  protected stateManager: StateManager<ThekSelectState<T>>;
   private events = new ThekSelectEventEmitter<T>();
-  private originalElement: HTMLElement;
-  private unsubscribeEvents: (() => void)[] = [];
-  private unsubscribeState?: () => void;
+  /** @internal */
+  protected isDestroyed = false;
   private remoteRequestId = 0;
-  private isDestroyed = false;
-  private focusTimeoutId: ReturnType<typeof setTimeout> | null = null;
-  private injectedOptionValues: Set<string> = new Set();
+  private debouncedSearch!: DebouncedFn<[query: string]>;
 
-  private constructor(element: string | HTMLElement, config: ThekSelectConfig<T> = {}) {
-    injectStyles();
-    const el = typeof element === 'string' ? document.querySelector(element) : element;
-    if (!el) throw new Error('Element not found');
-    this.originalElement = el as HTMLElement;
-    this.id = generateId();
-
+  /**
+   * Headless constructor — no DOM element required.
+   * @param config  Selection options and behaviour config.
+   * @param _element  Used internally by ThekSelect.init() to parse native <select> elements.
+   */
+  constructor(config: ThekSelectConfig<T> = {}, _element: HTMLElement | null = null) {
     this.config = buildConfig(
-      this.originalElement,
+      _element,
       config,
       ThekSelect.globalDefaults as Partial<ThekSelectConfig<T>>
     );
     this.stateManager = new StateManager<ThekSelectState<T>>(buildInitialState(this.config));
-
-    const callbacks: RendererCallbacks = {
-      onSelect: (option) => this.handleSelect(option as unknown as ThekSelectOption<T>),
-      onCreate: (label) => this.handleCreate(label),
-      onRemove: (option) => this.handleSelect(option as unknown as ThekSelectOption<T>), // selecting selected item removes it in multi
-      onReorder: (from, to) => this.handleReorder(from, to)
-    };
-
-    this.renderer = new DomRenderer(
-      this.config as unknown as Required<ThekSelectConfig>,
-      this.id,
-      callbacks
-    );
-
-    this.setupHandleSearch();
-    this.initialize();
+    this.setupDebouncedSearch();
   }
+
+  // ── Reactive interface ────────────────────────────────────────────────────
+
+  public subscribe(listener: (state: Readonly<ThekSelectState<T>>) => void): () => void {
+    return this.stateManager.subscribe(listener);
+  }
+
+  public getState(): Readonly<ThekSelectState<T>> {
+    return this.stateManager.getState();
+  }
+
+  public getFilteredOptions(): ThekSelectOption<T>[] {
+    return getFilteredOptions(this.config, this.stateManager.getState() as ThekSelectState<T>);
+  }
+
+  // ── Actions ───────────────────────────────────────────────────────────────
+
+  public open(): void {
+    if (this.stateManager.getState().isOpen) return;
+    this.stateManager.setState({ isOpen: true, focusedIndex: 0 });
+    this.emit('open', null);
+  }
+
+  public close(): void {
+    if (!this.stateManager.getState().isOpen) return;
+    this.stateManager.setState({ isOpen: false, focusedIndex: -1, inputValue: '' });
+    this.emit('close', null);
+  }
+
+  public toggle(): void {
+    if (this.stateManager.getState().isOpen) {
+      this.close();
+    } else {
+      this.open();
+    }
+  }
+
+  public select(option: ThekSelectOption<T>): void {
+    if (option.disabled) return;
+    const state = this.stateManager.getState() as ThekSelectState<T>;
+    const update = applySelection(this.config, state, option);
+    if (!this.config.multiple) this.close();
+    this.stateManager.setState({
+      selectedValues: update.selectedValues,
+      selectedOptionsByValue: update.selectedOptionsByValue,
+      inputValue: ''
+    });
+    if (update.tagEvent && update.tagOption) {
+      this.emit(update.tagEvent, update.tagOption);
+    }
+    this.emit('change', this.getValue());
+  }
+
+  public create(label: string): void {
+    const newOption = createOptionFromLabel(this.config, label);
+    const state = this.stateManager.getState();
+    this.stateManager.setState({ options: [...state.options, newOption] });
+    this.select(newOption);
+  }
+
+  /**
+   * Sets the search query in state and triggers the debounced loadOptions call.
+   */
+  public search(query: string): void {
+    this.stateManager.setState({ inputValue: query });
+    this.debouncedSearch(query);
+  }
+
+  public reorder(from: number, to: number): void {
+    const state = this.stateManager.getState() as ThekSelectState<T>;
+    const selectedValues = reorderSelectedValues(state, from, to);
+    this.stateManager.setState({ selectedValues });
+    this.emit('reordered', selectedValues);
+    this.emit('change', this.getValue());
+  }
+
+  public removeLastSelection(): void {
+    const state = this.stateManager.getState() as ThekSelectState<T>;
+    const update = removeLastSelection(this.config, state);
+    this.stateManager.setState({
+      selectedValues: update.selectedValues,
+      selectedOptionsByValue: update.selectedOptionsByValue
+    });
+    if (update.removedOption) this.emit('tagRemoved', update.removedOption);
+    this.emit('change', this.getValue());
+  }
+
+  /** Move keyboard focus to the next option in the dropdown. */
+  public focusNext(): void {
+    const state = this.stateManager.getState();
+    const filteredOptions = this.getFilteredOptions();
+    const displayField = this.config.displayField;
+    const hasCreateSlot =
+      this.config.canCreate &&
+      state.inputValue &&
+      !filteredOptions.some(
+        (o) => (o[displayField] as string)?.toLowerCase() === state.inputValue.toLowerCase()
+      );
+    const maxIndex = hasCreateSlot ? filteredOptions.length : filteredOptions.length - 1;
+    this.stateManager.setState({ focusedIndex: Math.min(state.focusedIndex + 1, maxIndex) });
+  }
+
+  /** Move keyboard focus to the previous option in the dropdown. */
+  public focusPrev(): void {
+    const state = this.stateManager.getState();
+    this.stateManager.setState({ focusedIndex: Math.max(state.focusedIndex - 1, 0) });
+  }
+
+  /** Select the currently focused option, or create if focused on the create slot. */
+  public selectFocused(): void {
+    const state = this.stateManager.getState();
+    const filteredOptions = this.getFilteredOptions();
+    if (state.focusedIndex >= 0 && state.focusedIndex < filteredOptions.length) {
+      this.select(filteredOptions[state.focusedIndex]);
+    } else if (
+      this.config.canCreate &&
+      state.inputValue &&
+      state.focusedIndex === filteredOptions.length
+    ) {
+      this.create(state.inputValue);
+    }
+  }
+
+  public setValue(value: string | string[], silent: boolean = false): void {
+    const state = this.stateManager.getState() as ThekSelectState<T>;
+    const incomingValues = Array.isArray(value) ? value : [value];
+    const stringValues = incomingValues.filter((e): e is string => typeof e === 'string');
+    const values = this.config.multiple
+      ? Array.from(new Set(stringValues))
+      : stringValues.slice(0, 1);
+    const selectedOptionsByValue = buildSelectedOptionsMapFromValues(this.config, state, values);
+    this.stateManager.setState({ selectedValues: values, selectedOptionsByValue });
+    if (!silent) this.emit('change', this.getValue());
+  }
+
+  public setMaxOptions(max: number | null): void {
+    this.config.maxOptions = max;
+    this.stateManager.forceNotify();
+  }
+
+  public getValue(): string | string[] | undefined {
+    const state = this.stateManager.getState();
+    return this.config.multiple ? state.selectedValues : state.selectedValues[0];
+  }
+
+  public getSelectedOptions(): ThekSelectOption<T> | ThekSelectOption<T>[] | undefined {
+    const state = this.stateManager.getState() as ThekSelectState<T>;
+    const selected = resolveSelectedOptions(this.config, state);
+    return this.config.multiple ? selected : selected[0];
+  }
+
+  public on<K extends ThekSelectEvent>(
+    event: K,
+    callback: (payload: ThekSelectEventPayloadMap<T>[K]) => void
+  ): () => void {
+    return this.events.on(event, callback);
+  }
+
+  public destroy(): void {
+    this.isDestroyed = true;
+    this.remoteRequestId++;
+    this.debouncedSearch.cancel();
+  }
+
+  // ── Static API ────────────────────────────────────────────────────────────
 
   public static init<T = unknown>(
     element: string | HTMLElement,
     config: ThekSelectConfig<T> = {}
-  ): ThekSelect<T> {
-    return new ThekSelect<T>(element, config);
+  ): ThekSelectHandle<T> {
+    return new ThekSelectDom<T>(element, config) as unknown as ThekSelectHandle<T>;
   }
 
   public static setDefaults(defaults: Partial<ThekSelectConfig>): void {
-    ThekSelect.globalDefaults = {
-      ...ThekSelect.globalDefaults,
-      ...defaults
-    };
+    ThekSelect.globalDefaults = { ...ThekSelect.globalDefaults, ...defaults };
   }
 
   public static resetDefaults(): void {
     ThekSelect.globalDefaults = {};
   }
 
-  private initialize(): void {
-    this.renderer.createDom();
-    this.applyAccessibleName();
-    this.setupListeners();
-    this.unsubscribeState = this.stateManager.subscribe(() => this.render());
-    this.render();
+  // ── Internal ─────────────────────────────────────────────────────────────
 
-    if (this.originalElement.parentNode) {
-      this.originalElement.style.display = 'none';
-      this.originalElement.parentNode.insertBefore(
-        this.renderer.wrapper,
-        this.originalElement.nextSibling
-      );
-    }
-  }
-
-  private applyAccessibleName(): void {
-    const el = this.originalElement;
-    const control = this.renderer.control;
-
-    // 1. Explicit aria-labelledby on the original element takes priority
-    const existingLabelledBy = el.getAttribute('aria-labelledby');
-    if (existingLabelledBy) {
-      control.setAttribute('aria-labelledby', existingLabelledBy);
-      return;
-    }
-
-    // 2. aria-label on the original element
-    const ariaLabel = el.getAttribute('aria-label');
-    if (ariaLabel) {
-      control.setAttribute('aria-label', ariaLabel);
-      return;
-    }
-
-    // 3. <label for="id"> association
-    const id = el.id;
-    if (id) {
-      const label = document.querySelector<HTMLLabelElement>(`label[for="${id}"]`);
-      if (label) {
-        if (!label.id) {
-          label.id = `${id}-label`;
-        }
-        control.setAttribute('aria-labelledby', label.id);
-      }
-    }
-  }
-
-  private setupListeners(): void {
-    this.renderer.control.addEventListener('click', () => {
-      if (this.config.disabled) return;
-      this.toggleDropdown();
-    });
-
-    if (this.config.searchable) {
-      this.renderer.input.addEventListener('input', (e) => {
-        const value = (e.target as HTMLInputElement).value;
-        this.stateManager.setState({ inputValue: value });
-        this.handleSearch(value);
-      });
-    }
-
-    this.renderer.input.addEventListener('keydown', (e) => this.handleKeyDown(e));
-    this.renderer.control.addEventListener('keydown', (e) => this.handleKeyDown(e));
-
-    this.unsubscribeEvents.push(
-      globalEventManager.onClick((e: unknown) => {
-        const event = e as Event;
-        if (
-          !this.renderer.wrapper.contains(event.target as Node) &&
-          !this.renderer.dropdown.contains(event.target as Node)
-        ) {
-          this.closeDropdown();
-        }
-      })
-    );
-
-    this.unsubscribeEvents.push(
-      globalEventManager.onResize(() => this.renderer.positionDropdown())
-    );
-    this.unsubscribeEvents.push(
-      globalEventManager.onScroll(() => this.renderer.positionDropdown())
-    );
-  }
-
-  private handleSearch!: DebouncedFn<[query: string]>;
-
-  private setupHandleSearch(): void {
-    this.handleSearch = debounce(async (query: string) => {
+  private setupDebouncedSearch(): void {
+    this.debouncedSearch = debounce(async (query: string) => {
       this.emit('search', query);
-      if (isRemoteMode(this.config as Required<ThekSelectConfig>)) {
+      if (isRemoteMode(this.config)) {
         if (query.length > 0) {
           const requestId = ++this.remoteRequestId;
           this.stateManager.setState({ isLoading: true });
@@ -204,7 +268,7 @@ export class ThekSelect<T = unknown> {
         } else {
           this.remoteRequestId++;
           this.stateManager.setState({
-            options: this.config.options as ThekSelectOption<T>[],
+            options: this.config.options,
             focusedIndex: -1,
             isLoading: false
           });
@@ -215,31 +279,159 @@ export class ThekSelect<T = unknown> {
     }, this.config.debounce);
   }
 
+  protected emit<K extends ThekSelectEvent>(event: K, data: ThekSelectEventPayloadMap<T>[K]): void {
+    this.events.emit(event, data);
+  }
+}
+
+// ── ThekSelectDom — wires ThekSelect core + DomRenderer ──────────────────────
+// Not exported: consumers use ThekSelect.init() which returns ThekSelectHandle<T>.
+
+class ThekSelectDom<T = unknown> extends ThekSelect<T> {
+  /** @internal accessible via cast in tests */
+  private renderer: DomRenderer;
+  private readonly originalElement: HTMLElement;
+  private readonly id: string;
+  private unsubscribeState?: () => void;
+  private unsubscribeEvents: (() => void)[] = [];
+  private focusTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private injectedOptionValues: Set<string> = new Set();
+
+  constructor(element: string | HTMLElement, config: ThekSelectConfig<T> = {}) {
+    const el =
+      typeof element === 'string'
+        ? (document.querySelector(element) as HTMLElement | null)
+        : element;
+    if (!el) throw new Error(`ThekSelect: element not found`);
+
+    super(config, el);
+
+    this.originalElement = el;
+    this.id = generateId();
+    injectStyles();
+
+    const callbacks: RendererCallbacks = {
+      onSelect: (option) => this.select(option as unknown as ThekSelectOption<T>),
+      onCreate: (label) => this.create(label),
+      onRemove: (option) => this.select(option as unknown as ThekSelectOption<T>),
+      onReorder: (from, to) => this.reorder(from, to)
+    };
+
+    this.renderer = new DomRenderer(
+      this.config as unknown as Required<ThekSelectConfig>,
+      this.id,
+      callbacks
+    );
+
+    this.initialize();
+  }
+
+  private initialize(): void {
+    this.renderer.createDom();
+    this.applyAccessibleName();
+    this.setupListeners();
+    this.unsubscribeState = this.stateManager.subscribe(() => this.render());
+    this.render();
+
+    this.originalElement.style.display = 'none';
+    if (this.originalElement.parentNode) {
+      this.originalElement.parentNode.insertBefore(
+        this.renderer.wrapper,
+        this.originalElement.nextSibling
+      );
+    }
+  }
+
+  private applyAccessibleName(): void {
+    const el = this.originalElement;
+    const control = this.renderer.control;
+
+    const existingLabelledBy = el.getAttribute('aria-labelledby');
+    if (existingLabelledBy) {
+      control.setAttribute('aria-labelledby', existingLabelledBy);
+      return;
+    }
+
+    const ariaLabel = el.getAttribute('aria-label');
+    if (ariaLabel) {
+      control.setAttribute('aria-label', ariaLabel);
+      return;
+    }
+
+    const id = el.id;
+    if (id) {
+      const label = document.querySelector<HTMLLabelElement>(`label[for="${id}"]`);
+      if (label) {
+        if (!label.id) {
+          label.id = `${id}-label`;
+        }
+        control.setAttribute('aria-labelledby', label.id);
+      }
+    }
+  }
+
+  private setupListeners(): void {
+    this.renderer.control.addEventListener('click', () => {
+      if (this.config.disabled) return;
+      this.toggle();
+    });
+
+    if (this.config.searchable) {
+      this.renderer.input.addEventListener('input', (e) => {
+        const value = (e.target as HTMLInputElement).value;
+        this.stateManager.setState({ inputValue: value });
+        // Trigger the debounced search directly via the inherited search logic
+        this.search(value);
+      });
+    }
+
+    this.renderer.input.addEventListener('keydown', (e) => this.handleKeyDown(e));
+    this.renderer.control.addEventListener('keydown', (e) => this.handleKeyDown(e));
+
+    this.unsubscribeEvents.push(
+      globalEventManager.onClick((e: unknown) => {
+        const event = e as Event;
+        if (
+          !this.renderer.wrapper.contains(event.target as Node) &&
+          !this.renderer.dropdown.contains(event.target as Node)
+        ) {
+          this.close();
+        }
+      })
+    );
+
+    this.unsubscribeEvents.push(
+      globalEventManager.onResize(() => this.renderer.positionDropdown())
+    );
+    this.unsubscribeEvents.push(
+      globalEventManager.onScroll(() => this.renderer.positionDropdown())
+    );
+  }
+
   private handleKeyDown(e: KeyboardEvent): void {
     const state = this.stateManager.getState();
-    const filteredOptions = getFilteredOptions(
-      this.config as Required<ThekSelectConfig>,
-      state as ThekSelectState
-    );
+    const filteredOptions = this.getFilteredOptions();
     const displayField = this.config.displayField as keyof ThekSelectOption<T>;
 
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
         this.openDropdown();
-        const maxIndex =
-          this.config.canCreate &&
-          state.inputValue &&
-          !filteredOptions.some(
-            (o) =>
-              (o[displayField] as unknown as string).toLowerCase() ===
-              state.inputValue.toLowerCase()
-          )
-            ? filteredOptions.length
-            : filteredOptions.length - 1;
-        this.stateManager.setState({
-          focusedIndex: Math.min(state.focusedIndex + 1, maxIndex)
-        });
+        {
+          const maxIndex =
+            this.config.canCreate &&
+            state.inputValue &&
+            !filteredOptions.some(
+              (o) =>
+                (o[displayField] as unknown as string).toLowerCase() ===
+                state.inputValue.toLowerCase()
+            )
+              ? filteredOptions.length
+              : filteredOptions.length - 1;
+          this.stateManager.setState({
+            focusedIndex: Math.min(state.focusedIndex + 1, maxIndex)
+          });
+        }
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -251,14 +443,8 @@ export class ThekSelect<T = unknown> {
         e.preventDefault();
         if (!state.isOpen) {
           this.openDropdown();
-        } else if (state.focusedIndex >= 0 && state.focusedIndex < filteredOptions.length) {
-          this.handleSelect(filteredOptions[state.focusedIndex] as unknown as ThekSelectOption<T>);
-        } else if (
-          this.config.canCreate &&
-          state.inputValue &&
-          state.focusedIndex === filteredOptions.length
-        ) {
-          this.handleCreate(state.inputValue);
+        } else {
+          this.selectFocused();
         }
         break;
       case ' ':
@@ -270,22 +456,13 @@ export class ThekSelect<T = unknown> {
         }
         break;
       case 'Escape':
-        this.closeDropdown();
+        this.close();
         break;
       case 'Backspace':
         if (state.inputValue === '' && this.config.multiple && state.selectedValues.length > 0) {
-          this.handleRemoveLastSelection();
+          this.removeLastSelection();
         }
         break;
-    }
-  }
-
-  private toggleDropdown(): void {
-    const state = this.stateManager.getState();
-    if (state.isOpen) {
-      this.closeDropdown();
-    } else {
-      this.openDropdown();
     }
   }
 
@@ -303,78 +480,11 @@ export class ThekSelect<T = unknown> {
     this.emit('open', null);
   }
 
-  private closeDropdown(): void {
-    if (!this.stateManager.getState().isOpen) return;
-    this.stateManager.setState({ isOpen: false, focusedIndex: -1, inputValue: '' });
-    this.renderer.input.value = '';
-    this.emit('close', null);
-  }
-
-  private handleSelect(option: ThekSelectOption<T>): void {
-    if (option.disabled) return;
-
-    const state = this.stateManager.getState();
-    const update = applySelection(
-      this.config as Required<ThekSelectConfig>,
-      state as ThekSelectState,
-      option as ThekSelectOption
+  private render(): void {
+    this.renderer.render(
+      this.stateManager.getState() as ThekSelectState,
+      this.getFilteredOptions() as ThekSelectOption[]
     );
-
-    if (!this.config.multiple) {
-      this.closeDropdown();
-    }
-
-    this.stateManager.setState({
-      selectedValues: update.selectedValues,
-      selectedOptionsByValue: update.selectedOptionsByValue as Record<string, ThekSelectOption<T>>,
-      inputValue: ''
-    });
-
-    this.renderer.input.value = '';
-    this.syncOriginalElement(update.selectedValues);
-
-    if (update.tagEvent && update.tagOption) {
-      this.emit(update.tagEvent, update.tagOption as ThekSelectOption<T>);
-    }
-    this.emit('change', this.getValue());
-  }
-
-  private handleCreate(label: string): void {
-    const newOption = createOptionFromLabel(
-      this.config as Required<ThekSelectConfig>,
-      label
-    ) as ThekSelectOption<T>;
-    const state = this.stateManager.getState();
-    this.stateManager.setState({ options: [...state.options, newOption] });
-    this.handleSelect(newOption);
-  }
-
-  private handleRemoveLastSelection(): void {
-    const state = this.stateManager.getState();
-    const update = removeLastSelection(
-      this.config as Required<ThekSelectConfig>,
-      state as ThekSelectState
-    );
-
-    this.stateManager.setState({
-      selectedValues: update.selectedValues,
-      selectedOptionsByValue: update.selectedOptionsByValue as Record<string, ThekSelectOption<T>>
-    });
-    this.syncOriginalElement(update.selectedValues);
-
-    if (update.removedOption) {
-      this.emit('tagRemoved', update.removedOption as ThekSelectOption<T>);
-    }
-    this.emit('change', this.getValue());
-  }
-
-  private handleReorder(from: number, to: number): void {
-    const state = this.stateManager.getState();
-    const selectedValues = reorderSelectedValues(state as ThekSelectState, from, to);
-    this.stateManager.setState({ selectedValues });
-    this.syncOriginalElement(selectedValues);
-    this.emit('reordered', selectedValues);
-    this.emit('change', this.getValue());
   }
 
   private syncOriginalElement(values: string[]): void {
@@ -394,63 +504,36 @@ export class ThekSelect<T = unknown> {
     }
   }
 
-  private render(): void {
-    this.renderer.render(
-      this.stateManager.getState() as ThekSelectState,
-      getFilteredOptions(
-        this.config as Required<ThekSelectConfig>,
-        this.stateManager.getState() as ThekSelectState
-      )
-    );
+  // Override select to also sync the native element
+  public override select(option: ThekSelectOption<T>): void {
+    super.select(option);
+    this.syncOriginalElement(this.stateManager.getState().selectedValues);
+    // Clear the renderer input field
+    this.renderer.input.value = '';
   }
 
-  public on<K extends ThekSelectEvent>(
-    event: K,
-    callback: (payload: ThekSelectEventPayloadMap<T>[K]) => void
-  ): () => void {
-    return this.events.on(event, callback);
+  // Override close to also clear renderer input
+  public override close(): void {
+    super.close();
+    this.renderer.input.value = '';
   }
 
-  private emit<K extends ThekSelectEvent>(event: K, data: ThekSelectEventPayloadMap<T>[K]): void {
-    this.events.emit(event, data);
+  // Override setValue to also sync the native element
+  public override setValue(value: string | string[], silent: boolean = false): void {
+    super.setValue(value, silent);
+    this.syncOriginalElement(this.stateManager.getState().selectedValues);
   }
 
-  public getValue(): string | string[] | undefined {
-    const state = this.stateManager.getState();
-    return this.config.multiple ? state.selectedValues : state.selectedValues[0];
+  // Override removeLastSelection to also sync the native element
+  public override removeLastSelection(): void {
+    super.removeLastSelection();
+    this.syncOriginalElement(this.stateManager.getState().selectedValues);
   }
 
-  public getSelectedOptions(): ThekSelectOption<T> | ThekSelectOption<T>[] | undefined {
-    const selected = resolveSelectedOptions(
-      this.config as Required<ThekSelectConfig>,
-      this.stateManager.getState() as ThekSelectState
-    ) as ThekSelectOption<T>[];
-    return this.config.multiple ? selected : selected[0];
-  }
-
-  public setValue(value: string | string[], silent: boolean = false): void {
-    const state = this.stateManager.getState();
-    const incomingValues = Array.isArray(value) ? value : [value];
-    const stringValues = incomingValues.filter(
-      (entry): entry is string => typeof entry === 'string'
-    );
-    const values = this.config.multiple
-      ? Array.from(new Set(stringValues))
-      : stringValues.slice(0, 1);
-    const selectedOptionsByValue = buildSelectedOptionsMapFromValues(
-      this.config as Required<ThekSelectConfig>,
-      state as ThekSelectState,
-      values
-    );
-
-    this.stateManager.setState({
-      selectedValues: values,
-      selectedOptionsByValue: selectedOptionsByValue as Record<string, ThekSelectOption<T>>
-    });
-    this.syncOriginalElement(values);
-    if (!silent) {
-      this.emit('change', this.getValue());
-    }
+  // Override reorder to also sync the native element
+  public override reorder(from: number, to: number): void {
+    super.reorder(from, to);
+    this.syncOriginalElement(this.stateManager.getState().selectedValues);
   }
 
   public setHeight(height: number | string): void {
@@ -459,23 +542,16 @@ export class ThekSelect<T = unknown> {
     this.renderer.positionDropdown();
   }
 
-  public setRenderOption(callback: (option: ThekSelectOption<T>) => string | HTMLElement): void {
-    this.config.renderOption = callback;
+  public setRenderOption(fn: (option: ThekSelectOption<T>) => string | HTMLElement): void {
+    this.config.renderOption = fn;
     this.renderer.updateConfig({
-      renderOption: callback as (option: ThekSelectOption) => string | HTMLElement
+      renderOption: fn as (option: ThekSelectOption) => string | HTMLElement
     });
     this.render();
   }
 
-  public setMaxOptions(max: number | null): void {
-    this.config.maxOptions = max;
-    this.render();
-  }
-
-  public destroy(): void {
+  public override destroy(): void {
     this.isDestroyed = true;
-    this.remoteRequestId++;
-    this.handleSearch.cancel();
     if (this.focusTimeoutId !== null) {
       clearTimeout(this.focusTimeoutId);
       this.focusTimeoutId = null;
@@ -495,5 +571,6 @@ export class ThekSelect<T = unknown> {
       this.injectedOptionValues.clear();
     }
     this.originalElement.style.display = '';
+    super.destroy();
   }
 }
