@@ -12,7 +12,7 @@ export function parseSelectOptions(select: HTMLSelectElement): ThekSelectOption[
 }
 
 export function buildConfig<T = unknown>(
-  element: HTMLElement,
+  element: HTMLElement | null,
   config: ThekSelectConfig<T>,
   globalDefaults: Partial<ThekSelectConfig<T>> = {}
 ): Required<ThekSelectConfig<T>> {
