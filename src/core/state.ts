@@ -8,23 +8,20 @@ export class StateManager<T extends object> {
     this.state = { ...initialState };
   }
 
-  getState(): T {
-    return { ...this.state };
+  getState(): Readonly<T> {
+    return Object.freeze({ ...this.state });
   }
 
   setState(newState: Partial<T>): void {
     const oldState = this.state;
     this.state = { ...this.state, ...newState };
 
-    // Simple check if state changed (shallow)
     const hasChanged = Object.keys(newState).some((key) => {
       const val = (newState as Record<string, unknown>)[key];
       const oldVal = (oldState as Record<string, unknown>)[key];
-
       if (Array.isArray(val) && Array.isArray(oldVal)) {
         return val.length !== oldVal.length || val.some((item, index) => item !== oldVal[index]);
       }
-
       return val !== oldVal;
     });
 
@@ -36,6 +33,11 @@ export class StateManager<T extends object> {
   subscribe(listener: StateListener<T>): () => void {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
+  }
+
+  /** Force all subscribers to re-run regardless of state changes. Used when config mutates. */
+  forceNotify(): void {
+    this.notify();
   }
 
   private notify(): void {

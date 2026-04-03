@@ -26,4 +26,18 @@ describe('StateManager', () => {
     sm.setState({ count: 0 });
     expect(listener).not.toHaveBeenCalled();
   });
+
+  it('getState() returns a frozen object', () => {
+    const sm = new StateManager({ count: 0 });
+    const state = sm.getState();
+    expect(Object.isFrozen(state)).toBe(true);
+  });
+
+  it('forceNotify() calls listeners even when state is unchanged', () => {
+    const sm = new StateManager({ count: 0 });
+    const listener = vi.fn();
+    sm.subscribe(listener);
+    sm.forceNotify();
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
 });
