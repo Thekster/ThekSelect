@@ -9,6 +9,9 @@ const SVG_SEARCH =
 const SVG_SPINNER =
   '<svg class="thek-spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" stroke-dasharray="52" stroke-dashoffset="20" stroke-linecap="round"/></svg>';
 
+const SVG_CHECK =
+  '<svg class="thek-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg>';
+
 export interface RendererCallbacks {
   onSelect: (option: ThekSelectOption) => void;
   onCreate: (label: string) => void;
@@ -349,7 +352,7 @@ export class DomRenderer {
       const checkbox = document.createElement('div');
       checkbox.className = 'thek-checkbox';
       if (isSelected) {
-        checkbox.innerHTML = '<i class="fa-solid fa-check"></i>';
+        checkbox.innerHTML = SVG_CHECK;
       }
       li.appendChild(checkbox);
     }

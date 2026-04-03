@@ -59,4 +59,25 @@ describe('No external icon dependency', () => {
 
     resolve([]);
   });
+
+  it('multi-select checkboxes use inline SVG, not FontAwesome', () => {
+    ThekSelect.init(container, {
+      multiple: true,
+      options: [
+        { value: '1', label: 'One', selected: true },
+        { value: '2', label: 'Two' }
+      ]
+    });
+
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    control.click();
+
+    const selectedCheckbox = document.querySelector(
+      '.thek-option.thek-selected .thek-checkbox'
+    ) as HTMLElement;
+    expect(selectedCheckbox).not.toBeNull();
+    expect(selectedCheckbox.querySelector('.fa-solid')).toBeNull();
+    expect(selectedCheckbox.querySelector('.fa-check')).toBeNull();
+    expect(selectedCheckbox.querySelector('svg')).not.toBeNull();
+  });
 });

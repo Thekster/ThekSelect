@@ -127,6 +127,11 @@ export const BASE_STYLES = `:root {
     flex-shrink: 0;
 }
 
+.thek-check {
+    width: 0.75em;
+    height: 0.75em;
+}
+
 .thek-selection {
     display: flex;
     flex-wrap: nowrap;
