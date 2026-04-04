@@ -14,11 +14,12 @@ describe('Accessible name / label association', () => {
       </select>
     `;
     const select = document.getElementById('fruit-select') as HTMLSelectElement;
+    // Default config has searchable: true, so role="combobox" lives on the input
     ThekSelect.init(select);
 
-    const control = document.querySelector('.thek-control') as HTMLElement;
-    // The control must reference the label so screen readers announce "Favourite fruit"
-    expect(control.getAttribute('aria-labelledby')).toBe('fruit-select-label');
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    // The input (combobox element) must reference the label so screen readers announce "Favourite fruit"
+    expect(input.getAttribute('aria-labelledby')).toBe('fruit-select-label');
 
     const label = document.querySelector('label') as HTMLLabelElement;
     expect(label.id).toBe('fruit-select-label');
@@ -31,10 +32,11 @@ describe('Accessible name / label association', () => {
       </select>
     `;
     const select = document.getElementById('country') as HTMLSelectElement;
+    // Default config has searchable: true, so role="combobox" lives on the input
     ThekSelect.init(select);
 
-    const control = document.querySelector('.thek-control') as HTMLElement;
-    expect(control.getAttribute('aria-label')).toBe('Country selector');
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    expect(input.getAttribute('aria-label')).toBe('Country selector');
   });
 
   it('does not set aria-labelledby when no label or aria-label is present', () => {
@@ -55,9 +57,10 @@ describe('Accessible name / label association', () => {
       </select>
     `;
     const select = document.getElementById('sel') as HTMLSelectElement;
+    // Default config has searchable: true, so role="combobox" lives on the input
     ThekSelect.init(select);
 
-    const control = document.querySelector('.thek-control') as HTMLElement;
-    expect(control.getAttribute('aria-labelledby')).toBe('my-label');
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    expect(input.getAttribute('aria-labelledby')).toBe('my-label');
   });
 });

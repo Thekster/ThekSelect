@@ -351,17 +351,19 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
 
   private applyAccessibleName(): void {
     const el = this.originalElement;
-    const control = this.renderer.control;
+    // In searchable mode role="combobox" lives on the input; apply the label there.
+    // In non-searchable mode it lives on the control div.
+    const labelTarget = this.config.searchable ? this.renderer.input : this.renderer.control;
 
     const existingLabelledBy = el.getAttribute('aria-labelledby');
     if (existingLabelledBy) {
-      control.setAttribute('aria-labelledby', existingLabelledBy);
+      labelTarget.setAttribute('aria-labelledby', existingLabelledBy);
       return;
     }
 
     const ariaLabel = el.getAttribute('aria-label');
     if (ariaLabel) {
-      control.setAttribute('aria-label', ariaLabel);
+      labelTarget.setAttribute('aria-label', ariaLabel);
       return;
     }
 
@@ -372,7 +374,7 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
         if (!label.id) {
           label.id = `${id}-label`;
         }
-        control.setAttribute('aria-labelledby', label.id);
+        labelTarget.setAttribute('aria-labelledby', label.id);
       }
     }
   }

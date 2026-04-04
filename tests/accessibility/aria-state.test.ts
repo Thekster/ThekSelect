@@ -220,4 +220,36 @@ describe('ARIA state correctness', () => {
     expect(document.querySelector('.thek-loading')?.textContent).toBe('Wird geladen...');
     resolve([]);
   });
+
+  // ── combobox role placement ───────────────────────────────────────────────
+
+  it('places role="combobox" on the input element in searchable mode', () => {
+    ThekSelect.init(container, { searchable: true, options: [] });
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    expect(input.getAttribute('role')).toBe('combobox');
+    expect(control.getAttribute('role')).toBeNull();
+  });
+
+  it('places aria-expanded on the input in searchable mode', () => {
+    ThekSelect.init(container, { searchable: true, options: [] });
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    expect(input.getAttribute('aria-expanded')).toBe('false');
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    expect(control.getAttribute('aria-expanded')).toBeNull();
+  });
+
+  it('updates aria-expanded on the input when dropdown opens in searchable mode', () => {
+    ThekSelect.init(container, { searchable: true, options: [{ value: '1', label: 'One' }] });
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    control.click();
+    expect(input.getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('places role="combobox" on the control div in non-searchable mode', () => {
+    ThekSelect.init(container, { searchable: false, options: [] });
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    expect(control.getAttribute('role')).toBe('combobox');
+  });
 });

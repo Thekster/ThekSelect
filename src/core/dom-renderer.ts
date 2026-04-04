@@ -64,10 +64,12 @@ export class DomRenderer<T = unknown> {
 
     this.control = document.createElement('div');
     this.control.className = 'thek-control';
-    this.control.setAttribute('role', 'combobox');
-    this.control.setAttribute('aria-expanded', 'false');
-    this.control.setAttribute('aria-haspopup', 'listbox');
-    this.control.setAttribute('aria-controls', `${this.id}-list`);
+    if (!this.config.searchable) {
+      this.control.setAttribute('role', 'combobox');
+      this.control.setAttribute('aria-expanded', 'false');
+      this.control.setAttribute('aria-haspopup', 'listbox');
+      this.control.setAttribute('aria-controls', `${this.id}-list`);
+    }
     this.control.setAttribute('tabindex', '0');
 
     this.selectionContainer = document.createElement('div');
@@ -99,6 +101,10 @@ export class DomRenderer<T = unknown> {
       this.input.type = 'text';
       this.input.autocomplete = 'off';
       this.input.placeholder = this.config.searchPlaceholder;
+      this.input.setAttribute('role', 'combobox');
+      this.input.setAttribute('aria-expanded', 'false');
+      this.input.setAttribute('aria-haspopup', 'listbox');
+      this.input.setAttribute('aria-controls', `${this.id}-list`);
       this.input.setAttribute('aria-autocomplete', 'list');
 
       searchWrapper.appendChild(this.input);
@@ -127,7 +133,8 @@ export class DomRenderer<T = unknown> {
   public render(state: ThekSelectState<T>, filteredOptions: ThekSelectOption<T>[]): void {
     this.lastState = state;
     this.lastFilteredOptions = filteredOptions;
-    this.control.setAttribute('aria-expanded', state.isOpen.toString());
+    const ariaTarget = this.config.searchable ? this.input : this.control;
+    ariaTarget.setAttribute('aria-expanded', state.isOpen.toString());
     this.dropdown.hidden = !state.isOpen;
     this.wrapper.classList.toggle('thek-open', state.isOpen);
 
