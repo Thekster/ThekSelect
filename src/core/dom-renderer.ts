@@ -232,6 +232,13 @@ export class DomRenderer<T = unknown> {
     li.classList.toggle('thek-selected', isSelected);
     li.classList.toggle('thek-focused', state.focusedIndex === index);
     li.setAttribute('aria-selected', isSelected.toString());
+    const isDisabled = !!(option as Record<string, unknown>)['disabled'];
+    li.classList.toggle('thek-disabled', isDisabled);
+    if (isDisabled) {
+      li.setAttribute('aria-disabled', 'true');
+    } else {
+      li.removeAttribute('aria-disabled');
+    }
     if (this.config.multiple) {
       const checkbox = li.querySelector<HTMLElement>('.thek-checkbox');
       if (checkbox) {
@@ -265,12 +272,10 @@ export class DomRenderer<T = unknown> {
       return;
     }
 
-    const canCreate =
-      this.config.canCreate &&
-      state.inputValue &&
-      !filteredOptions.some(
-        (o) => o[dField] && o[dField].toString().toLowerCase() === state.inputValue.toLowerCase()
-      );
+    const exactMatch = filteredOptions.some(
+      (o) => o[dField] && o[dField].toString().toLowerCase() === state.inputValue.toLowerCase()
+    );
+    const canCreate = this.config.canCreate && !!state.inputValue && !exactMatch;
     const shouldVirtualize =
       this.config.virtualize &&
       filteredOptions.length >= this.config.virtualThreshold &&
@@ -328,7 +333,7 @@ export class DomRenderer<T = unknown> {
       }
 
       filteredOptions.forEach((option, index) => {
-        const key = String(option[vField] ?? index);
+        const key = option[vField] != null ? `v:${String(option[vField])}` : `i:${index}`;
         let li = existing.get(key);
         if (li) {
           existing.delete(key);
@@ -340,11 +345,8 @@ export class DomRenderer<T = unknown> {
         this.optionsList.appendChild(li);
       });
 
-      // Reconcile sentinel: "create" option
-      const exactMatch = filteredOptions.some(
-        (o) => o[dField] && o[dField].toString().toLowerCase() === state.inputValue.toLowerCase()
-      );
-      if (this.config.canCreate && state.inputValue && !exactMatch) {
+      // Reconcile sentinel: "create" option  (exactMatch/canCreate hoisted above)
+      if (canCreate) {
         const createKey = '__create__';
         let createLi = existing.get(createKey) as HTMLLIElement | undefined;
         existing.delete(createKey);

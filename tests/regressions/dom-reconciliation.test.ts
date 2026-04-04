@@ -70,6 +70,35 @@ describe('DOM reconciliation — options list', () => {
     expect(updatedOptions[0].classList.contains('thek-selected')).toBe(true);
   });
 
+  it('reuses the __create__ sentinel node across renders', () => {
+    ThekSelect.init(container, {
+      searchable: true,
+      canCreate: true,
+      options: [{ value: '1', label: 'Apple' }],
+      debounce: 0
+    });
+
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    control.click();
+
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    input.value = 'New';
+    input.dispatchEvent(new Event('input'));
+
+    const createNode = document.querySelector('.thek-create') as HTMLElement;
+    expect(createNode).not.toBeNull();
+
+    // Simulate a second render with different input (still no exact match)
+    input.value = 'Newer';
+    input.dispatchEvent(new Event('input'));
+
+    const createNodeAfter = document.querySelector('.thek-create') as HTMLElement;
+    expect(createNodeAfter).not.toBeNull();
+    // Should be the SAME node (reused)
+    expect(createNodeAfter).toBe(createNode);
+    expect(createNodeAfter.textContent).toContain('Newer');
+  });
+
   it('removes orphan nodes when an option disappears from the filtered list', () => {
     ThekSelect.init(container, {
       searchable: true,
