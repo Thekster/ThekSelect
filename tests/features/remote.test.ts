@@ -103,4 +103,30 @@ describe('ThekSelect Remote loading', () => {
 
     expect(abortedSignals.length).toBe(1);
   });
+
+  it('aborts in-flight request when query is cleared', async () => {
+    let aborted = false;
+    const loadOptions = vi.fn((_query: string, signal: AbortSignal) => {
+      return new Promise<{ value: string; label: string }[]>((resolve, reject) => {
+        signal.addEventListener('abort', () => {
+          aborted = true;
+          reject(new DOMException('Aborted', 'AbortError'));
+        });
+      });
+    });
+
+    ThekSelect.init(container, { loadOptions, debounce: 0 });
+
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    input.value = 'hello';
+    input.dispatchEvent(new Event('input'));
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    // Clear the query — should abort the in-flight request
+    input.value = '';
+    input.dispatchEvent(new Event('input'));
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(aborted).toBe(true);
+  });
 });

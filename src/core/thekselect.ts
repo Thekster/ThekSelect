@@ -268,10 +268,14 @@ export class ThekSelect<T = unknown> {
               )
             });
           } catch {
+            // Guard covers: component destroyed, superseded by newer search, or explicit abort.
+            // Note: abort increments remoteRequestId before this catch fires, so the guard is valid.
             if (this.isDestroyed || requestId !== this.remoteRequestId) return;
             this.stateManager.setState({ isLoading: false });
           }
         } else {
+          this.currentSearchAbortController?.abort();
+          this.currentSearchAbortController = null;
           this.remoteRequestId++;
           this.stateManager.setState({
             options: this.config.options,
