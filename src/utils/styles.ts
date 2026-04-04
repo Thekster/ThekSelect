@@ -39,7 +39,8 @@ export const BASE_STYLES = `.thek-select,
     }
 }
 
-[data-theme='dark'] {
+[data-theme='dark'] .thek-select,
+[data-theme='dark'] .thek-dropdown {
     --thek-primary: #38bdf8;
     --thek-primary-light: rgba(56, 189, 248, 0.15);
     --thek-bg-surface: #0f172a;
