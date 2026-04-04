@@ -27,7 +27,7 @@ describe('ThekSelect Remote loading', () => {
     // Wait for debounce and promise
     await new Promise((resolve) => setTimeout(resolve, 10));
 
-    expect(loadOptions).toHaveBeenCalledWith('rem');
+    expect(loadOptions).toHaveBeenCalledWith('rem', expect.any(Object));
 
     const options = document.querySelectorAll('.thek-option');
     expect(options.length).toBe(2);
@@ -61,5 +61,46 @@ describe('ThekSelect Remote loading', () => {
 
     expect(document.querySelector('.thek-loading')).toBeNull();
     expect(document.querySelector('.thek-option')?.textContent).toBe('One');
+  });
+
+  it('passes an AbortSignal as second argument to loadOptions', async () => {
+    const loadOptions = vi.fn().mockResolvedValue([]);
+
+    ThekSelect.init(container, { loadOptions, debounce: 0 });
+
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    input.value = 'test';
+    input.dispatchEvent(new Event('input'));
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(loadOptions).toHaveBeenCalledWith('test', expect.any(Object));
+    const signal = loadOptions.mock.calls[0][1];
+    expect(signal).toBeInstanceOf(AbortSignal);
+  });
+
+  it('aborts the previous request when a new search fires', async () => {
+    const abortedSignals: boolean[] = [];
+    const loadOptions = vi.fn((query: string, signal: AbortSignal) => {
+      return new Promise<{ value: string; label: string }[]>((resolve, reject) => {
+        signal.addEventListener('abort', () => {
+          abortedSignals.push(true);
+          reject(new DOMException('Aborted', 'AbortError'));
+        });
+        // never resolves naturally so we can observe the abort
+      });
+    });
+
+    ThekSelect.init(container, { loadOptions, debounce: 0 });
+
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    input.value = 'a';
+    input.dispatchEvent(new Event('input'));
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    input.value = 'ab';
+    input.dispatchEvent(new Event('input'));
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(abortedSignals.length).toBe(1);
   });
 });

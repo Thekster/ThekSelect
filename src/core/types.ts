@@ -25,7 +25,7 @@ export interface ThekSelectConfig<T = unknown> {
   virtualItemHeight?: number;
   virtualOverscan?: number;
   virtualThreshold?: number;
-  loadOptions?: (query: string) => Promise<ThekSelectOption<T>[]>;
+  loadOptions?: (query: string, signal: AbortSignal) => Promise<ThekSelectOption<T>[]>;
   renderOption?: (option: ThekSelectOption<T>) => string | HTMLElement;
   renderSelection?: (option: ThekSelectOption<T>) => string | HTMLElement;
   searchPlaceholder?: string;

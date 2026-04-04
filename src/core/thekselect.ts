@@ -40,6 +40,7 @@ export class ThekSelect<T = unknown> {
   /** @internal */
   protected isDestroyed = false;
   private remoteRequestId = 0;
+  private currentSearchAbortController: AbortController | null = null;
   private debouncedSearch!: DebouncedFn<[query: string]>;
 
   /**
@@ -217,6 +218,8 @@ export class ThekSelect<T = unknown> {
   public destroy(): void {
     this.isDestroyed = true;
     this.remoteRequestId++;
+    this.currentSearchAbortController?.abort();
+    this.currentSearchAbortController = null;
     this.debouncedSearch.cancel();
   }
 
@@ -244,10 +247,13 @@ export class ThekSelect<T = unknown> {
       this.emit('search', query);
       if (isRemoteMode(this.config)) {
         if (query.length > 0) {
+          this.currentSearchAbortController?.abort();
+          this.currentSearchAbortController = new AbortController();
+          const { signal } = this.currentSearchAbortController;
           const requestId = ++this.remoteRequestId;
           this.stateManager.setState({ isLoading: true });
           try {
-            const options = await this.config.loadOptions!(query);
+            const options = await this.config.loadOptions!(query, signal);
             if (this.isDestroyed || requestId !== this.remoteRequestId) return;
             const state = this.stateManager.getState();
             this.stateManager.setState({
