@@ -163,7 +163,7 @@ export class DomRenderer<T = unknown> {
             const option =
               state.options.find((o) => o[vField] === val) ||
               state.selectedOptionsByValue[val] ||
-              ({ [vField]: val, [dField]: val } as unknown as ThekSelectOption);
+              ({ [vField]: val, [dField]: val } as unknown as ThekSelectOption<T>);
             const tag = document.createElement('span');
             tag.className = 'thek-tag';
             tag.draggable = true;
