@@ -173,6 +173,13 @@ export const BASE_STYLES = `:root {
     color: var(--thek-text-muted);
     font-size: 1.1em;
     line-height: 1;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
 }
 
 .thek-tag-remove:hover {
@@ -302,14 +309,12 @@ export const BASE_STYLES = `:root {
 }
 `;
 
-let injected = false;
-
 export function injectStyles() {
-  if (injected || typeof document === 'undefined') return;
+  if (typeof document === 'undefined') return;
+  if (document.getElementById('thekselect-base-styles')) return;
 
   const style = document.createElement('style');
   style.id = 'thekselect-base-styles';
   style.textContent = BASE_STYLES;
   document.head.appendChild(style);
-  injected = true;
 }

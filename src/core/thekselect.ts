@@ -33,7 +33,7 @@ export class ThekSelect<T = unknown> {
   private static globalDefaults: Partial<ThekSelectConfig> = {};
 
   /** @internal Config is readable by DomRenderer. Do not reassign the reference. */
-  public readonly config: Required<ThekSelectConfig<T>>;
+  protected readonly config: Required<ThekSelectConfig<T>>;
   /** @internal accessible via cast in tests */
   protected stateManager: StateManager<ThekSelectState<T>>;
   private events = new ThekSelectEventEmitter<T>();
@@ -379,8 +379,7 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     if (this.config.searchable) {
       this.renderer.input.addEventListener('input', (e) => {
         const value = (e.target as HTMLInputElement).value;
-        this.stateManager.setState({ inputValue: value });
-        // Trigger the debounced search directly via the inherited search logic
+        // search() handles the setState({ inputValue }) call — no need to duplicate it here.
         this.search(value);
       });
     }
@@ -410,39 +409,24 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
 
   private handleKeyDown(e: KeyboardEvent): void {
     const state = this.stateManager.getState();
-    const filteredOptions = this.getFilteredOptions();
-    const displayField = this.config.displayField as keyof ThekSelectOption<T>;
 
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        this.openDropdown();
-        {
-          const maxIndex =
-            this.config.canCreate &&
-            state.inputValue &&
-            !filteredOptions.some(
-              (o) =>
-                (o[displayField] as unknown as string).toLowerCase() ===
-                state.inputValue.toLowerCase()
-            )
-              ? filteredOptions.length
-              : filteredOptions.length - 1;
-          this.stateManager.setState({
-            focusedIndex: Math.min(state.focusedIndex + 1, maxIndex)
-          });
+        if (!state.isOpen) {
+          this.open(); // opens and sets focusedIndex: 0
+        } else {
+          this.focusNext();
         }
         break;
       case 'ArrowUp':
         e.preventDefault();
-        this.stateManager.setState({
-          focusedIndex: Math.max(state.focusedIndex - 1, 0)
-        });
+        this.focusPrev();
         break;
       case 'Enter':
         e.preventDefault();
         if (!state.isOpen) {
-          this.openDropdown();
+          this.open();
         } else {
           this.selectFocused();
         }
@@ -451,7 +435,7 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
         if ((e.target as HTMLElement).tagName !== 'INPUT') {
           e.preventDefault();
           if (!state.isOpen) {
-            this.openDropdown();
+            this.open();
           }
         }
         break;
@@ -466,18 +450,18 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     }
   }
 
-  private openDropdown(): void {
+  // Override open() to also position the dropdown and focus the search input.
+  public override open(): void {
     if (this.stateManager.getState().isOpen) return;
-    this.stateManager.setState({ isOpen: true, focusedIndex: 0 });
+    super.open(); // sets isOpen: true, focusedIndex: 0, emits 'open'
     this.renderer.positionDropdown();
     if (this.config.searchable) {
       this.focusTimeoutId = setTimeout(() => {
-        if (!this.isDestroyed) {
+        if (!this.isDestroyed && this.stateManager.getState().isOpen) {
           this.renderer.input.focus();
         }
       }, 10);
     }
-    this.emit('open', null);
   }
 
   private render(): void {

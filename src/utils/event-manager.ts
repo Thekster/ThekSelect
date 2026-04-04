@@ -5,14 +5,14 @@ class GlobalEventManager {
   private resizeListeners: Set<EventCallback> = new Set();
   private scrollListeners: Set<EventCallback> = new Set();
   private clickListeners: Set<EventCallback> = new Set();
+  private attached = false;
 
-  private constructor() {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', (e) => this.notify(this.resizeListeners, e));
-      window.addEventListener('scroll', (e) => this.notify(this.scrollListeners, e), true);
-      document.addEventListener('click', (e) => this.notify(this.clickListeners, e));
-    }
-  }
+  // Stable bound references required for removeEventListener to match addEventListener.
+  private readonly boundResize = (e: Event) => this.notify(this.resizeListeners, e);
+  private readonly boundScroll = (e: Event) => this.notify(this.scrollListeners, e);
+  private readonly boundClick = (e: Event) => this.notify(this.clickListeners, e);
+
+  private constructor() {}
 
   public static getInstance(): GlobalEventManager {
     if (!GlobalEventManager.instance) {
@@ -21,23 +21,57 @@ class GlobalEventManager {
     return GlobalEventManager.instance;
   }
 
+  private attach(): void {
+    if (this.attached || typeof window === 'undefined') return;
+    window.addEventListener('resize', this.boundResize);
+    window.addEventListener('scroll', this.boundScroll, true);
+    document.addEventListener('click', this.boundClick);
+    this.attached = true;
+  }
+
+  private detachIfEmpty(): void {
+    if (!this.attached) return;
+    if (
+      this.resizeListeners.size === 0 &&
+      this.scrollListeners.size === 0 &&
+      this.clickListeners.size === 0
+    ) {
+      window.removeEventListener('resize', this.boundResize);
+      window.removeEventListener('scroll', this.boundScroll, true);
+      document.removeEventListener('click', this.boundClick);
+      this.attached = false;
+    }
+  }
+
   private notify(listeners: Set<EventCallback>, event: unknown): void {
     listeners.forEach((callback) => callback(event));
   }
 
   public onResize(callback: EventCallback): () => void {
+    this.attach();
     this.resizeListeners.add(callback);
-    return () => this.resizeListeners.delete(callback);
+    return () => {
+      this.resizeListeners.delete(callback);
+      this.detachIfEmpty();
+    };
   }
 
   public onScroll(callback: EventCallback): () => void {
+    this.attach();
     this.scrollListeners.add(callback);
-    return () => this.scrollListeners.delete(callback);
+    return () => {
+      this.scrollListeners.delete(callback);
+      this.detachIfEmpty();
+    };
   }
 
   public onClick(callback: EventCallback): () => void {
+    this.attach();
     this.clickListeners.add(callback);
-    return () => this.clickListeners.delete(callback);
+    return () => {
+      this.clickListeners.delete(callback);
+      this.detachIfEmpty();
+    };
   }
 }
 

@@ -31,6 +31,7 @@ export class DomRenderer {
 
   private lastState: ThekSelectState | null = null;
   private lastFilteredOptions: ThekSelectOption[] = [];
+  private _destroyed = false;
 
   constructor(
     private config: Required<ThekSelectConfig>,
@@ -97,7 +98,7 @@ export class DomRenderer {
       this.input.className = 'thek-input';
       this.input.type = 'text';
       this.input.autocomplete = 'off';
-      this.input.placeholder = 'Search...';
+      this.input.placeholder = this.config.searchPlaceholder;
       this.input.setAttribute('aria-autocomplete', 'list');
 
       searchWrapper.appendChild(this.input);
@@ -138,7 +139,7 @@ export class DomRenderer {
 
     this.renderSelectionContent(state);
     this.renderOptionsContent(state, filteredOptions);
-    if (state.isOpen) this.positionDropdown();
+    // positionDropdown is NOT called here: it runs on open(), resize, and scroll events.
   }
 
   private renderSelectionContent(state: ThekSelectState): void {
@@ -172,6 +173,8 @@ export class DomRenderer {
             const label = document.createElement('span');
             label.className = 'thek-tag-label';
             const content = this.config.renderSelection(option);
+            const displayText =
+              content instanceof HTMLElement ? String(option[dField] ?? val) : content;
             if (content instanceof HTMLElement) {
               label.appendChild(content);
             } else {
@@ -179,8 +182,10 @@ export class DomRenderer {
             }
             tag.appendChild(label);
 
-            const removeBtn = document.createElement('span');
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
             removeBtn.className = 'thek-tag-remove';
+            removeBtn.setAttribute('aria-label', `Remove ${displayText}`);
             removeBtn.innerHTML = '&times;';
             removeBtn.addEventListener('click', (e) => {
               e.stopPropagation();
@@ -220,8 +225,9 @@ export class DomRenderer {
     if (state.isLoading && filteredOptions.length === 0) {
       const li = document.createElement('li');
       li.className = 'thek-option thek-loading';
-      li.textContent = 'Loading...';
+      li.textContent = this.config.loadingText;
       this.optionsList.appendChild(li);
+      this.updateActiveDescendant(null);
       return;
     }
 
@@ -301,7 +307,7 @@ export class DomRenderer {
     if (filteredOptions.length === 0 && (!this.config.canCreate || !state.inputValue)) {
       const li = document.createElement('li');
       li.className = 'thek-option thek-no-results';
-      li.textContent = 'No results found';
+      li.textContent = this.config.noResultsText;
       this.optionsList.appendChild(li);
     }
 
@@ -311,11 +317,22 @@ export class DomRenderer {
       !!document.getElementById(`${this.id}-opt-${state.focusedIndex}`)
         ? `${this.id}-opt-${state.focusedIndex}`
         : null;
+    this.updateActiveDescendant(activeDescendantId);
+  }
+
+  /** Set aria-activedescendant on the appropriate focusable element. */
+  private updateActiveDescendant(id: string | null): void {
     if (this.config.searchable) {
-      if (activeDescendantId) {
-        this.input.setAttribute('aria-activedescendant', activeDescendantId);
+      if (id) {
+        this.input.setAttribute('aria-activedescendant', id);
       } else {
         this.input.removeAttribute('aria-activedescendant');
+      }
+    } else {
+      if (id) {
+        this.control.setAttribute('aria-activedescendant', id);
+      } else {
+        this.control.removeAttribute('aria-activedescendant');
       }
     }
   }
@@ -341,7 +358,10 @@ export class DomRenderer {
     li.id = `${this.id}-opt-${index}`;
     const isSelected = state.selectedValues.includes(option[valueField] as string);
 
-    if (option.disabled) li.classList.add('thek-disabled');
+    if (option.disabled) {
+      li.classList.add('thek-disabled');
+      li.setAttribute('aria-disabled', 'true');
+    }
     if (isSelected) li.classList.add('thek-selected');
     if (state.focusedIndex === index) li.classList.add('thek-focused');
 
@@ -390,7 +410,15 @@ export class DomRenderer {
 
     if ((scrollingUp && !atTop) || (scrollingDown && !atBottom)) {
       e.preventDefault();
-      list.scrollTop += e.deltaY;
+      let delta = e.deltaY;
+      if (e.deltaMode === 1) {
+        // DOM_DELTA_LINE: multiply by item height to get pixels
+        delta *= Math.max(1, this.config.virtualItemHeight);
+      } else if (e.deltaMode === 2) {
+        // DOM_DELTA_PAGE: multiply by visible list height
+        delta *= list.clientHeight || 240;
+      }
+      list.scrollTop += delta;
     }
   }
 
@@ -470,6 +498,8 @@ export class DomRenderer {
   }
 
   public destroy(): void {
+    if (this._destroyed) return;
+    this._destroyed = true;
     if (this.wrapper.parentNode) {
       this.wrapper.parentNode.removeChild(this.wrapper);
     }

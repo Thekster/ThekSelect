@@ -28,6 +28,9 @@ export interface ThekSelectConfig<T = unknown> {
   loadOptions?: (query: string) => Promise<ThekSelectOption<T>[]>;
   renderOption?: (option: ThekSelectOption<T>) => string | HTMLElement;
   renderSelection?: (option: ThekSelectOption<T>) => string | HTMLElement;
+  searchPlaceholder?: string;
+  noResultsText?: string;
+  loadingText?: string;
 }
 
 export interface ThekSelectState<T = unknown> {

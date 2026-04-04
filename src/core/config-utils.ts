@@ -39,7 +39,10 @@ export function buildConfig<T = unknown>(
     virtualThreshold: 80,
     loadOptions: NOOP_LOAD_OPTIONS as (query: string) => Promise<ThekSelectOption<T>[]>,
     renderOption: (o: ThekSelectOption<T>) => o.label,
-    renderSelection: (o: ThekSelectOption<T>) => o.label
+    renderSelection: (o: ThekSelectOption<T>) => o.label,
+    searchPlaceholder: 'Search...',
+    noResultsText: 'No results found',
+    loadingText: 'Loading...'
   };
 
   const finalConfig = {
@@ -51,7 +54,9 @@ export function buildConfig<T = unknown>(
   // If loadOptions spread in as undefined (explicit override), fall back to NOOP so the
   // component treats the instance as local mode instead of crashing on invocation.
   if (typeof finalConfig.loadOptions !== 'function') {
-    finalConfig.loadOptions = NOOP_LOAD_OPTIONS as (query: string) => Promise<ThekSelectOption<T>[]>;
+    finalConfig.loadOptions = NOOP_LOAD_OPTIONS as (
+      query: string
+    ) => Promise<ThekSelectOption<T>[]>;
   }
 
   const hasCustomRenderOption = !!(globalDefaults.renderOption || config.renderOption);
@@ -61,8 +66,7 @@ export function buildConfig<T = unknown>(
     finalConfig.renderOption = (o: ThekSelectOption<T>) => o[finalConfig.displayField] as string;
   }
   if (!hasCustomRenderSelection) {
-    finalConfig.renderSelection = (o: ThekSelectOption<T>) =>
-      o[finalConfig.displayField] as string;
+    finalConfig.renderSelection = (o: ThekSelectOption<T>) => o[finalConfig.displayField] as string;
   }
 
   return finalConfig;
