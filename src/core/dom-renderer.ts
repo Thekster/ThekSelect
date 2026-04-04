@@ -70,7 +70,8 @@ export class DomRenderer<T = unknown> {
       this.control.setAttribute('aria-haspopup', 'listbox');
       this.control.setAttribute('aria-controls', `${this.id}-list`);
     }
-    this.control.setAttribute('tabindex', '0');
+    // In searchable mode the <input> is the tab stop; keep the div reachable via click only.
+    this.control.setAttribute('tabindex', this.config.searchable ? '-1' : '0');
 
     this.selectionContainer = document.createElement('div');
     this.selectionContainer.className = 'thek-selection';

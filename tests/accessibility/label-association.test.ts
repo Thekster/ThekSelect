@@ -44,9 +44,10 @@ describe('Accessible name / label association', () => {
     const el = document.getElementById('plain') as HTMLElement;
     ThekSelect.init(el, { options: [{ value: '1', label: 'One' }] });
 
-    const control = document.querySelector('.thek-control') as HTMLElement;
-    expect(control.getAttribute('aria-labelledby')).toBeNull();
-    expect(control.getAttribute('aria-label')).toBeNull();
+    // Default config is searchable, so the combobox element is the input.
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    expect(input.getAttribute('aria-labelledby')).toBeNull();
+    expect(input.getAttribute('aria-label')).toBeNull();
   });
 
   it('transfers aria-labelledby when the <select> already has aria-labelledby', () => {

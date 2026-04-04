@@ -13,11 +13,21 @@ describe('Keyboard accessibility', () => {
     document.body.innerHTML = '';
   });
 
-  // Issue 1: control must be reachable by Tab
-  it('control has tabindex="0" so keyboard users can reach it via Tab', () => {
-    ThekSelect.init(container, { options: [{ value: '1', label: 'One' }] });
+  // Issue 1: keyboard reachability depends on searchable mode
+  it('non-searchable control has tabindex="0" so keyboard users can reach it via Tab', () => {
+    ThekSelect.init(container, { searchable: false, options: [{ value: '1', label: 'One' }] });
     const control = document.querySelector('.thek-control') as HTMLElement;
     expect(control.getAttribute('tabindex')).toBe('0');
+  });
+
+  it('searchable input has tabindex (naturally focusable) and control has tabindex="-1"', () => {
+    ThekSelect.init(container, { searchable: true, options: [{ value: '1', label: 'One' }] });
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    // Control is removed from tab order; the input (combobox) is the keyboard entry point.
+    expect(control.getAttribute('tabindex')).toBe('-1');
+    // <input> elements are naturally focusable (no tabindex needed).
+    expect(input).not.toBeNull();
   });
 
   // Issue 2: Enter on focused control opens dropdown
