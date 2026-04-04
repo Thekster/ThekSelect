@@ -299,7 +299,7 @@ export class ThekSelect<T = unknown> {
 
 class ThekSelectDom<T = unknown> extends ThekSelect<T> {
   /** @internal accessible via cast in tests */
-  private renderer: DomRenderer;
+  private renderer: DomRenderer<T>;
   private readonly originalElement: HTMLElement;
   private readonly id: string;
   private unsubscribeState?: () => void;
@@ -320,18 +320,14 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     this.id = generateId();
     injectStyles();
 
-    const callbacks: RendererCallbacks = {
-      onSelect: (option) => this.select(option as unknown as ThekSelectOption<T>),
+    const callbacks: RendererCallbacks<T> = {
+      onSelect: (option) => this.select(option),
       onCreate: (label) => this.create(label),
-      onRemove: (option) => this.select(option as unknown as ThekSelectOption<T>),
+      onRemove: (option) => this.select(option),
       onReorder: (from, to) => this.reorder(from, to)
     };
 
-    this.renderer = new DomRenderer(
-      this.config as unknown as Required<ThekSelectConfig>,
-      this.id,
-      callbacks
-    );
+    this.renderer = new DomRenderer<T>(this.config, this.id, callbacks);
 
     this.initialize();
   }
@@ -476,8 +472,8 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
 
   private render(): void {
     this.renderer.render(
-      this.stateManager.getState() as ThekSelectState,
-      this.getFilteredOptions() as ThekSelectOption[]
+      this.stateManager.getState(),
+      this.getFilteredOptions()
     );
   }
 

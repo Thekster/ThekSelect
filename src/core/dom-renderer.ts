@@ -12,14 +12,14 @@ const SVG_SPINNER =
 const SVG_CHECK =
   '<svg class="thek-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg>';
 
-export interface RendererCallbacks {
-  onSelect: (option: ThekSelectOption) => void;
+export interface RendererCallbacks<T = unknown> {
+  onSelect: (option: ThekSelectOption<T>) => void;
   onCreate: (label: string) => void;
-  onRemove: (option: ThekSelectOption) => void;
+  onRemove: (option: ThekSelectOption<T>) => void;
   onReorder: (from: number, to: number) => void;
 }
 
-export class DomRenderer {
+export class DomRenderer<T = unknown> {
   public wrapper!: HTMLElement;
   public control!: HTMLElement;
   public selectionContainer!: HTMLElement;
@@ -29,14 +29,14 @@ export class DomRenderer {
   public dropdown!: HTMLElement;
   public optionsList!: HTMLElement;
 
-  private lastState: ThekSelectState | null = null;
-  private lastFilteredOptions: ThekSelectOption[] = [];
+  private lastState: ThekSelectState<T> | null = null;
+  private lastFilteredOptions: ThekSelectOption<T>[] = [];
   private _destroyed = false;
 
   constructor(
-    private config: Required<ThekSelectConfig>,
+    private config: Required<ThekSelectConfig<T>>,
     private id: string,
-    private callbacks: RendererCallbacks
+    private callbacks: RendererCallbacks<T>
   ) {}
 
   private normalizeHeight(value: number | string): string {
@@ -124,7 +124,7 @@ export class DomRenderer {
     this.applyHeight(this.config.height);
   }
 
-  public render(state: ThekSelectState, filteredOptions: ThekSelectOption[]): void {
+  public render(state: ThekSelectState<T>, filteredOptions: ThekSelectOption<T>[]): void {
     this.lastState = state;
     this.lastFilteredOptions = filteredOptions;
     this.control.setAttribute('aria-expanded', state.isOpen.toString());
@@ -142,7 +142,7 @@ export class DomRenderer {
     // positionDropdown is NOT called here: it runs on open(), resize, and scroll events.
   }
 
-  private renderSelectionContent(state: ThekSelectState): void {
+  private renderSelectionContent(state: ThekSelectState<T>): void {
     this.selectionContainer.innerHTML = '';
     const hasSelection = state.selectedValues.length > 0;
     this.placeholderElement.style.display = hasSelection ? 'none' : 'block';
@@ -213,8 +213,8 @@ export class DomRenderer {
   }
 
   private renderOptionsContent(
-    state: ThekSelectState,
-    filteredOptions: ThekSelectOption[],
+    state: ThekSelectState<T>,
+    filteredOptions: ThekSelectOption<T>[],
     alignFocused: boolean = true,
     preservedScrollTop?: number
   ): void {
@@ -348,9 +348,9 @@ export class DomRenderer {
   }
 
   private createOptionItem(
-    option: ThekSelectOption,
+    option: ThekSelectOption<T>,
     index: number,
-    state: ThekSelectState,
+    state: ThekSelectState<T>,
     valueField: string
   ): HTMLLIElement {
     const li = document.createElement('li');
@@ -493,7 +493,7 @@ export class DomRenderer {
     this.applyHeight(height);
   }
 
-  public updateConfig(newConfig: Partial<Required<ThekSelectConfig>>): void {
+  public updateConfig(newConfig: Partial<Required<ThekSelectConfig<T>>>): void {
     this.config = { ...this.config, ...newConfig };
   }
 
