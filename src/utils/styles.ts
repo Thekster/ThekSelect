@@ -1,4 +1,5 @@
-export const BASE_STYLES = `:root {
+export const BASE_STYLES = `.thek-select,
+  .thek-dropdown {
     --thek-primary: #0f172a;
     --thek-primary-light: #f1f5f9;
     --thek-bg-surface: #ffffff;
@@ -21,7 +22,8 @@ export const BASE_STYLES = `:root {
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
+    .thek-select,
+    .thek-dropdown {
         --thek-primary: #38bdf8;
         --thek-primary-light: rgba(56, 189, 248, 0.15);
         --thek-bg-surface: #0f172a;
