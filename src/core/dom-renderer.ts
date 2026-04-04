@@ -151,73 +151,112 @@ export class DomRenderer<T = unknown> {
   }
 
   private renderSelectionContent(state: ThekSelectState<T>): void {
-    this.selectionContainer.innerHTML = '';
     const hasSelection = state.selectedValues.length > 0;
     this.placeholderElement.style.display = hasSelection ? 'none' : 'block';
     this.selectionContainer.style.display = hasSelection ? 'flex' : 'none';
 
-    if (hasSelection) {
-      const vField = this.config.valueField;
-      const dField = this.config.displayField;
+    if (!hasSelection) {
+      this.selectionContainer.innerHTML = '';
+      return;
+    }
 
-      if (this.config.multiple) {
-        if (state.selectedValues.length > this.config.maxSelectedLabels) {
+    const vField = this.config.valueField;
+    const dField = this.config.displayField;
+
+    if (this.config.multiple) {
+      const isSummaryMode = state.selectedValues.length > this.config.maxSelectedLabels;
+      const isCurrentlySummary = !!this.selectionContainer.querySelector('.thek-summary-text');
+
+      if (isSummaryMode) {
+        if (!isCurrentlySummary) {
+          // Transitioning from tag mode to summary mode: clear and create summary span.
+          this.selectionContainer.innerHTML = '';
           const summary = document.createElement('span');
           summary.className = 'thek-summary-text';
-          summary.textContent = `${state.selectedValues.length} items selected`;
           this.selectionContainer.appendChild(summary);
-        } else {
-          state.selectedValues.forEach((val, i) => {
-            const option =
-              state.options.find((o) => o[vField] === val) ||
-              state.selectedOptionsByValue[val] ||
-              ({ [vField]: val, [dField]: val } as unknown as ThekSelectOption<T>);
-            const tag = document.createElement('span');
-            tag.className = 'thek-tag';
-            tag.draggable = true;
-            tag.dataset.index = i.toString();
-            tag.dataset.value = val;
-
-            const label = document.createElement('span');
-            label.className = 'thek-tag-label';
-            const content = this.config.renderSelection(option);
-            const displayText =
-              content instanceof HTMLElement ? String(option[dField] ?? val) : content;
-            if (content instanceof HTMLElement) {
-              label.appendChild(content);
-            } else {
-              label.textContent = content;
-            }
-            tag.appendChild(label);
-
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.className = 'thek-tag-remove';
-            removeBtn.setAttribute('aria-label', `Remove ${displayText}`);
-            removeBtn.innerHTML = '&times;';
-            removeBtn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              this.callbacks.onSelect(option);
-            });
-            tag.appendChild(removeBtn);
-            this.setupTagDnd(tag);
-            this.selectionContainer.appendChild(tag);
-          });
         }
+        (this.selectionContainer.querySelector('.thek-summary-text') as HTMLElement).textContent =
+          `${state.selectedValues.length} items selected`;
       } else {
-        const val = state.selectedValues[0];
-        const option =
-          state.options.find((o) => o[vField] === val) || state.selectedOptionsByValue[val];
-        if (option) {
-          const content = this.config.renderSelection(option);
-          if (content instanceof HTMLElement) {
-            this.selectionContainer.appendChild(content);
+        if (isCurrentlySummary) {
+          // Transitioning from summary mode to tag mode: clear summary span.
+          this.selectionContainer.innerHTML = '';
+        }
+
+        // Key-based reconciliation: reuse tag nodes by value.
+        const existing = new Map<string, HTMLElement>();
+        for (const child of Array.from(this.selectionContainer.children) as HTMLElement[]) {
+          if (child.dataset.value !== undefined) existing.set(child.dataset.value, child);
+        }
+
+        state.selectedValues.forEach((val, i) => {
+          const option =
+            state.options.find((o) => o[vField] === val) ||
+            state.selectedOptionsByValue[val] ||
+            ({ [vField]: val, [dField]: val } as unknown as ThekSelectOption<T>);
+          let tag = existing.get(val);
+          if (tag) {
+            existing.delete(val);
+            tag.dataset.index = i.toString();
           } else {
-            this.selectionContainer.textContent = content;
+            tag = this.createTagNode(option, val, i);
           }
+          this.selectionContainer.appendChild(tag);
+        });
+
+        // Remove orphan tags.
+        for (const node of existing.values()) {
+          this.selectionContainer.removeChild(node);
+        }
+      }
+    } else {
+      // Single-select: one item, clear and rebuild.
+      this.selectionContainer.innerHTML = '';
+      const val = state.selectedValues[0];
+      const option =
+        state.options.find((o) => o[vField] === val) || state.selectedOptionsByValue[val];
+      if (option) {
+        const content = this.config.renderSelection(option);
+        if (content instanceof HTMLElement) {
+          this.selectionContainer.appendChild(content);
+        } else {
+          this.selectionContainer.textContent = content;
         }
       }
     }
+  }
+
+  private createTagNode(option: ThekSelectOption<T>, val: string, index: number): HTMLElement {
+    const dField = this.config.displayField;
+    const tag = document.createElement('span');
+    tag.className = 'thek-tag';
+    tag.draggable = true;
+    tag.dataset.index = index.toString();
+    tag.dataset.value = val;
+
+    const label = document.createElement('span');
+    label.className = 'thek-tag-label';
+    const content = this.config.renderSelection(option);
+    const displayText = content instanceof HTMLElement ? String(option[dField] ?? val) : content;
+    if (content instanceof HTMLElement) {
+      label.appendChild(content);
+    } else {
+      label.textContent = content;
+    }
+    tag.appendChild(label);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'thek-tag-remove';
+    removeBtn.setAttribute('aria-label', `Remove ${displayText}`);
+    removeBtn.innerHTML = '&times;';
+    removeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.callbacks.onSelect(option);
+    });
+    tag.appendChild(removeBtn);
+    this.setupTagDnd(tag);
+    return tag;
   }
 
   private updateOptionAttrs(
