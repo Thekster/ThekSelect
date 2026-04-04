@@ -389,6 +389,7 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     if (this.config.searchable) {
       this.renderer.input.addEventListener('input', (e) => {
         const value = (e.target as HTMLInputElement).value;
+        // search() handles the setState({ inputValue }) call — no need to duplicate it here.
         this.search(value);
       }, { signal });
     }
