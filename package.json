@@ -46,6 +46,7 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "release:check": "npm test -- --run && npm run build && npm pack --dry-run --cache .npm-cache",
+    "build:showcase": "vite build --config vite.showcase.config.ts",
     "prepublishOnly": "npm run release:check"
   },
   "devDependencies": {
