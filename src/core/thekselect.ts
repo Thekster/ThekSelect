@@ -305,6 +305,7 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
   private unsubscribeState?: () => void;
   private unsubscribeEvents: (() => void)[] = [];
   private focusTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private listenerController: AbortController | null = null;
   private injectedOptionValues: Set<string> = new Set();
 
   constructor(element: string | HTMLElement, config: ThekSelectConfig<T> = {}) {
@@ -377,21 +378,23 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
   }
 
   private setupListeners(): void {
+    this.listenerController = new AbortController();
+    const { signal } = this.listenerController;
+
     this.renderer.control.addEventListener('click', () => {
       if (this.config.disabled) return;
       this.toggle();
-    });
+    }, { signal });
 
     if (this.config.searchable) {
       this.renderer.input.addEventListener('input', (e) => {
         const value = (e.target as HTMLInputElement).value;
-        // search() handles the setState({ inputValue }) call — no need to duplicate it here.
         this.search(value);
-      });
+      }, { signal });
     }
 
-    this.renderer.input.addEventListener('keydown', (e) => this.handleKeyDown(e));
-    this.renderer.control.addEventListener('keydown', (e) => this.handleKeyDown(e));
+    this.renderer.input.addEventListener('keydown', (e) => this.handleKeyDown(e), { signal });
+    this.renderer.control.addEventListener('keydown', (e) => this.handleKeyDown(e), { signal });
 
     this.unsubscribeEvents.push(
       globalEventManager.onClick((e: unknown) => {
@@ -552,6 +555,8 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     }
     this.unsubscribeEvents.forEach((unsub) => unsub());
     this.unsubscribeEvents = [];
+    this.listenerController?.abort();
+    this.listenerController = null;
     this.renderer.destroy();
     if (this.originalElement instanceof HTMLSelectElement && this.injectedOptionValues.size > 0) {
       const select = this.originalElement;

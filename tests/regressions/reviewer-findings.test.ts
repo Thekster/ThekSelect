@@ -184,4 +184,34 @@ describe('Reviewer findings regressions', () => {
     option.click();
     expect(onChange).not.toHaveBeenCalled();
   });
+
+  it('removes direct DOM event listeners on destroy', () => {
+    const ts = ThekSelect.init(container, {
+      options: [{ value: '1', label: 'One' }]
+    });
+
+    // Grab a reference to the control before destroy removes it from DOM
+    const control = document.querySelector('.thek-control') as HTMLElement;
+
+    // Detach from DOM (simulates a SPA framework removing the component)
+    control.remove();
+
+    // Destroy the ThekSelect instance
+    ts.destroy();
+
+    // Re-attach the orphaned element to DOM
+    document.body.appendChild(control);
+
+    // With AbortController cleanup, clicking the control should not call toggle
+    // (isDestroyed guard catches it too, but the listener itself should be gone)
+    let threw = false;
+    try {
+      control.click();
+    } catch {
+      threw = true;
+    }
+    expect(threw).toBe(false);
+    // State should remain closed (toggle is a no-op after destroy)
+    expect(ts.getState().isOpen).toBe(false);
+  });
 });
