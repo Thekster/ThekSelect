@@ -45,7 +45,10 @@ describe('No external icon dependency', () => {
     let resolve!: (v: { value: string; label: string }[]) => void;
     ThekSelect.init(container, {
       debounce: 0,
-      loadOptions: () => new Promise((r) => { resolve = r; })
+      loadOptions: () =>
+        new Promise((r) => {
+          resolve = r;
+        })
     });
 
     const input = document.querySelector('.thek-input') as HTMLInputElement;

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { ThekSelect } from '../../src/core/thekselect';
 
 describe('Accessible name / label association', () => {

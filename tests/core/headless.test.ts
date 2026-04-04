@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { ThekSelect } from '../../src/core/thekselect';
 
 describe('ThekSelect headless core', () => {
@@ -42,7 +42,9 @@ describe('ThekSelect headless core', () => {
       ]
     });
     // Directly set inputValue in state to test filtering without debounce
-    (core as unknown as { stateManager: { setState: (s: object) => void } }).stateManager.setState({ inputValue: 'app' });
+    (core as unknown as { stateManager: { setState: (s: object) => void } }).stateManager.setState({
+      inputValue: 'app'
+    });
     const filtered = core.getFilteredOptions();
     expect(filtered.length).toBe(1);
     expect(filtered[0].label).toBe('Apple');
@@ -157,5 +159,70 @@ describe('ThekSelect headless core', () => {
     expect(ts.getValue()).toBe('1');
     ts.destroy();
     document.body.innerHTML = '';
+  });
+
+  it('toggle() opens when closed and closes when open', () => {
+    const core = new ThekSelect({ options: [] });
+    expect(core.getState().isOpen).toBe(false);
+    core.toggle();
+    expect(core.getState().isOpen).toBe(true);
+    core.toggle();
+    expect(core.getState().isOpen).toBe(false);
+    core.destroy();
+  });
+
+  it('create() adds a new option and selects it', () => {
+    const core = new ThekSelect({ canCreate: true, options: [] });
+    core.create('NewItem');
+    expect(core.getValue()).toBe('NewItem');
+    expect(core.getState().options.some((o) => o.label === 'NewItem')).toBe(true);
+    core.destroy();
+  });
+
+  it('search() updates inputValue in state', () => {
+    const core = new ThekSelect({
+      options: [{ value: '1', label: 'Apple' }]
+    });
+    core.search('app');
+    expect(core.getState().inputValue).toBe('app');
+    core.destroy();
+  });
+
+  it('selectFocused() selects the currently focused option', () => {
+    const core = new ThekSelect({
+      options: [
+        { value: '1', label: 'One' },
+        { value: '2', label: 'Two' }
+      ]
+    });
+    core.open(); // sets focusedIndex to 0
+    core.focusNext(); // moves to index 1
+    core.selectFocused();
+    expect(core.getValue()).toBe('2');
+    core.destroy();
+  });
+
+  it('getSelectedOptions() returns the selected option object', () => {
+    const core = new ThekSelect({
+      options: [{ value: '1', label: 'One' }]
+    });
+    core.select({ value: '1', label: 'One' });
+    const selected = core.getSelectedOptions();
+    expect(selected).toMatchObject({ value: '1', label: 'One' });
+    core.destroy();
+  });
+
+  it('setMaxOptions() limits the number of filtered options', () => {
+    const core = new ThekSelect({
+      options: [
+        { value: '1', label: 'One' },
+        { value: '2', label: 'Two' },
+        { value: '3', label: 'Three' }
+      ]
+    });
+    expect(core.getFilteredOptions().length).toBe(3);
+    core.setMaxOptions(1);
+    expect(core.getFilteredOptions().length).toBe(1);
+    core.destroy();
   });
 });
