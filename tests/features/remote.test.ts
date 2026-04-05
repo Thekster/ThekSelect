@@ -129,4 +129,53 @@ describe('ThekSelect Remote loading', () => {
 
     expect(aborted).toBe(true);
   });
+
+  it('emits error event when loadOptions rejects with a real error', async () => {
+    const networkError = new Error('network failure');
+    const ts = ThekSelect.init(container, {
+      loadOptions: async (_q, _s) => { throw networkError; },
+      debounce: 0
+    });
+
+    const errorHandler = vi.fn();
+    ts.on('error', errorHandler);
+
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    input.value = 'q';
+    input.dispatchEvent(new Event('input'));
+    await new Promise((r) => setTimeout(r, 20));
+
+    expect(errorHandler).toHaveBeenCalledOnce();
+    expect(errorHandler.mock.calls[0][0]).toBeInstanceOf(Error);
+    expect(errorHandler.mock.calls[0][0].message).toBe('network failure');
+    // loading state must be cleared
+    expect(ts.getState().isLoading).toBe(false);
+  });
+
+  it('does NOT emit error event when loadOptions is aborted', async () => {
+    const ts = ThekSelect.init(container, {
+      loadOptions: (_q, signal) =>
+        new Promise((_resolve, reject) => {
+          signal.addEventListener('abort', () =>
+            reject(new DOMException('Aborted', 'AbortError'))
+          );
+        }),
+      debounce: 0
+    });
+
+    const errorHandler = vi.fn();
+    ts.on('error', errorHandler);
+
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    input.value = 'a';
+    input.dispatchEvent(new Event('input'));
+    await new Promise((r) => setTimeout(r, 10));
+
+    // Abort by typing a new query
+    input.value = 'ab';
+    input.dispatchEvent(new Event('input'));
+    await new Promise((r) => setTimeout(r, 20));
+
+    expect(errorHandler).not.toHaveBeenCalled();
+  });
 });

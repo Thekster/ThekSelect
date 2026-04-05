@@ -267,11 +267,15 @@ export class ThekSelect<T = unknown> {
                 options
               )
             });
-          } catch {
-            // Guard covers: component destroyed, superseded by newer search, or explicit abort.
-            // Note: abort increments remoteRequestId before this catch fires, so the guard is valid.
+          } catch (err) {
+            // Guard: destroyed or superseded by a newer request — discard silently.
             if (this.isDestroyed || requestId !== this.remoteRequestId) return;
             this.stateManager.setState({ isLoading: false });
+            // Abort errors are intentional — do not surface to the caller.
+            const isAbort = err instanceof Error && err.name === 'AbortError';
+            if (!isAbort) {
+              this.emit('error', err instanceof Error ? err : new Error(String(err)));
+            }
           }
         } else {
           this.currentSearchAbortController?.abort();
