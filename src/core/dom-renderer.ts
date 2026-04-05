@@ -33,6 +33,7 @@ export class DomRenderer<T = unknown> {
   private lastState: ThekSelectState<T> | null = null;
   private lastFilteredOptions: ThekSelectOption<T>[] = [];
   private _destroyed = false;
+  private _listenerController: AbortController | null = null;
 
   constructor(
     private config: Required<ThekSelectConfig<T>>,
@@ -88,6 +89,41 @@ export class DomRenderer<T = unknown> {
 
     this.selectionContainer = document.createElement('div');
     this.selectionContainer.className = 'thek-selection';
+
+    this._listenerController = new AbortController();
+    const { signal } = this._listenerController;
+
+    this.selectionContainer.addEventListener('dragstart', (e) => {
+      const tag = (e.target as HTMLElement).closest<HTMLElement>('.thek-tag');
+      if (!tag) return;
+      e.dataTransfer?.setData('text/plain', tag.dataset.index!);
+      tag.classList.add('thek-dragging');
+    }, { signal });
+
+    this.selectionContainer.addEventListener('dragend', (e) => {
+      (e.target as HTMLElement).closest<HTMLElement>('.thek-tag')?.classList.remove('thek-dragging');
+    }, { signal });
+
+    this.selectionContainer.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      (e.target as HTMLElement).closest<HTMLElement>('.thek-tag')?.classList.add('thek-drag-over');
+    }, { signal });
+
+    this.selectionContainer.addEventListener('dragleave', (e) => {
+      (e.target as HTMLElement).closest<HTMLElement>('.thek-tag')?.classList.remove('thek-drag-over');
+    }, { signal });
+
+    this.selectionContainer.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const tag = (e.target as HTMLElement).closest<HTMLElement>('.thek-tag');
+      if (!tag) return;
+      tag.classList.remove('thek-drag-over');
+      const fromIndex = parseInt(e.dataTransfer?.getData('text/plain') || '-1');
+      const toIndex = parseInt(tag.dataset.index!);
+      if (fromIndex !== -1 && fromIndex !== toIndex) {
+        this.callbacks.onReorder(fromIndex, toIndex);
+      }
+    }, { signal });
 
     this.placeholderElement = document.createElement('span');
     this.placeholderElement.className = 'thek-placeholder';
@@ -268,7 +304,6 @@ export class DomRenderer<T = unknown> {
       this.callbacks.onSelect(option);
     });
     tag.appendChild(removeBtn);
-    this.setupTagDnd(tag);
     return tag;
   }
 
@@ -587,32 +622,6 @@ export class DomRenderer<T = unknown> {
     }
   }
 
-  private setupTagDnd(tag: HTMLElement): void {
-    tag.addEventListener('dragstart', (e) => {
-      e.dataTransfer?.setData('text/plain', tag.dataset.index!);
-      tag.classList.add('thek-dragging');
-    });
-    tag.addEventListener('dragend', () => {
-      tag.classList.remove('thek-dragging');
-    });
-    tag.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      tag.classList.add('thek-drag-over');
-    });
-    tag.addEventListener('dragleave', () => {
-      tag.classList.remove('thek-drag-over');
-    });
-    tag.addEventListener('drop', (e) => {
-      e.preventDefault();
-      tag.classList.remove('thek-drag-over');
-      const fromIndex = parseInt(e.dataTransfer?.getData('text/plain') || '-1');
-      const toIndex = parseInt(tag.dataset.index!);
-      if (fromIndex !== -1 && fromIndex !== toIndex) {
-        this.callbacks.onReorder(fromIndex, toIndex);
-      }
-    });
-  }
-
   public setHeight(height: number | string): void {
     this.config.height = height as unknown as string | number;
     this.applyHeight(height);
@@ -625,6 +634,8 @@ export class DomRenderer<T = unknown> {
   public destroy(): void {
     if (this._destroyed) return;
     this._destroyed = true;
+    this._listenerController?.abort();
+    this._listenerController = null;
     if (this.wrapper.parentNode) {
       this.wrapper.parentNode.removeChild(this.wrapper);
     }
