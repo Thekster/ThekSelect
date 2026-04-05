@@ -302,16 +302,6 @@ export class DomRenderer<T = unknown> {
         }
       }
     }
-    const labelEl = li.querySelector<HTMLElement>('.thek-option-label');
-    if (labelEl) {
-      const content = this.safeRender(this.config.renderOption, option);
-      if (content instanceof HTMLElement) {
-        labelEl.innerHTML = '';
-        labelEl.appendChild(content);
-      } else {
-        labelEl.textContent = content;
-      }
-    }
   }
 
   private renderOptionsContent(
