@@ -59,6 +59,27 @@ export function buildConfig<T = unknown>(
     ) => Promise<ThekSelectOption<T>[]>;
   }
 
+  // Runtime validation of field names — catches typos early.
+  if (!finalConfig.valueField || typeof finalConfig.valueField !== 'string') {
+    throw new Error('ThekSelect: valueField must be a non-empty string');
+  }
+  if (!finalConfig.displayField || typeof finalConfig.displayField !== 'string') {
+    throw new Error('ThekSelect: displayField must be a non-empty string');
+  }
+  if (finalConfig.options.length > 0) {
+    const sample = finalConfig.options[0];
+    if (!(finalConfig.valueField in sample)) {
+      console.warn(
+        `ThekSelect: valueField "${finalConfig.valueField}" not found on first option. Check your config.`
+      );
+    }
+    if (!(finalConfig.displayField in sample)) {
+      console.warn(
+        `ThekSelect: displayField "${finalConfig.displayField}" not found on first option. Check your config.`
+      );
+    }
+  }
+
   const hasCustomRenderOption = !!(globalDefaults.renderOption || config.renderOption);
   const hasCustomRenderSelection = !!(globalDefaults.renderSelection || config.renderSelection);
 
