@@ -115,4 +115,24 @@ describe('Typed event callbacks', () => {
     const arg: string[] = handler.mock.calls[0][0];
     expect(Array.isArray(arg)).toBe(true);
   });
+
+  it('error event callback receives an Error object', async () => {
+    const ts = ThekSelect.init(container, {
+      loadOptions: async () => { throw new Error('network failure'); },
+      debounce: 0
+    });
+
+    const handler = vi.fn();
+    ts.on('error', handler);
+
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    input.value = 'x';
+    input.dispatchEvent(new Event('input'));
+    await new Promise((r) => setTimeout(r, 20));
+
+    expect(handler).toHaveBeenCalledOnce();
+    const arg: Error = handler.mock.calls[0][0];
+    expect(arg).toBeInstanceOf(Error);
+    expect(arg.message).toBe('network failure');
+  });
 });

@@ -50,7 +50,8 @@ export type ThekSelectEvent =
   | 'search'
   | 'tagAdded'
   | 'tagRemoved'
-  | 'reordered';
+  | 'reordered'
+  | 'error';
 
 export interface ThekSelectEventPayloadMap<T = unknown> {
   change: string | string[] | undefined;
@@ -60,4 +61,5 @@ export interface ThekSelectEventPayloadMap<T = unknown> {
   tagAdded: ThekSelectOption<T>;
   tagRemoved: ThekSelectOption<T>;
   reordered: string[];
+  error: Error;
 }
