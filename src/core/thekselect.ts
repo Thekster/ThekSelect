@@ -497,7 +497,12 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
       });
       values.forEach((val) => {
         if (!Array.from(select.options).some((opt) => opt.value === val)) {
-          const opt = new Option(val, val, true, true);
+          const state = this.stateManager.getState();
+          const found =
+            state.options.find((o) => o[this.config.valueField] === val) ||
+            state.selectedOptionsByValue[val];
+          const label = found ? String(found[this.config.displayField] ?? val) : val;
+          const opt = new Option(label, val, true, true);
           select.add(opt);
           this.injectedOptionValues.add(val);
         }

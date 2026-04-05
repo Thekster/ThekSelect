@@ -257,4 +257,17 @@ describe('Reviewer findings regressions', () => {
     // State should remain closed (toggle is a no-op after destroy)
     expect(ts.getState().isOpen).toBe(false);
   });
+
+  it('syncOriginalElement uses display label not raw value for injected options', () => {
+    // When value !== label, the injected <option> text must use the label.
+    document.body.innerHTML = `<select id="fruit"></select>`;
+    const select = document.getElementById('fruit') as HTMLSelectElement;
+    ThekSelect.init(select, {
+      options: [{ value: 'f1', label: 'Fig' }]
+    }).setValue('f1');
+
+    const opt = Array.from(select.options).find((o) => o.value === 'f1');
+    expect(opt).toBeDefined();
+    expect(opt!.text).toBe('Fig'); // Bug: currently 'f1'
+  });
 });
