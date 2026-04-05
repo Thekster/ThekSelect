@@ -9,7 +9,14 @@ export class StateManager<T extends object> {
   }
 
   getState(): Readonly<T> {
-    return Object.freeze({ ...this.state });
+    const shallow = { ...this.state } as Record<string, unknown>;
+    for (const key of Object.keys(shallow)) {
+      const val = shallow[key];
+      if (val !== null && typeof val === 'object' && !Array.isArray(val)) {
+        shallow[key] = Object.freeze({ ...(val as object) });
+      }
+    }
+    return Object.freeze(shallow) as Readonly<T>;
   }
 
   setState(newState: Partial<T>): void {

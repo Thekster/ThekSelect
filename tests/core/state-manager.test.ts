@@ -40,4 +40,18 @@ describe('StateManager', () => {
     sm.forceNotify();
     expect(listener).toHaveBeenCalledTimes(1);
   });
+
+  it('getState() returns a deeply frozen object — nested plain objects are frozen', () => {
+    const sm = new StateManager<{ count: number; meta: { x: number } }>({
+      count: 0,
+      meta: { x: 1 }
+    });
+    const state = sm.getState();
+    expect(Object.isFrozen(state)).toBe(true);
+    expect(Object.isFrozen(state.meta)).toBe(true);
+    // Attempt mutation should throw in strict mode (vitest runs in strict mode)
+    expect(() => {
+      (state.meta as { x: number }).x = 99;
+    }).toThrow();
+  });
 });
