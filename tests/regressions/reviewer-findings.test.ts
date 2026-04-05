@@ -270,4 +270,32 @@ describe('Reviewer findings regressions', () => {
     expect(opt).toBeDefined();
     expect(opt!.text).toBe('Fig'); // Bug: currently 'f1'
   });
+
+  it('throttles positionDropdown calls — multiple rapid resize events cause only one call per rAF', async () => {
+    const ts = ThekSelect.init(container, {
+      options: [{ value: '1', label: 'One' }]
+    });
+
+    // Open dropdown so positionDropdown is meaningful
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    control.click();
+
+    const positionSpy = vi.spyOn(
+      (ts as unknown as { renderer: { positionDropdown: () => void } }).renderer,
+      'positionDropdown'
+    );
+
+    // Fire 5 rapid resize events
+    window.dispatchEvent(new Event('resize'));
+    window.dispatchEvent(new Event('resize'));
+    window.dispatchEvent(new Event('resize'));
+    window.dispatchEvent(new Event('resize'));
+    window.dispatchEvent(new Event('resize'));
+
+    // Wait for the rAF callback to fire (jsdom implements rAF as a microtask/setTimeout)
+    await new Promise((r) => setTimeout(r, 50));
+
+    // Should be called at most once (the rAF collapses duplicate events)
+    expect(positionSpy).toHaveBeenCalledTimes(1);
+  });
 });

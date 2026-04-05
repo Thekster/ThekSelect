@@ -417,12 +417,17 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
       })
     );
 
-    this.unsubscribeEvents.push(
-      globalEventManager.onResize(() => this.renderer.positionDropdown())
-    );
-    this.unsubscribeEvents.push(
-      globalEventManager.onScroll(() => this.renderer.positionDropdown())
-    );
+    let rafPending = false;
+    const schedulePosition = () => {
+      if (rafPending) return;
+      rafPending = true;
+      requestAnimationFrame(() => {
+        rafPending = false;
+        if (!this.isDestroyed) this.renderer.positionDropdown();
+      });
+    };
+    this.unsubscribeEvents.push(globalEventManager.onResize(schedulePosition));
+    this.unsubscribeEvents.push(globalEventManager.onScroll(schedulePosition));
   }
 
   private handleKeyDown(e: KeyboardEvent): void {
