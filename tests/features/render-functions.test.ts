@@ -37,18 +37,15 @@ describe('Render function error boundary', () => {
     const errorHandler = vi.fn();
     ts.on('error', errorHandler);
 
-    // The renderOption error happens during init's createOptionItem, before the
-    // handler is registered. So the error is emitted but discarded. The fallback
-    // text should still appear. Let's verify it appears on the click's re-render.
-    const control = document.querySelector('.thek-control') as HTMLElement;
-    control.click();
+    // Force option node recreation after the handler is registered:
+    // setMaxOptions(0) orphans existing nodes; setMaxOptions(null) recreates
+    // them via createOptionItem which calls renderOption → safeRender catches it.
+    ts.setMaxOptions(0);
+    ts.setMaxOptions(null);
 
-    const option = document.querySelector('.thek-option-label') as HTMLElement;
-    expect(option.textContent).toBe('Apple');
-
-    // Note: the error event is not emitted on the click's re-render because that path
-    // goes through updateOptionAttrs which no longer calls safeRender (per spec).
-    // The error event was emitted during init but before the handler was registered.
+    expect(errorHandler).toHaveBeenCalledOnce();
+    expect(errorHandler.mock.calls[0][0]).toBeInstanceOf(Error);
+    expect(errorHandler.mock.calls[0][0].message).toBe('render crash');
   });
 
   it('falls back to plain label text when renderSelection throws in single mode', () => {
