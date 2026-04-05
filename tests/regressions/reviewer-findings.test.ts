@@ -204,6 +204,30 @@ describe('Reviewer findings regressions', () => {
     expect(document.body.contains(dropdown)).toBe(false);
   });
 
+  it('does not mutate state after destroy when a fetch is in-flight', async () => {
+    let resolveRemote!: (opts: { value: string; label: string }[]) => void;
+    const ts = ThekSelect.init(container, {
+      loadOptions: (_q, _signal) =>
+        new Promise((resolve) => { resolveRemote = resolve; }),
+      debounce: 0
+    });
+
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    input.value = 'x';
+    input.dispatchEvent(new Event('input'));
+    await flush(10); // fetch is now in-flight
+
+    ts.destroy();
+
+    // Resolve the fetch AFTER destroy — should be a no-op
+    resolveRemote([{ value: 'x', label: 'X' }]);
+    await flush(10);
+
+    // isLoading must still be false (the component is destroyed; no state mutation)
+    expect(ts.getState().isLoading).toBe(false);
+    expect(ts.getState().options).toHaveLength(0);
+  });
+
   it('removes direct DOM event listeners on destroy', () => {
     const ts = ThekSelect.init(container, {
       options: [{ value: '1', label: 'One' }]

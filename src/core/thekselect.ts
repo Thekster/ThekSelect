@@ -554,6 +554,8 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
 
   public override destroy(): void {
     this.isDestroyed = true;
+    super.destroy(); // abort in-flight requests and cancel debounce immediately
+
     if (this.focusTimeoutId !== null) {
       clearTimeout(this.focusTimeoutId);
       this.focusTimeoutId = null;
@@ -562,12 +564,13 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
       this.unsubscribeState();
       this.unsubscribeState = undefined;
     }
+    this.stateManager.setState({ isLoading: false });
     this.unsubscribeEvents.forEach((unsub) => unsub());
     this.unsubscribeEvents = [];
     this.listenerController?.abort();
     this.listenerController = null;
     this.renderer.destroy();
-    if (this.originalElement instanceof HTMLSelectElement && this.injectedOptionValues.size > 0) {
+    if (typeof HTMLSelectElement !== 'undefined' && this.originalElement instanceof HTMLSelectElement && this.injectedOptionValues.size > 0) {
       const select = this.originalElement;
       Array.from(select.options)
         .filter((opt) => this.injectedOptionValues.has(opt.value))
@@ -575,6 +578,5 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
       this.injectedOptionValues.clear();
     }
     this.originalElement.style.display = '';
-    super.destroy();
   }
 }

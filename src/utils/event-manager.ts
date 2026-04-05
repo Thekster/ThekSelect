@@ -30,7 +30,7 @@ class GlobalEventManager {
   }
 
   private detachIfEmpty(): void {
-    if (!this.attached) return;
+    if (!this.attached || typeof window === 'undefined') return;
     if (
       this.resizeListeners.size === 0 &&
       this.scrollListeners.size === 0 &&
