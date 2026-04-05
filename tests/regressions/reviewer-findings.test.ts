@@ -185,6 +185,25 @@ describe('Reviewer findings regressions', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
+  it('removes dropdown from body when wrapper is removed without calling destroy()', async () => {
+    ThekSelect.init(container, {
+      options: [{ value: '1', label: 'One' }]
+    });
+
+    // Dropdown is appended to document.body and is hidden but present
+    const dropdown = document.querySelector('.thek-dropdown') as HTMLElement;
+    expect(document.body.contains(dropdown)).toBe(true);
+
+    // Remove the wrapper without calling destroy() — simulates SPA teardown
+    const wrapper = document.querySelector('.thek-select') as HTMLElement;
+    wrapper.remove();
+
+    // Give MutationObserver a tick to fire
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(document.body.contains(dropdown)).toBe(false);
+  });
+
   it('removes direct DOM event listeners on destroy', () => {
     const ts = ThekSelect.init(container, {
       options: [{ value: '1', label: 'One' }]

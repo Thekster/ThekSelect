@@ -34,6 +34,7 @@ export class DomRenderer<T = unknown> {
   private lastFilteredOptions: ThekSelectOption<T>[] = [];
   private _destroyed = false;
   private _listenerController: AbortController | null = null;
+  private _orphanObserver: MutationObserver | null = null;
 
   constructor(
     private config: Required<ThekSelectConfig<T>>,
@@ -177,6 +178,17 @@ export class DomRenderer<T = unknown> {
 
     this.wrapper.appendChild(this.control);
     document.body.appendChild(this.dropdown);
+    this._orphanObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const removed of Array.from(mutation.removedNodes)) {
+          if (removed === this.wrapper || (removed as Element).contains?.(this.wrapper)) {
+            this.destroy();
+            return;
+          }
+        }
+      }
+    });
+    this._orphanObserver.observe(document.body, { childList: true, subtree: true });
     this.applyHeight(this.config.height);
   }
 
@@ -634,6 +646,8 @@ export class DomRenderer<T = unknown> {
   public destroy(): void {
     if (this._destroyed) return;
     this._destroyed = true;
+    this._orphanObserver?.disconnect();
+    this._orphanObserver = null;
     this._listenerController?.abort();
     this._listenerController = null;
     if (this.wrapper.parentNode) {
