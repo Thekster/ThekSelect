@@ -18,6 +18,7 @@ export interface RendererCallbacks<T = unknown> {
   onRemove: (option: ThekSelectOption<T>) => void;
   onReorder: (from: number, to: number) => void;
   onError: (err: Error) => void;
+  onOrphan: () => void;
 }
 
 export class DomRenderer<T = unknown> {
@@ -182,7 +183,7 @@ export class DomRenderer<T = unknown> {
       for (const mutation of mutations) {
         for (const removed of Array.from(mutation.removedNodes)) {
           if (removed === this.wrapper || (removed as Element).contains?.(this.wrapper)) {
-            this.destroy();
+            this.callbacks.onOrphan();
             return;
           }
         }

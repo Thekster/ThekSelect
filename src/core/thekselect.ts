@@ -330,7 +330,8 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
       onCreate: (label) => this.create(label),
       onRemove: (option) => this.select(option),
       onReorder: (from, to) => this.reorder(from, to),
-      onError: (err) => this.emit('error', err)
+      onError: (err) => this.emit('error', err),
+      onOrphan: () => this.destroy()
     };
 
     this.renderer = new DomRenderer<T>(this.config, this.id, callbacks);
