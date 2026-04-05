@@ -2,6 +2,8 @@
 
 A lightweight, framework-agnostic, and accessible select library with native drag-and-drop tag reordering.
 
+**[Live showcase →](https://thekster.github.io/ThekSelect/)**
+
 ## Features
 
 - Headless core with renderer/state separation

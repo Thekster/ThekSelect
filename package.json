@@ -68,7 +68,7 @@
   "bugs": {
     "url": "https://github.com/Thekster/ThekSelect/issues"
   },
-  "homepage": "https://github.com/Thekster/ThekSelect#readme",
+  "homepage": "https://thekster.github.io/ThekSelect/",
   "publishConfig": {
     "access": "public"
   }
