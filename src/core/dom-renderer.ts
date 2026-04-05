@@ -17,6 +17,7 @@ export interface RendererCallbacks<T = unknown> {
   onCreate: (label: string) => void;
   onRemove: (option: ThekSelectOption<T>) => void;
   onReorder: (from: number, to: number) => void;
+  onError: (err: Error) => void;
 }
 
 export class DomRenderer<T = unknown> {
@@ -54,6 +55,18 @@ export class DomRenderer<T = unknown> {
     const resolved = this.normalizeHeight(height);
     this.wrapper.style.setProperty('--thek-input-height', resolved);
     this.dropdown.style.setProperty('--thek-input-height', resolved);
+  }
+
+  private safeRender(
+    fn: (o: ThekSelectOption<T>) => string | HTMLElement,
+    option: ThekSelectOption<T>
+  ): string | HTMLElement {
+    try {
+      return fn(option);
+    } catch (err) {
+      this.callbacks.onError(err instanceof Error ? err : new Error(String(err)));
+      return String(option[this.config.displayField] ?? '');
+    }
   }
 
   public createDom(): void {
@@ -216,7 +229,7 @@ export class DomRenderer<T = unknown> {
       const option =
         state.options.find((o) => o[vField] === val) || state.selectedOptionsByValue[val];
       if (option) {
-        const content = this.config.renderSelection(option);
+        const content = this.safeRender(this.config.renderSelection, option);
         if (content instanceof HTMLElement) {
           this.selectionContainer.appendChild(content);
         } else {
@@ -236,7 +249,7 @@ export class DomRenderer<T = unknown> {
 
     const label = document.createElement('span');
     label.className = 'thek-tag-label';
-    const content = this.config.renderSelection(option);
+    const content = this.safeRender(this.config.renderSelection, option);
     const displayText = content instanceof HTMLElement ? String(option[dField] ?? val) : content;
     if (content instanceof HTMLElement) {
       label.appendChild(content);
@@ -287,6 +300,16 @@ export class DomRenderer<T = unknown> {
         } else if (!isSelected && hasSvg) {
           checkbox.innerHTML = '';
         }
+      }
+    }
+    const labelEl = li.querySelector<HTMLElement>('.thek-option-label');
+    if (labelEl) {
+      const content = this.safeRender(this.config.renderOption, option);
+      if (content instanceof HTMLElement) {
+        labelEl.innerHTML = '';
+        labelEl.appendChild(content);
+      } else {
+        labelEl.textContent = content;
       }
     }
   }
@@ -491,7 +514,7 @@ export class DomRenderer<T = unknown> {
 
     const label = document.createElement('span');
     label.className = 'thek-option-label';
-    const content = this.config.renderOption(option);
+    const content = this.safeRender(this.config.renderOption, option);
     if (content instanceof HTMLElement) {
       label.appendChild(content);
     } else {
