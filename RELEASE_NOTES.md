@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+## 1.2.0 (2026-04-05)
+
+### Added
+
+- **Error event** — `ThekSelect` now emits an `'error'` event when `loadOptions` fails with a non-abort error or when a render function throws.
+- **safeRender error boundary** — User-provided `renderOption` and `renderSelection` functions are now wrapped in an error boundary. If they throw, the library emits an `'error'` event and falls back to rendering the plain label text.
+- **Orphan dropdown protection** — A `MutationObserver` now watches for the removal of the component's wrapper from the DOM. If the wrapper is removed without calling `.destroy()`, the orphaned dropdown is automatically destroyed.
+- **Config field validation** — `buildConfig()` now performs runtime validation of `valueField` and `displayField`. It throws an error if they are empty strings and warns if they are missing from the first option.
+
+### Changed
+
+- **DnD event delegation** — Per-tag Drag-and-Drop listeners replaced with a single set of delegated listeners on the selection container, reducing memory overhead and potential leaks.
+- **Deep freeze state** — `StateManager.getState()` now performs a deep freeze on nested plain objects (like `selectedOptionsByValue`), ensuring the returned state snapshot is truly immutable.
+- **Performance throttling** — `positionDropdown()` calls are now throttled via `requestAnimationFrame` during scroll and resize events to prevent layout thrashing.
+
+### Fixed
+
+- **Destroy race window** — `ThekSelectDom.destroy()` now calls `super.destroy()` (aborting in-flight requests and debounced searches) *before* cleaning up the DOM, closing a race window where a resolving fetch could attempt to mutate a destroyed state.
+- **Native select sync label** — `syncOriginalElement` now correctly uses the display label (instead of the raw value string) when injecting dynamically created options into the native `<select>`.
+
 ## 1.1.0 (2026-04-04)
 
 ### Added
