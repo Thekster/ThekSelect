@@ -1,11 +1,11 @@
 import { ThekSelectConfig, ThekSelectState, ThekSelectOption } from './types.js';
-import { RendererCallbacks, SVG_CHEVRON, SVG_SPINNER } from './renderer/constants.js';
+import { type RendererCallbacks, SVG_CHEVRON, SVG_SPINNER } from './renderer/constants.js';
 import { createRendererSkeleton } from './renderer/dom-assembly.js';
 import { renderSelectionContent } from './renderer/selection-renderer.js';
 import { renderOptionsContent } from './renderer/options-renderer.js';
 import { positionDropdown, normalizeHeight } from './renderer/dropdown-positioner.js';
 
-export { RendererCallbacks };
+export type { RendererCallbacks };
 
 export class DomRenderer<T = unknown> {
   public wrapper!: HTMLElement;
