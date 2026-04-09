@@ -110,7 +110,7 @@ const select = ThekSelect.init('#my-select', {
 
 ```html
 <link rel="stylesheet" href="./dist/css/base.css" />
-<script src="./dist/thekselect.umd.min.cjs"></script>
+<script src="./dist/thekselect.umd.min.js"></script>
 
 <select id="my-select">
   <option value="react">React</option>
@@ -123,7 +123,7 @@ const select = ThekSelect.init('#my-select', {
 </script>
 ```
 
-If your static server does not serve `.cjs` files as JavaScript, rename the UMD output to `.js` for browser delivery.
+The UMD output uses a `.js` extension and works directly from any static server without renaming.
 
 ### Initialize From Existing `<select>`
 
