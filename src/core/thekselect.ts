@@ -76,7 +76,17 @@ export class ThekSelect<T = unknown> {
 
   public open(): void {
     if (this.stateManager.getState().isOpen) return;
-    this.stateManager.setState({ isOpen: true, focusedIndex: 0 });
+    // Skip past any leading disabled options so aria-activedescendant never
+    // points at an item the user cannot select.
+    const filteredOptions = this.getFilteredOptions();
+    let initialFocus = 0;
+    while (initialFocus < filteredOptions.length && !!filteredOptions[initialFocus]?.disabled) {
+      initialFocus++;
+    }
+    this.stateManager.setState({
+      isOpen: true,
+      focusedIndex: initialFocus < filteredOptions.length ? initialFocus : -1
+    });
     this.emit('open', null);
   }
 
@@ -144,7 +154,7 @@ export class ThekSelect<T = unknown> {
     this.emit('change', this.getValue());
   }
 
-  /** Move keyboard focus to the next option in the dropdown. */
+  /** Move keyboard focus to the next non-disabled option in the dropdown. */
   public focusNext(): void {
     const state = this.stateManager.getState();
     const filteredOptions = this.getFilteredOptions();
@@ -156,13 +166,28 @@ export class ThekSelect<T = unknown> {
         (o) => (o[displayField] as string)?.toLowerCase() === state.inputValue.toLowerCase()
       );
     const maxIndex = hasCreateSlot ? filteredOptions.length : filteredOptions.length - 1;
-    this.stateManager.setState({ focusedIndex: Math.min(state.focusedIndex + 1, maxIndex) });
+    let next = state.focusedIndex + 1;
+    // Skip disabled items; the create slot (index === filteredOptions.length) is never disabled.
+    while (next < filteredOptions.length && !!filteredOptions[next]?.disabled) {
+      next++;
+    }
+    if (next <= maxIndex) {
+      this.stateManager.setState({ focusedIndex: next });
+    }
   }
 
-  /** Move keyboard focus to the previous option in the dropdown. */
+  /** Move keyboard focus to the previous non-disabled option in the dropdown. */
   public focusPrev(): void {
     const state = this.stateManager.getState();
-    this.stateManager.setState({ focusedIndex: Math.max(state.focusedIndex - 1, 0) });
+    const filteredOptions = this.getFilteredOptions();
+    let prev = state.focusedIndex - 1;
+    // Skip disabled items.
+    while (prev >= 0 && !!filteredOptions[prev]?.disabled) {
+      prev--;
+    }
+    if (prev >= 0) {
+      this.stateManager.setState({ focusedIndex: prev });
+    }
   }
 
   /** Select the currently focused option, or create if focused on the create slot. */
@@ -347,11 +372,11 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     this.render();
 
     this.originalElement.style.display = 'none';
-    if (this.originalElement.parentNode) {
-      this.originalElement.parentNode.insertBefore(
-        this.renderer.wrapper,
-        this.originalElement.nextSibling
-      );
+    const parent = this.originalElement.parentNode;
+    if (parent) {
+      parent.insertBefore(this.renderer.wrapper, this.originalElement.nextSibling);
+      // Observe only the direct parent — avoids one full-body subtree observer per instance.
+      this.renderer.startOrphanObserver(parent);
     }
   }
 
@@ -444,7 +469,11 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
         break;
       case 'ArrowUp':
         e.preventDefault();
-        this.focusPrev();
+        if (!state.isOpen) {
+          this.open();
+        } else {
+          this.focusPrev();
+        }
         break;
       case 'Enter':
         e.preventDefault();
@@ -464,6 +493,12 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
         break;
       case 'Escape':
         this.close();
+        // Return focus to the combobox element so keyboard users don't lose their position.
+        if (this.config.searchable) {
+          this.renderer.input.focus();
+        } else {
+          this.renderer.control.focus();
+        }
         break;
       case 'Backspace':
         if (state.inputValue === '' && this.config.multiple && state.selectedValues.length > 0) {

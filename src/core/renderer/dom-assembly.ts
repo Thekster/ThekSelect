@@ -113,6 +113,9 @@ export function createRendererSkeleton<T>(
   optionsList.className = 'thek-options';
   optionsList.id = `${id}-list`;
   optionsList.setAttribute('role', 'listbox');
+  if (config.multiple) {
+    optionsList.setAttribute('aria-multiselectable', 'true');
+  }
 
   dropdown.appendChild(optionsList);
   wrapper.appendChild(control);

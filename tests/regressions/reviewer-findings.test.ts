@@ -268,7 +268,7 @@ describe('Reviewer findings regressions', () => {
 
     const opt = Array.from(select.options).find((o) => o.value === 'f1');
     expect(opt).toBeDefined();
-    expect(opt!.text).toBe('Fig'); // Bug: currently 'f1'
+    expect(opt!.text).toBe('Fig');
   });
 
   it('throttles positionDropdown calls — multiple rapid resize events cause only one call per rAF', async () => {

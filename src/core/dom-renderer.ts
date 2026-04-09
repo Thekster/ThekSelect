@@ -42,17 +42,6 @@ export class DomRenderer<T = unknown> {
     });
 
     document.body.appendChild(this.dropdown);
-    this._orphanObserver = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const removed of Array.from(mutation.removedNodes)) {
-          if (removed === this.wrapper || (removed as Element).contains?.(this.wrapper)) {
-            this.callbacks.onOrphan();
-            return;
-          }
-        }
-      }
-    });
-    this._orphanObserver.observe(document.body, { childList: true, subtree: true });
     this.applyHeight(this.config.height);
   }
 
@@ -62,7 +51,24 @@ export class DomRenderer<T = unknown> {
     this.dropdown.style.setProperty('--thek-input-height', resolved);
   }
 
+  /** Start watching parent for direct removal of this wrapper. Must be called after insertion. */
+  public startOrphanObserver(parent: Node): void {
+    this._orphanObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const removed of Array.from(mutation.removedNodes)) {
+          if (removed === this.wrapper) {
+            this.callbacks.onOrphan();
+            return;
+          }
+        }
+      }
+    });
+    // childList only — no subtree. We know the wrapper is a direct child of parent.
+    this._orphanObserver.observe(parent, { childList: true });
+  }
+
   public render(state: ThekSelectState<T>, filteredOptions: ThekSelectOption<T>[]): void {
+    const prevState = this.lastState;
     this.lastState = state;
     this.lastFilteredOptions = filteredOptions;
     const ariaTarget = this.config.searchable ? this.input : this.control;
@@ -70,10 +76,9 @@ export class DomRenderer<T = unknown> {
     this.dropdown.hidden = !state.isOpen;
     this.wrapper.classList.toggle('thek-open', state.isOpen);
 
-    if (state.isLoading) {
-      this.indicatorsContainer.innerHTML = SVG_SPINNER;
-    } else {
-      this.indicatorsContainer.innerHTML = SVG_CHEVRON;
+    // Only touch the indicator DOM when the loading state actually changes.
+    if (state.isLoading !== prevState?.isLoading) {
+      this.indicatorsContainer.innerHTML = state.isLoading ? SVG_SPINNER : SVG_CHEVRON;
     }
 
     renderSelectionContent(this.selectionContainer, this.placeholderElement, state, this.config, this.callbacks);

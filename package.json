@@ -20,19 +20,19 @@
     "**/*.css"
   ],
   "type": "module",
-  "main": "./dist/thekselect.umd.cjs",
+  "main": "./dist/thekselect.umd.js",
   "module": "./dist/thekselect.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/thekselect.js",
-      "require": "./dist/thekselect.umd.cjs"
+      "require": "./dist/thekselect.umd.js"
     },
     "./min": {
       "types": "./dist/index.d.ts",
       "import": "./dist/thekselect.min.js",
-      "require": "./dist/thekselect.umd.min.cjs"
+      "require": "./dist/thekselect.umd.min.js"
     },
     "./css/*": "./dist/css/*"
   },

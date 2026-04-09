@@ -252,4 +252,24 @@ describe('ARIA state correctness', () => {
     const control = document.querySelector('.thek-control') as HTMLElement;
     expect(control.getAttribute('role')).toBe('combobox');
   });
+
+  // ── aria-multiselectable ──────────────────────────────────────────────────
+
+  it('listbox has aria-multiselectable="true" in multiple mode', () => {
+    ThekSelect.init(container, {
+      multiple: true,
+      options: [{ value: '1', label: 'One' }]
+    });
+    const listbox = document.querySelector('[role="listbox"]') as HTMLElement;
+    expect(listbox.getAttribute('aria-multiselectable')).toBe('true');
+  });
+
+  it('listbox does not have aria-multiselectable in single mode', () => {
+    ThekSelect.init(container, {
+      multiple: false,
+      options: [{ value: '1', label: 'One' }]
+    });
+    const listbox = document.querySelector('[role="listbox"]') as HTMLElement;
+    expect(listbox.getAttribute('aria-multiselectable')).toBeNull();
+  });
 });
