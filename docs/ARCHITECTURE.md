@@ -38,8 +38,15 @@ CSS themes are distributed as importable CSS files and are entirely optional.
 ThekSelectDom also uses:
 ┌──────────────┐  ┌──────────────────┐  ┌───────────────┐
 │ DomRenderer  │  │ GlobalEvent      │  │ injectStyles  │
-│ (DOM only)   │  │ Manager          │  │ (DOM only)    │
-└──────────────┘  └──────────────────┘  └───────────────┘
+│ (orchestrator)│  │ Manager          │  │ (DOM only)    │
+└──────┬───────┘  └──────────────────┘  └───────────────┘
+       │ delegates to
+┌──────▼───────┬──────────────────┬──────────────────┐
+│ selection    │ options          │ dropdown         │
+│ -renderer    │ -renderer        │ -positioner      │
+└──────────────┴──────────────────┴──────────────────┘
+│ constants    │ dom-assembly     │
+└──────────────┴──────────────────┘
 ```
 
 ## Module Responsibilities
@@ -74,15 +81,26 @@ Pure functions for option list management: filtering by `inputValue`, remote mod
 
 Pure functions for selection operations: applying a selection, removing a value, reordering tags, creating a new option from a label (`canCreate` path). No side effects.
 
-### `src/core/dom-renderer.ts` — `DomRenderer`
+### `src/core/dom-renderer.ts` — `DomRenderer` (Orchestrator)
 
-Creates and updates all DOM nodes. Key contracts:
+Acts as the **Functional Orchestrator** for all DOM updates. It manages the component's lifecycle and DOM references, but delegates the actual node creation and attribute updates to specialized modules in `src/core/renderer/`.
+
+Key contracts:
 
 - **No state** — receives a `ThekSelectState` snapshot on every `render()` call.
-- **No events** — never calls back into `ThekSelect`. DOM event handlers are wired by `ThekSelectDom`.
-- **Full rebuild** — `render()` does a complete rebuild of the option list and tag list. No diffing.
-- `positionDropdown()` must **not** be called from inside `render()`. It is called only from `open()`, resize handlers, and scroll handlers.
-- `destroy()` is idempotent (safe to call twice).
+- **Stateless rendering** — delegates selection and option list updates to sub-renderer modules.
+- **Lifecycle management** — creates the DOM skeleton via `dom-assembly`, manages `MutationObserver` for orphan protection, and handles `destroy()`.
+- `positionDropdown()` is a wrapper around `dropdown-positioner` logic.
+
+### `src/core/renderer/` — Sub-Renderer Modules
+
+This directory contains stateless functional utilities used by `DomRenderer`:
+
+- **`constants.ts`**: Shared SVG icons and the `RendererCallbacks` interface.
+- **`dom-assembly.ts`**: Initial DOM skeleton creation and event listener attachment.
+- **`selection-renderer.ts`**: Pure rendering for tags, summaries, and single-select content.
+- **`options-renderer.ts`**: Dropdown list rendering, including virtualization and key-based node reconciliation.
+- **`dropdown-positioner.ts`**: Calculation of dropdown placement and height math.
 
 ### `src/core/thekselect.ts` — `ThekSelect` + `ThekSelectDom`
 
@@ -158,8 +176,9 @@ CSS themes are separate files, also in `dist/`, and are imported explicitly by t
 ## Key Invariants
 
 1. `StateManager.getState()` always returns a frozen object — no caller may mutate it.
-2. `DomRenderer.render()` never calls `positionDropdown()`.
-3. Every UI string is a `ThekSelectConfig` field — nothing is hardcoded in `DomRenderer`.
-4. All user-supplied strings are set via `textContent`, never `innerHTML`.
-5. All shared `window`/`document` listeners go through `GlobalEventManager`.
-6. `ThekSelectDom.destroy()` releases all four resource categories (DOM nodes, global event subscriptions, debounce timer, original element state).
+2. `DomRenderer.render()` is a **functional orchestrator** delegating to stateless sub-modules.
+3. `DomRenderer` never calls `positionDropdown()` during its render cycle.
+4. Every UI string is a `ThekSelectConfig` field — nothing is hardcoded in renderer logic.
+5. All user-supplied strings are set via `textContent`, never `innerHTML`.
+6. All shared `window`/`document` listeners go through `GlobalEventManager`.
+7. `ThekSelectDom.destroy()` releases all four resource categories (DOM nodes, global event subscriptions, debounce timer, original element state).
