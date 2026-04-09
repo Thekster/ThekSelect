@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.2.1 (2026-04-08)
+
+### Changed
+
+- **DomRenderer Modularity** — Refactored the monolithic `dom-renderer.ts` into a functional orchestrator. Extracted rendering and positioning logic into focused, stateless utility modules under `src/core/renderer/` (`dom-assembly`, `selection-renderer`, `options-renderer`, `dropdown-positioner`) to improve maintainability and reduce file size.
+
 ## 1.2.0 (2026-04-05)
 
 ### Added
