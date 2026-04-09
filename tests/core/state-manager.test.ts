@@ -54,4 +54,17 @@ describe('StateManager', () => {
       (state.meta as { x: number }).x = 99;
     }).toThrow();
   });
+
+  it('getState() freezes nested arrays as well', () => {
+    const sm = new StateManager<{ values: string[]; nested: { ids: number[] } }>({
+      values: ['a', 'b'],
+      nested: { ids: [1, 2] }
+    });
+    const state = sm.getState();
+    expect(Object.isFrozen(state.values)).toBe(true);
+    expect(Object.isFrozen(state.nested.ids)).toBe(true);
+    expect(() => {
+      (state.values as string[]).push('c');
+    }).toThrow();
+  });
 });

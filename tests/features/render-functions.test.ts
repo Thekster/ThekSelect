@@ -43,7 +43,7 @@ describe('Render function error boundary', () => {
     ts.setMaxOptions(0);
     ts.setMaxOptions(null);
 
-    expect(errorHandler).toHaveBeenCalledOnce();
+    expect(errorHandler).toHaveBeenCalled();
     expect(errorHandler.mock.calls[0][0]).toBeInstanceOf(Error);
     expect(errorHandler.mock.calls[0][0].message).toBe('render crash');
   });

@@ -1,18 +1,18 @@
 # ThekSelect
 
-A lightweight, framework-agnostic, and accessible select library with native drag-and-drop tag reordering.
+A lightweight, framework-agnostic browser select library with native drag-and-drop tag reordering.
 
 **[Live showcase →](https://thekster.github.io/ThekSelect/)**
 
 ## Features
 
-- Headless core with renderer/state separation
+- Reusable core with renderer/state separation
 - Search with debounce support
 - Single and multi-select modes
 - User-created tags (`canCreate`)
 - Remote async options (`loadOptions`)
 - Native HTML5 drag-and-drop for selected tags
-- Keyboard-friendly and ARIA-aware behavior
+- Keyboard and ARIA support for browser usage
 - Height control via `height` option (`number` or CSS string)
 
 ## Installation
@@ -123,7 +123,7 @@ const select = ThekSelect.init('#my-select', {
 </script>
 ```
 
-The UMD output uses a `.js` extension and works directly from any static server without renaming.
+The UMD output is intended for direct browser `<script>` usage from a static server.
 
 ### Initialize From Existing `<select>`
 

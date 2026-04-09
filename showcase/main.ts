@@ -106,7 +106,7 @@ const remote = ThekSelect.init('#remote-container', {
       const res = await fetch(`https://api.github.com/search/users?q=${query}&per_page=10`);
       const data = await res.json();
       return (data.items || []).map((u) => ({ value: u.login, label: u.login }));
-    } catch (e) {
+    } catch {
       return [];
     }
   }
@@ -248,7 +248,7 @@ document.getElementById('btn-destroy').addEventListener('click', () => {
 document.getElementById('btn-reinit').addEventListener('click', () => {
   try {
     apiInstance.destroy();
-  } catch (e) {}
+  } catch {}
   initApiInstance();
 });
 
@@ -502,7 +502,7 @@ document.getElementById('copy-theme-css').addEventListener('click', async () => 
   if (!cssText.trim()) return;
   try {
     await navigator.clipboard.writeText(cssText);
-  } catch (_err) {
+  } catch {
     // Clipboard API might be unavailable in some contexts.
   }
 });

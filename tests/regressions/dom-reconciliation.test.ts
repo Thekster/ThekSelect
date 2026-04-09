@@ -47,7 +47,7 @@ describe('DOM reconciliation — options list', () => {
   });
 
   it('updates thek-selected class on existing nodes without recreating them', () => {
-    const ts = ThekSelect.init(container, {
+    ThekSelect.init(container, {
       options: [
         { value: '1', label: 'One' },
         { value: '2', label: 'Two' }
@@ -99,6 +99,21 @@ describe('DOM reconciliation — options list', () => {
     expect(createNodeAfter.textContent).toContain('Newer');
   });
 
+  it('updates reused option node content when setRenderOption changes output', () => {
+    const ts = ThekSelect.init(container, {
+      searchable: true,
+      options: [{ value: '1', label: 'Apple' }]
+    });
+
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    control.click();
+
+    const optionNode = document.querySelector('.thek-option') as HTMLElement;
+    ts.setRenderOption((option) => `Fruit: ${option.label}`);
+    expect(document.querySelector('.thek-option')).toBe(optionNode);
+    expect(optionNode.textContent).toContain('Fruit: Apple');
+  });
+
   it('removes orphan nodes when an option disappears from the filtered list', () => {
     ThekSelect.init(container, {
       searchable: true,
@@ -135,7 +150,7 @@ describe('DOM reconciliation — selection container (tags)', () => {
   });
 
   it('reuses existing tag nodes when a second option is selected', () => {
-    const ts = ThekSelect.init(container, {
+    ThekSelect.init(container, {
       multiple: true,
       options: [
         { value: '1', label: 'One' },
@@ -218,5 +233,25 @@ describe('DOM reconciliation — selection container (tags)', () => {
     document.querySelectorAll('.thek-option')[2].dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(document.querySelector('.thek-summary-text')).toBeNull();
     expect(document.querySelectorAll('.thek-tag').length).toBe(2);
+  });
+
+  it('updates reused tag content and aria-label when option labels change', () => {
+    const options = [{ value: '1', label: 'One', selected: true }];
+    const ts = ThekSelect.init(container, {
+      multiple: true,
+      options
+    });
+
+    const tag = document.querySelector('.thek-tag') as HTMLElement;
+    const removeButton = document.querySelector('.thek-tag-remove') as HTMLButtonElement;
+    const label = document.querySelector('.thek-tag-label') as HTMLElement;
+    expect(removeButton.getAttribute('aria-label')).toBe('Remove One');
+
+    options[0].label = 'Renamed';
+    ts.setMaxOptions(null);
+
+    expect(document.querySelector('.thek-tag')).toBe(tag);
+    expect(label.textContent).toBe('Renamed');
+    expect(removeButton.getAttribute('aria-label')).toBe('Remove Renamed');
   });
 });

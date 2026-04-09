@@ -253,6 +253,16 @@ describe('ARIA state correctness', () => {
     expect(control.getAttribute('role')).toBe('combobox');
   });
 
+  it('marks the widget disabled in searchable mode', () => {
+    ThekSelect.init(container, { searchable: true, disabled: true, options: [] });
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    expect(control.getAttribute('aria-disabled')).toBe('true');
+    expect(control.getAttribute('tabindex')).toBe('-1');
+    expect(input.getAttribute('aria-disabled')).toBe('true');
+    expect(input.disabled).toBe(true);
+  });
+
   // ── aria-multiselectable ──────────────────────────────────────────────────
 
   it('listbox has aria-multiselectable="true" in multiple mode', () => {

@@ -20,14 +20,10 @@ describe('Keyboard accessibility', () => {
     expect(control.getAttribute('tabindex')).toBe('0');
   });
 
-  it('searchable input has tabindex (naturally focusable) and control has tabindex="-1"', () => {
+  it('searchable mode keeps the visible control in the tab order', () => {
     ThekSelect.init(container, { searchable: true, options: [{ value: '1', label: 'One' }] });
     const control = document.querySelector('.thek-control') as HTMLElement;
-    const input = document.querySelector('.thek-input') as HTMLInputElement;
-    // Control is removed from tab order; the input (combobox) is the keyboard entry point.
-    expect(control.getAttribute('tabindex')).toBe('-1');
-    // <input> elements are naturally focusable (no tabindex needed).
-    expect(input).not.toBeNull();
+    expect(control.getAttribute('tabindex')).toBe('0');
   });
 
   // Issue 2: Enter on focused control opens dropdown
@@ -202,5 +198,18 @@ describe('Keyboard accessibility', () => {
     control.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
 
     expect((document.querySelector('.thek-dropdown') as HTMLElement).hidden).toBe(false);
+  });
+
+  it('disabled controls ignore keyboard open attempts', () => {
+    ThekSelect.init(container, {
+      disabled: true,
+      searchable: true,
+      options: [{ value: '1', label: 'One' }]
+    });
+    const control = document.querySelector('.thek-control') as HTMLElement;
+
+    control.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+
+    expect((document.querySelector('.thek-dropdown') as HTMLElement).hidden).toBe(true);
   });
 });

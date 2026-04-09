@@ -2,9 +2,9 @@
 
 ## Overview
 
-ThekSelect is a zero-dependency TypeScript select component. It is split into two independently usable layers:
+ThekSelect is a zero-dependency TypeScript select component for browsers. It is split into two layers:
 
-- **Headless core** (`ThekSelect`) — pure state machine, no DOM required. Can be used in any environment (SSR, tests, non-browser runtimes).
+- **Reusable core** (`ThekSelect`) — state and selection logic that does not require binding to a DOM element, but still targets browser-like environments.
 - **DOM layer** (`ThekSelectDom`) — a subclass of `ThekSelect` that wires the core to a rendered widget. Created via the static `ThekSelect.init(element, config)` factory.
 
 CSS themes are distributed as importable CSS files and are entirely optional.
@@ -23,7 +23,7 @@ CSS themes are distributed as importable CSS files and are entirely optional.
           └──────────┬──────────┘
                      │ extends
           ┌──────────▼──────────┐
-          │     ThekSelect      │  (exported headless class)
+          │     ThekSelect      │  (exported reusable core)
           │  StateManager       │
           │  EventEmitter       │
           └──────────┬──────────┘
@@ -38,7 +38,7 @@ CSS themes are distributed as importable CSS files and are entirely optional.
 ThekSelectDom also uses:
 ┌──────────────┐  ┌──────────────────┐  ┌───────────────┐
 │ DomRenderer  │  │ GlobalEvent      │  │ injectStyles  │
-│ (orchestrator)│  │ Manager          │  │ (DOM only)    │
+│(orchestrator)│  │ Manager          │  │ (DOM only)    │
 └──────┬───────┘  └──────────────────┘  └───────────────┘
        │ delegates to
 ┌──────▼───────┬──────────────────┬──────────────────┐
@@ -59,8 +59,8 @@ All public TypeScript interfaces: `ThekSelectConfig`, `ThekSelectOption`, `ThekS
 
 Owns all mutable state. Key contracts:
 
-- `getState()` returns a **frozen** deep copy — callers cannot accidentally mutate it.
-- `setState(partial)` merges the partial update and notifies subscribers only when state actually changed (via `JSON.stringify` comparison).
+- `getState()` returns a recursively frozen snapshot — callers cannot accidentally mutate it.
+- `setState(partial)` merges the partial update and notifies subscribers only when one of the updated keys actually changed.
 - `forceNotify()` triggers subscribers without a state change — used when config mutates in place (e.g. `setMaxOptions()`).
 - Subscribers receive the new frozen snapshot as their argument.
 
@@ -104,11 +104,11 @@ This directory contains stateless functional utilities used by `DomRenderer`:
 
 ### `src/core/thekselect.ts` — `ThekSelect` + `ThekSelectDom`
 
-`ThekSelect` is the exported headless class. It composes `StateManager` and `ThekSelectEventEmitter`, exposes the public action API (`open`, `close`, `toggle`, `select`, `setValue`, `search`, etc.), and calls the pure logic functions.
+`ThekSelect` is the exported reusable core class. It composes `StateManager` and `ThekSelectEventEmitter`, exposes the public action API (`open`, `close`, `toggle`, `select`, `setValue`, `search`, etc.), and calls the pure logic functions.
 
 `ThekSelectDom` is an unexported subclass. It is the only class instantiated by `ThekSelect.init()`. It:
 - Creates `DomRenderer` and subscribes to `StateManager` to re-render on every state change.
-- Wires DOM events (click, keydown, input, focus, blur) to the headless action methods.
+- Wires DOM events (click, keydown, input, focus, blur) to the core action methods.
 - Subscribes to `GlobalEventManager` for resize, scroll, and outside-click detection.
 - Overrides `open()` to call `positionDropdown()` and schedule focus on the search input.
 - Overrides `destroy()` to clean up all four resource categories (DOM, global events, debounce timer, original element restoration).
@@ -168,8 +168,8 @@ Vite produces three artifacts in `dist/`:
 | File | Format | Consumer |
 |---|---|---|
 | `thekselect.js` | ESM | Bundlers (webpack, Rollup, Vite) |
-| `thekselect.umd.js` | UMD | `<script>` tags, CommonJS |
-| `thekselect.d.ts` | TypeScript declarations | TypeScript consumers |
+| `thekselect.umd.js` | UMD | `<script>` tags in browsers |
+| `index.d.ts` | TypeScript declarations | TypeScript consumers |
 
 CSS themes are separate files, also in `dist/`, and are imported explicitly by the consumer.
 

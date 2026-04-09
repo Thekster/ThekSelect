@@ -1,5 +1,3 @@
-import { ThekSelectConfig } from '../types.js';
-
 export function normalizeHeight(value: number | string): string {
   if (typeof value === 'number') {
     return `${value}px`;

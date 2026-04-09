@@ -1,12 +1,11 @@
 {
   "name": "thekselect",
-  "version": "1.2.1",
-  "description": "A headless, framework-agnostic select library with themes.",
+  "version": "1.2.2",
+  "description": "A browser select library with a reusable core and themes.",
   "keywords": [
     "accessible",
     "aria",
     "autocomplete",
-    "headless",
     "multiselect",
     "select",
     "tagging"
@@ -20,19 +19,17 @@
     "**/*.css"
   ],
   "type": "module",
-  "main": "./dist/thekselect.umd.js",
+  "main": "./dist/thekselect.js",
   "module": "./dist/thekselect.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/thekselect.js",
-      "require": "./dist/thekselect.umd.js"
+      "import": "./dist/thekselect.js"
     },
     "./min": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/thekselect.min.js",
-      "require": "./dist/thekselect.umd.min.js"
+      "import": "./dist/thekselect.min.js"
     },
     "./css/*": "./dist/css/*"
   },
@@ -45,7 +42,7 @@
     "format:check": "oxfmt --check .",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "release:check": "npm test -- --run && npm run build && npm pack --dry-run --cache .npm-cache",
+    "release:check": "npm run lint && npm test -- --run && npm run build && npm pack --dry-run --cache .npm-cache",
     "build:showcase": "vite build --config vite.showcase.config.ts",
     "prepublishOnly": "npm run release:check"
   },

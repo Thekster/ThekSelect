@@ -22,15 +22,39 @@ export function createTagNode<T>(
   config: Required<ThekSelectConfig<T>>,
   callbacks: RendererCallbacks<T>
 ): HTMLElement {
-  const dField = config.displayField;
   const tag = document.createElement('span');
   tag.className = 'thek-tag';
   tag.draggable = true;
-  tag.dataset.index = index.toString();
-  tag.dataset.value = val;
 
   const label = document.createElement('span');
   label.className = 'thek-tag-label';
+  tag.appendChild(label);
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  removeBtn.className = 'thek-tag-remove';
+  tag.appendChild(removeBtn);
+  updateTagNode(tag, option, val, index, config, callbacks);
+  return tag;
+}
+
+export function updateTagNode<T>(
+  tag: HTMLElement,
+  option: ThekSelectOption<T>,
+  val: string,
+  index: number,
+  config: Required<ThekSelectConfig<T>>,
+  callbacks: RendererCallbacks<T>
+): void {
+  const dField = config.displayField;
+  tag.dataset.index = index.toString();
+  tag.dataset.value = val;
+
+  const label = tag.querySelector<HTMLElement>('.thek-tag-label');
+  const removeBtn = tag.querySelector<HTMLButtonElement>('.thek-tag-remove');
+  if (!label || !removeBtn) return;
+
+  label.textContent = '';
   const content = safeRender(config.renderSelection, option, config, callbacks.onError);
   const displayText = content instanceof HTMLElement ? String(option[dField] ?? val) : content;
   if (content instanceof HTMLElement) {
@@ -38,19 +62,13 @@ export function createTagNode<T>(
   } else {
     label.textContent = content;
   }
-  tag.appendChild(label);
 
-  const removeBtn = document.createElement('button');
-  removeBtn.type = 'button';
-  removeBtn.className = 'thek-tag-remove';
+  removeBtn.textContent = '×';
   removeBtn.setAttribute('aria-label', `Remove ${displayText}`);
-  removeBtn.innerHTML = '&times;';
-  removeBtn.addEventListener('click', (e) => {
+  removeBtn.onclick = (e) => {
     e.stopPropagation();
     callbacks.onSelect(option);
-  });
-  tag.appendChild(removeBtn);
-  return tag;
+  };
 }
 
 export function renderSelectionContent<T>(
@@ -103,7 +121,7 @@ export function renderSelectionContent<T>(
         let tag = existing.get(val);
         if (tag) {
           existing.delete(val);
-          tag.dataset.index = i.toString();
+          updateTagNode(tag, option, val, i, config, callbacks);
         } else {
           tag = createTagNode(option, val, i, config, callbacks);
         }

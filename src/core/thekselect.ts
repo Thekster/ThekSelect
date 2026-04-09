@@ -23,7 +23,7 @@ import { injectStyles } from '../utils/styles.js';
 import { generateId } from '../utils/dom.js';
 import { globalEventManager } from '../utils/event-manager.js';
 
-/** Returned by ThekSelect.init() — a headless core augmented with DOM-specific methods. */
+/** Returned by ThekSelect.init() — the core instance augmented with DOM-specific methods. */
 export type ThekSelectHandle<T = unknown> = ThekSelect<T> & {
   setHeight(height: number | string): void;
   setRenderOption(fn: (option: ThekSelectOption<T>) => string | HTMLElement): void;
@@ -44,7 +44,7 @@ export class ThekSelect<T = unknown> {
   private debouncedSearch!: DebouncedFn<[query: string]>;
 
   /**
-   * Headless constructor — no DOM element required.
+   * Core constructor — no bound DOM element required.
    * @param config  Selection options and behaviour config.
    * @param _element  Used internally by ThekSelect.init() to parse native <select> elements.
    */
@@ -75,6 +75,7 @@ export class ThekSelect<T = unknown> {
   // ── Actions ───────────────────────────────────────────────────────────────
 
   public open(): void {
+    if (this.config.disabled) return;
     if (this.stateManager.getState().isOpen) return;
     // Skip past any leading disabled options so aria-activedescendant never
     // points at an item the user cannot select.
@@ -105,6 +106,7 @@ export class ThekSelect<T = unknown> {
   }
 
   public select(option: ThekSelectOption<T>): void {
+    if (this.config.disabled) return;
     if (option.disabled) return;
     const state = this.stateManager.getState() as ThekSelectState<T>;
     const update = applySelection(this.config, state, option);
@@ -121,6 +123,7 @@ export class ThekSelect<T = unknown> {
   }
 
   public create(label: string): void {
+    if (this.config.disabled) return;
     const newOption = createOptionFromLabel(this.config, label);
     const state = this.stateManager.getState();
     this.stateManager.setState({ options: [...state.options, newOption] });
@@ -131,11 +134,13 @@ export class ThekSelect<T = unknown> {
    * Sets the search query in state and triggers the debounced loadOptions call.
    */
   public search(query: string): void {
+    if (this.config.disabled) return;
     this.stateManager.setState({ inputValue: query });
     this.debouncedSearch(query);
   }
 
   public reorder(from: number, to: number): void {
+    if (this.config.disabled) return;
     const state = this.stateManager.getState() as ThekSelectState<T>;
     const selectedValues = reorderSelectedValues(state, from, to);
     this.stateManager.setState({ selectedValues });
@@ -144,6 +149,7 @@ export class ThekSelect<T = unknown> {
   }
 
   public removeLastSelection(): void {
+    if (this.config.disabled) return;
     const state = this.stateManager.getState() as ThekSelectState<T>;
     const update = removeLastSelection(this.config, state);
     this.stateManager.setState({
@@ -456,6 +462,7 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
   }
 
   private handleKeyDown(e: KeyboardEvent): void {
+    if (this.config.disabled) return;
     const state = this.stateManager.getState();
 
     switch (e.key) {

@@ -1,5 +1,19 @@
 export type StateListener<T> = (state: Readonly<T>) => void;
 
+function cloneAndFreeze(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return Object.freeze(value.map((item) => cloneAndFreeze(item)));
+  }
+  if (value !== null && typeof value === 'object') {
+    const cloned: Record<string, unknown> = {};
+    for (const [key, nested] of Object.entries(value)) {
+      cloned[key] = cloneAndFreeze(nested);
+    }
+    return Object.freeze(cloned);
+  }
+  return value;
+}
+
 export class StateManager<T extends object> {
   private state: T;
   private listeners: Set<StateListener<T>> = new Set();
@@ -9,14 +23,7 @@ export class StateManager<T extends object> {
   }
 
   getState(): Readonly<T> {
-    const shallow = { ...this.state } as Record<string, unknown>;
-    for (const key of Object.keys(shallow)) {
-      const val = shallow[key];
-      if (val !== null && typeof val === 'object' && !Array.isArray(val)) {
-        shallow[key] = Object.freeze({ ...(val as object) });
-      }
-    }
-    return Object.freeze(shallow) as Readonly<T>;
+    return cloneAndFreeze(this.state) as Readonly<T>;
   }
 
   setState(newState: Partial<T>): void {

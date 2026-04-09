@@ -46,6 +46,29 @@ export function updateOptionAttrs<T>(
   }
 }
 
+export function updateOptionContent<T>(
+  li: HTMLLIElement,
+  option: ThekSelectOption<T>,
+  config: Required<ThekSelectConfig<T>>,
+  callbacks: RendererCallbacks<T>
+): void {
+  const label = li.querySelector<HTMLElement>('.thek-option-label');
+  if (!label) return;
+
+  label.textContent = '';
+  const content = safeRender(config.renderOption, option, config, callbacks.onError);
+  if (content instanceof HTMLElement) {
+    label.appendChild(content);
+  } else {
+    label.textContent = content;
+  }
+
+  li.onclick = (e) => {
+    e.stopPropagation();
+    callbacks.onSelect(option);
+  };
+}
+
 export function createOptionItem<T>(
   option: ThekSelectOption<T>,
   index: number,
@@ -80,10 +103,7 @@ export function createOptionItem<T>(
   }
   li.appendChild(label);
 
-  li.addEventListener('click', (e) => {
-    e.stopPropagation();
-    callbacks.onSelect(option);
-  });
+  updateOptionContent(li, option, config, callbacks);
   return li;
 }
 
@@ -175,6 +195,7 @@ export function renderOptionsContent<T>(
       if (li) {
         existing.delete(key);
         updateOptionAttrs(li, option, index, state, config, id);
+        updateOptionContent(li, option, config, callbacks);
       } else {
         li = createOptionItem(option, index, state, config, callbacks, id);
         li.dataset.key = key;
@@ -190,11 +211,11 @@ export function renderOptionsContent<T>(
         createLi = document.createElement('li');
         createLi.className = 'thek-option thek-create';
         createLi.dataset.key = createKey;
-        createLi.addEventListener('click', (e) => {
-          e.stopPropagation();
-          callbacks.onCreate(state.inputValue);
-        });
       }
+      createLi.onclick = (e) => {
+        e.stopPropagation();
+        callbacks.onCreate(state.inputValue);
+      };
       createLi.textContent = config.createText.replace('{%t}', state.inputValue);
       createLi.classList.toggle('thek-focused', state.focusedIndex === filteredOptions.length);
       list.appendChild(createLi);

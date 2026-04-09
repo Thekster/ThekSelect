@@ -1,6 +1,18 @@
 # Release Notes
 
-## Unreleased
+## 1.2.2 (2026-04-09)
+
+### Changed
+
+- **Browser-only positioning** — package metadata and docs now describe ThekSelect as a browser select library with a reusable core, instead of implying non-browser runtime support or CommonJS consumption.
+- **Release gating** — `npm run release:check` now enforces lint before tests, build, and dry-run pack so publish verification matches CI expectations.
+
+### Fixed
+
+- **Default searchable keyboard entry** — the visible control remains keyboard reachable in searchable mode, instead of removing the widget from the tab order until the hidden dropdown input exists.
+- **Disabled interaction leaks** — disabled instances now block keyboard and action-method entry points consistently, and expose disabled semantics on the control/input.
+- **State snapshot mutability** — `StateManager.getState()` now returns recursively frozen snapshots, including nested arrays.
+- **Stale DOM reuse** — reused option and tag nodes now refresh rendered content, remove-button labels, and click handlers when render output or option labels change.
 
 ## 1.2.1 (2026-04-08)
 

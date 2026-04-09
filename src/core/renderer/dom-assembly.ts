@@ -25,13 +25,14 @@ export function createRendererSkeleton<T>(
 
   const control = document.createElement('div');
   control.className = 'thek-control';
+  control.setAttribute('tabindex', config.disabled ? '-1' : '0');
+  control.setAttribute('aria-disabled', config.disabled ? 'true' : 'false');
   if (!config.searchable) {
     control.setAttribute('role', 'combobox');
     control.setAttribute('aria-expanded', 'false');
     control.setAttribute('aria-haspopup', 'listbox');
     control.setAttribute('aria-controls', `${id}-list`);
   }
-  control.setAttribute('tabindex', config.searchable ? '-1' : '0');
 
   const selectionContainer = document.createElement('div');
   selectionContainer.className = 'thek-selection';
@@ -96,11 +97,13 @@ export function createRendererSkeleton<T>(
     input.type = 'text';
     input.autocomplete = 'off';
     input.placeholder = config.searchPlaceholder;
+    input.disabled = config.disabled;
     input.setAttribute('role', 'combobox');
     input.setAttribute('aria-expanded', 'false');
     input.setAttribute('aria-haspopup', 'listbox');
     input.setAttribute('aria-controls', `${id}-list`);
     input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-disabled', config.disabled ? 'true' : 'false');
 
     searchWrapper.appendChild(input);
     dropdown.appendChild(searchWrapper);
