@@ -32,8 +32,18 @@ Target environment: browser. Runtime dependencies: none.
 | `config-utils.ts` | `buildConfig()` merges defaults + global defaults + instance config; `buildInitialState()` seeds first state |
 | `options-logic.ts` | Pure functions: filter options, detect remote mode, merge remote results |
 | `selection-logic.ts` | Pure functions: apply selection, remove, reorder, create option from label |
-| `dom-renderer.ts` | `DomRenderer` — creates and updates all DOM nodes; no state, no events |
+| `dom-renderer.ts` | `DomRenderer` — orchestrator for DOM updates; delegates to `src/core/renderer/` modules |
 | `thekselect.ts` | `ThekSelect` (exported headless class) and `ThekSelectDom` (unexported DOM subclass); `ThekSelect.init()` entry point |
+
+### src/core/renderer/ (Modular Renderer)
+
+| File | Responsibility |
+|---|---|
+| `constants.ts` | SVG icons and `RendererCallbacks` interface |
+| `dom-assembly.ts` | Initial DOM skeleton creation and setup; Event listener attachment |
+| `selection-renderer.ts` | Rendering logic for tags, summary, and single-select content |
+| `options-renderer.ts` | Dropdown list rendering, virtualization logic, and item creation |
+| `dropdown-positioner.ts` | Layout math, viewport constraints, and "flip up" logic |
 
 ### src/utils/
 
@@ -54,8 +64,14 @@ Only `setMaxOptions()`, `setHeight()`, and `setRenderOption()` may mutate specif
 post-init, and only because they also trigger a re-render or `forceNotify()`.
 
 **Rendering:** `DomRenderer.render()` is called by the state subscriber on every state change.
-It does a full rebuild — no diffing. `positionDropdown()` must NOT be called from inside `render()`;
-it is called from `open()`, `resize` handlers, and `scroll` handlers only.
+It acts as a functional orchestrator, delegating specific rendering tasks (selection, options)
+to stateless modules in `src/core/renderer/`. `positionDropdown()` must NOT be called from
+inside `render()`; it is called from `open()`, `resize` handlers, and `scroll` handlers only.
+
+**Modularity:** Prefer small, focused files over monolithic ones. If a file grows beyond 300 lines,
+evaluate if its logic can be extracted into a stateless utility or a sub-renderer module.
+Follow the "Functional Orchestrator" pattern: a central class manages DOM references and
+lifecycle, while pure functions or focused utilities handle the heavy lifting.
 
 **Global events:** All shared `window`/`document` listeners go through `GlobalEventManager`.
 It attaches lazily on first subscriber and detaches when all subscriber sets are empty.
