@@ -1,5 +1,4 @@
-.thek-select,
-.thek-dropdown {
+:root {
   --thek-primary: #0f172a;
   --thek-primary-light: #f1f5f9;
   --thek-bg-surface: #ffffff;
@@ -21,8 +20,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .thek-select,
-  .thek-dropdown {
+  :root {
     --thek-primary: #38bdf8;
     --thek-primary-light: rgba(56, 189, 248, 0.15);
     --thek-bg-surface: #0f172a;

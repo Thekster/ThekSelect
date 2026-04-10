@@ -209,7 +209,10 @@ describe('ARIA state correctness', () => {
     ThekSelect.init(container, {
       debounce: 0,
       loadingText: 'Wird geladen...',
-      loadOptions: () => new Promise((r) => { resolve = r; })
+      loadOptions: () =>
+        new Promise((r) => {
+          resolve = r;
+        })
     });
 
     const input = document.querySelector('.thek-input') as HTMLInputElement;

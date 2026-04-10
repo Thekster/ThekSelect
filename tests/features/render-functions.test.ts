@@ -16,7 +16,9 @@ describe('Render function error boundary', () => {
   it('falls back to plain label text when renderOption throws', () => {
     ThekSelect.init(container, {
       options: [{ value: '1', label: 'Apple' }],
-      renderOption: () => { throw new Error('render crash'); }
+      renderOption: () => {
+        throw new Error('render crash');
+      }
     });
 
     const control = document.querySelector('.thek-control') as HTMLElement;
@@ -31,7 +33,9 @@ describe('Render function error boundary', () => {
   it('fires error event when renderOption throws', () => {
     const ts = ThekSelect.init(container, {
       options: [{ value: '1', label: 'Apple' }],
-      renderOption: () => { throw new Error('render crash'); }
+      renderOption: () => {
+        throw new Error('render crash');
+      }
     });
 
     const errorHandler = vi.fn();
@@ -51,7 +55,9 @@ describe('Render function error boundary', () => {
   it('falls back to plain label text when renderSelection throws in single mode', () => {
     ThekSelect.init(container, {
       options: [{ value: '1', label: 'Apple', selected: true }],
-      renderSelection: () => { throw new Error('selection crash'); }
+      renderSelection: () => {
+        throw new Error('selection crash');
+      }
     });
 
     // Selection content should render the fallback label
@@ -62,7 +68,9 @@ describe('Render function error boundary', () => {
   it('fires error event when renderSelection throws', () => {
     const ts = ThekSelect.init(container, {
       options: [{ value: '1', label: 'Apple', selected: true }],
-      renderSelection: () => { throw new Error('selection crash'); }
+      renderSelection: () => {
+        throw new Error('selection crash');
+      }
     });
 
     const errorHandler = vi.fn();

@@ -133,7 +133,9 @@ describe('ThekSelect Remote loading', () => {
   it('emits error event when loadOptions rejects with a real error', async () => {
     const networkError = new Error('network failure');
     const ts = ThekSelect.init(container, {
-      loadOptions: async (_q, _s) => { throw networkError; },
+      loadOptions: async (_q, _s) => {
+        throw networkError;
+      },
       debounce: 0
     });
 
@@ -156,9 +158,7 @@ describe('ThekSelect Remote loading', () => {
     const ts = ThekSelect.init(container, {
       loadOptions: (_q, signal) =>
         new Promise((_resolve, reject) => {
-          signal.addEventListener('abort', () =>
-            reject(new DOMException('Aborted', 'AbortError'))
-          );
+          signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')));
         }),
       debounce: 0
     });

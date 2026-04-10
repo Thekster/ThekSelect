@@ -1,20 +1,20 @@
-import { ThekSelect } from '../src/index.ts';
+import { ThekSelect, ThekSelectHandle } from '../src/index.ts';
 
-window.toggleCode = (btn) => {
-  const snippet = btn.nextElementSibling;
+window.toggleCode = (btn: HTMLElement) => {
+  const snippet = btn.nextElementSibling as HTMLElement;
   snippet.classList.toggle('visible');
   btn.textContent = snippet.classList.contains('visible') ? 'Hide Code' : 'Show Code';
 };
 
-const instances = [];
-const pageThemeSelect = document.getElementById('page-theme-select');
-const thekThemeSelect = document.getElementById('thek-theme-select');
+const instances: ThekSelectHandle<unknown>[] = [];
+const pageThemeSelect = document.getElementById('page-theme-select') as HTMLSelectElement;
+const thekThemeSelect = document.getElementById('thek-theme-select') as HTMLSelectElement;
 
-const registerInstance = (instance) => {
+const registerInstance = (instance: ThekSelectHandle<unknown>) => {
   instances.push(instance);
 };
 
-const applyThekTheme = (theme) => {
+const applyThekTheme = (theme: string) => {
   const supportedThemes = [
     'dark',
     'forest',
@@ -31,21 +31,28 @@ const applyThekTheme = (theme) => {
   } else {
     document.documentElement.setAttribute('data-thek-theme', resolvedTheme);
   }
-  thekThemeSelect.value = resolvedTheme;
+  if (thekThemeSelect) thekThemeSelect.value = resolvedTheme;
 };
 
-const applyPageTheme = (theme) => {
-  const resolvedTheme = theme === 'dark' ? 'dark' : 'light';
+const applyPageTheme = (theme: string) => {
+  const supportedPageThemes = ['light', 'dark', 'gray', 'red', 'blue', 'green'];
+  const resolvedTheme = supportedPageThemes.includes(theme) ? theme : 'light';
   document.documentElement.setAttribute('data-showcase-theme', resolvedTheme);
-  pageThemeSelect.value = resolvedTheme;
+  document.documentElement.setAttribute('data-theme', resolvedTheme === 'dark' ? 'dark' : 'light');
+  if (pageThemeSelect) pageThemeSelect.value = resolvedTheme;
 };
 
-pageThemeSelect.addEventListener('change', (e) => {
-  applyPageTheme(e.target.value);
-});
-thekThemeSelect.addEventListener('change', (e) => {
-  applyThekTheme(e.target.value);
-});
+if (pageThemeSelect) {
+  pageThemeSelect.addEventListener('change', (e) => {
+    applyPageTheme((e.target as HTMLSelectElement).value);
+  });
+}
+
+if (thekThemeSelect) {
+  thekThemeSelect.addEventListener('change', (e) => {
+    applyThekTheme((e.target as HTMLSelectElement).value);
+  });
+}
 
 // Basic
 const basic = ThekSelect.init('#basic-select', {
@@ -135,15 +142,9 @@ const options = [
   { value: '2', label: 'Option 2' },
   { value: '3', label: 'Option 3' }
 ];
-registerInstance(
-  ThekSelect.init('#size-sm', { height: 32, options, placeholder: 'Small size' })
-);
-registerInstance(
-  ThekSelect.init('#size-md', { height: 40, options, placeholder: 'Medium size' })
-);
-registerInstance(
-  ThekSelect.init('#size-lg', { height: 48, options, placeholder: 'Large size' })
-);
+registerInstance(ThekSelect.init('#size-sm', { height: 32, options, placeholder: 'Small size' }));
+registerInstance(ThekSelect.init('#size-md', { height: 40, options, placeholder: 'Medium size' }));
+registerInstance(ThekSelect.init('#size-lg', { height: 48, options, placeholder: 'Large size' }));
 
 // Multi-select sizing
 const smMulti = ThekSelect.init('#size-sm-multi', {
@@ -280,10 +281,9 @@ const configPreview = ThekSelect.init('#config-preview-container', {
 registerInstance(configPreview);
 
 const applyThemeToPreviewInstance = (theme) => {
-  const targetElements = [
-    configPreview.renderer?.wrapper,
-    configPreview.renderer?.dropdown
-  ].filter(Boolean);
+  const targetElements = [configPreview.renderer?.wrapper, configPreview.renderer?.dropdown].filter(
+    Boolean
+  );
   const cssVarMap = {
     primary: '--thek-primary',
     primaryLight: '--thek-primary-light',
@@ -536,10 +536,11 @@ presetEl.addEventListener('change', (e) => {
 applyConfigPreset('slate');
 updateConfigurator();
 
-const prefersDark =
-  window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 applyPageTheme(prefersDark ? 'dark' : 'light');
-applyThekTheme(thekThemeSelect.value);
+if (thekThemeSelect) {
+  applyThekTheme(thekThemeSelect.value);
+}
 
 const sections = document.querySelectorAll('section');
 const navLinks = document.querySelectorAll('nav a');

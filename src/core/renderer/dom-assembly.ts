@@ -38,37 +38,61 @@ export function createRendererSkeleton<T>(
   selectionContainer.className = 'thek-selection';
 
   // Setup DnD
-  selectionContainer.addEventListener('dragstart', (e) => {
-    const tag = (e.target as HTMLElement).closest<HTMLElement>('.thek-tag');
-    if (!tag) return;
-    e.dataTransfer?.setData('text/plain', tag.dataset.index!);
-    tag.classList.add('thek-dragging');
-  }, { signal });
+  selectionContainer.addEventListener(
+    'dragstart',
+    (e) => {
+      const tag = (e.target as HTMLElement).closest<HTMLElement>('.thek-tag');
+      if (!tag) return;
+      e.dataTransfer?.setData('text/plain', tag.dataset.index!);
+      tag.classList.add('thek-dragging');
+    },
+    { signal }
+  );
 
-  selectionContainer.addEventListener('dragend', (e) => {
-    (e.target as HTMLElement).closest<HTMLElement>('.thek-tag')?.classList.remove('thek-dragging');
-  }, { signal });
+  selectionContainer.addEventListener(
+    'dragend',
+    (e) => {
+      (e.target as HTMLElement)
+        .closest<HTMLElement>('.thek-tag')
+        ?.classList.remove('thek-dragging');
+    },
+    { signal }
+  );
 
-  selectionContainer.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    (e.target as HTMLElement).closest<HTMLElement>('.thek-tag')?.classList.add('thek-drag-over');
-  }, { signal });
+  selectionContainer.addEventListener(
+    'dragover',
+    (e) => {
+      e.preventDefault();
+      (e.target as HTMLElement).closest<HTMLElement>('.thek-tag')?.classList.add('thek-drag-over');
+    },
+    { signal }
+  );
 
-  selectionContainer.addEventListener('dragleave', (e) => {
-    (e.target as HTMLElement).closest<HTMLElement>('.thek-tag')?.classList.remove('thek-drag-over');
-  }, { signal });
+  selectionContainer.addEventListener(
+    'dragleave',
+    (e) => {
+      (e.target as HTMLElement)
+        .closest<HTMLElement>('.thek-tag')
+        ?.classList.remove('thek-drag-over');
+    },
+    { signal }
+  );
 
-  selectionContainer.addEventListener('drop', (e) => {
-    e.preventDefault();
-    const tag = (e.target as HTMLElement).closest<HTMLElement>('.thek-tag');
-    if (!tag) return;
-    tag.classList.remove('thek-drag-over');
-    const fromIndex = parseInt(e.dataTransfer?.getData('text/plain') || '-1');
-    const toIndex = parseInt(tag.dataset.index!);
-    if (fromIndex !== -1 && fromIndex !== toIndex) {
-      callbacks.onReorder(fromIndex, toIndex);
-    }
-  }, { signal });
+  selectionContainer.addEventListener(
+    'drop',
+    (e) => {
+      e.preventDefault();
+      const tag = (e.target as HTMLElement).closest<HTMLElement>('.thek-tag');
+      if (!tag) return;
+      tag.classList.remove('thek-drag-over');
+      const fromIndex = parseInt(e.dataTransfer?.getData('text/plain') || '-1');
+      const toIndex = parseInt(tag.dataset.index!);
+      if (fromIndex !== -1 && fromIndex !== toIndex) {
+        callbacks.onReorder(fromIndex, toIndex);
+      }
+    },
+    { signal }
+  );
 
   const placeholderElement = document.createElement('span');
   placeholderElement.className = 'thek-placeholder';

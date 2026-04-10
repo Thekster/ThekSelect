@@ -44,15 +44,18 @@ Breaking changes: add `!` after the type (`feat!: ...`) and a `BREAKING CHANGE:`
 These are enforced by reviewers and the CI gate — read them before writing code.
 
 **Safety**
+
 - Use `textContent` for all user-supplied strings. Never `innerHTML` for user content.
 - Every UI string (`noResultsText`, `loadingText`, `searchPlaceholder`) must be a `ThekSelectConfig` field with a sensible English default.
 - Do not add permanent listeners to `window` or `document` outside `GlobalEventManager`.
 - Do not use `as unknown as` to satisfy the type checker.
 
 **State**
+
 - All state lives in `StateManager`. Read via `getState()` (returns a frozen copy). Write via `setState(partial)`. Never mutate the object returned by `getState()`.
 
 **Rendering**
+
 - `DomRenderer.render()` must not call `positionDropdown()`. Position is set only in `open()`, resize handlers, and scroll handlers.
 
 **Destroy contract**
@@ -71,13 +74,13 @@ Every bug fix **must** include a regression test in `tests/regressions/`. Name t
 
 ## Tests
 
-| Directory | What it covers |
-|---|---|
-| `tests/core/` | Headless API, StateManager, config defaults |
-| `tests/features/` | Remote loading, canCreate, drag-and-drop, UI features |
+| Directory              | What it covers                                          |
+| ---------------------- | ------------------------------------------------------- |
+| `tests/core/`          | Headless API, StateManager, config defaults             |
+| `tests/features/`      | Remote loading, canCreate, drag-and-drop, UI features   |
 | `tests/accessibility/` | ARIA attributes, keyboard navigation, label association |
-| `tests/integration/` | Full DOM init and interaction scenarios |
-| `tests/regressions/` | One test per previously-found bug |
+| `tests/integration/`   | Full DOM init and interaction scenarios                 |
+| `tests/regressions/`   | One test per previously-found bug                       |
 
 Run a single test file:
 

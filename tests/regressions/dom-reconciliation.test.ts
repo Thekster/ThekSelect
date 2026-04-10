@@ -162,13 +162,17 @@ describe('DOM reconciliation — selection container (tags)', () => {
 
     // Select first option
     control.click();
-    document.querySelectorAll('.thek-option')[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    document
+      .querySelectorAll('.thek-option')[0]
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     const tagOne = document.querySelector('.thek-tag') as HTMLElement;
     expect(tagOne).not.toBeNull();
 
     // Select second option — tagOne should be reused
     control.click();
-    document.querySelectorAll('.thek-option')[1].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    document
+      .querySelectorAll('.thek-option')[1]
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     const tags = document.querySelectorAll('.thek-tag');
     expect(tags.length).toBe(2);
     expect(tags[0]).toBe(tagOne);
@@ -187,9 +191,13 @@ describe('DOM reconciliation — selection container (tags)', () => {
 
     // Select both options
     control.click();
-    document.querySelectorAll('.thek-option')[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    document
+      .querySelectorAll('.thek-option')[0]
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     control.click();
-    document.querySelectorAll('.thek-option')[1].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    document
+      .querySelectorAll('.thek-option')[1]
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(document.querySelectorAll('.thek-tag').length).toBe(2);
 
     // Deselect via remove button on first tag
@@ -213,24 +221,32 @@ describe('DOM reconciliation — selection container (tags)', () => {
 
     // Select 2 — still in tag mode
     control.click();
-    document.querySelectorAll('.thek-option')[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    document
+      .querySelectorAll('.thek-option')[0]
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     control.click();
-    document.querySelectorAll('.thek-option')[1].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    document
+      .querySelectorAll('.thek-option')[1]
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(document.querySelectorAll('.thek-tag').length).toBe(2);
     expect(document.querySelector('.thek-summary-text')).toBeNull();
 
     // Select 3rd — enters summary mode
     control.click();
-    document.querySelectorAll('.thek-option')[2].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    document
+      .querySelectorAll('.thek-option')[2]
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(document.querySelectorAll('.thek-tag').length).toBe(0);
     expect(document.querySelector('.thek-summary-text')?.textContent).toBe('3 items selected');
 
     // Deselect back to 2 — returns to tag mode
-    (document.querySelector('.thek-summary-text') as HTMLElement);
+    document.querySelector('.thek-summary-text') as HTMLElement;
     // Use remove via setValue to go back below threshold
     // Simulate deselect: click option 3 again to deselect
     control.click();
-    document.querySelectorAll('.thek-option')[2].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    document
+      .querySelectorAll('.thek-option')[2]
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(document.querySelector('.thek-summary-text')).toBeNull();
     expect(document.querySelectorAll('.thek-tag').length).toBe(2);
   });

@@ -1,5 +1,4 @@
-export const BASE_STYLES = `.thek-select,
-  .thek-dropdown {
+export const BASE_STYLES = `:root {
     --thek-primary: #0f172a;
     --thek-primary-light: #f1f5f9;
     --thek-bg-surface: #ffffff;
@@ -22,8 +21,7 @@ export const BASE_STYLES = `.thek-select,
 }
 
 @media (prefers-color-scheme: dark) {
-    .thek-select,
-    .thek-dropdown {
+    :root {
         --thek-primary: #38bdf8;
         --thek-primary-light: rgba(56, 189, 248, 0.15);
         --thek-bg-surface: #0f172a;
@@ -39,8 +37,8 @@ export const BASE_STYLES = `.thek-select,
     }
 }
 
-[data-theme='dark'] .thek-select,
-[data-theme='dark'] .thek-dropdown {
+html[data-thek-theme='dark'],
+[data-theme='dark'] {
     --thek-primary: #38bdf8;
     --thek-primary-light: rgba(56, 189, 248, 0.15);
     --thek-bg-surface: #0f172a;

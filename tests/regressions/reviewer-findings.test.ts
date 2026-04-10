@@ -208,7 +208,9 @@ describe('Reviewer findings regressions', () => {
     let resolveRemote!: (opts: { value: string; label: string }[]) => void;
     const ts = ThekSelect.init(container, {
       loadOptions: (_q, _signal) =>
-        new Promise((resolve) => { resolveRemote = resolve; }),
+        new Promise((resolve) => {
+          resolveRemote = resolve;
+        }),
       debounce: 0
     });
 

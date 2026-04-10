@@ -2,8 +2,15 @@
 
 ## Unreleased
 
+### Added
+
+- **Page Themes** — The showcase now supports all available page themes (Gray, Red, Blue, Green) in addition to Light and Dark. Components in the "Base" theme now automatically inherit colors from the active page theme for better visual integration.
+
 ### Fixed
 
+- **Theme Selector Specificity** — Fixed a bug where CSS variables defined directly on `.thek-select` in `BASE_STYLES` blocked external themes from applying via inheritance. Variables are now defined on `:root` to allow proper overriding.
+- **Top-right Selector Robustness** — Refactored the showcase theme selection logic with proper type safety and null checks, fixing a regression where the selectors were non-functional.
+- **Base Theme Dark Mode** — The "Base" theme now correctly responds to the manual page theme toggle (via `data-theme="dark"`) even when the system preference is set to light mode.
 - **Tab/blur closes dropdown** — the dropdown now closes when keyboard focus moves outside the widget (Tab key or programmatic focus change). Previously, Tab-navigating away left the dropdown open. A `mousedown.preventDefault` on the dropdown prevents premature blur when clicking options.
 - **Virtual scroll rAF throttle** — the virtual-list scroll handler is now throttled via `requestAnimationFrame`, collapsing multiple rapid scroll events into a single DOM update per frame. Previously each scroll event triggered a synchronous full rebuild of the visible slice.
 - **Render clone cost** — `render()` now reuses the state snapshot already computed by the state subscriber instead of calling `getState()` twice per render cycle. Eliminates one redundant deep-clone of the full state tree on every state change.

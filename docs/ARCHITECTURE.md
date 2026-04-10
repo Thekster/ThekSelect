@@ -107,6 +107,7 @@ This directory contains stateless functional utilities used by `DomRenderer`:
 `ThekSelect` is the exported reusable core class. It composes `StateManager` and `ThekSelectEventEmitter`, exposes the public action API (`open`, `close`, `toggle`, `select`, `setValue`, `search`, etc.), and calls the pure logic functions.
 
 `ThekSelectDom` is an unexported subclass. It is the only class instantiated by `ThekSelect.init()`. It:
+
 - Creates `DomRenderer` and subscribes to `StateManager` to re-render on every state change.
 - Wires DOM events (click, keydown, input, focus, blur) to the core action methods.
 - Subscribes to `GlobalEventManager` for resize, scroll, and outside-click detection.
@@ -165,11 +166,11 @@ See Global Event Management above.
 
 Vite produces three artifacts in `dist/`:
 
-| File | Format | Consumer |
-|---|---|---|
-| `thekselect.js` | ESM | Bundlers (webpack, Rollup, Vite) |
-| `thekselect.umd.js` | UMD | `<script>` tags in browsers |
-| `index.d.ts` | TypeScript declarations | TypeScript consumers |
+| File                | Format                  | Consumer                         |
+| ------------------- | ----------------------- | -------------------------------- |
+| `thekselect.js`     | ESM                     | Bundlers (webpack, Rollup, Vite) |
+| `thekselect.umd.js` | UMD                     | `<script>` tags in browsers      |
+| `index.d.ts`        | TypeScript declarations | TypeScript consumers             |
 
 CSS themes are separate files, also in `dist/`, and are imported explicitly by the consumer.
 

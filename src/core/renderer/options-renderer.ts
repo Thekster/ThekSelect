@@ -135,9 +135,7 @@ export function renderOptionsContent<T>(
   );
   const canCreate = config.canCreate && !!state.inputValue && !exactMatch;
   const shouldVirtualize =
-    config.virtualize &&
-    filteredOptions.length >= config.virtualThreshold &&
-    !canCreate;
+    config.virtualize && filteredOptions.length >= config.virtualThreshold && !canCreate;
   const itemHeight = Math.max(20, config.virtualItemHeight);
   const overscan = Math.max(0, config.virtualOverscan);
 
@@ -174,9 +172,7 @@ export function renderOptionsContent<T>(
     }
 
     if (end < filteredOptions.length) {
-      list.appendChild(
-        createSpacer((filteredOptions.length - end) * itemHeight)
-      );
+      list.appendChild(createSpacer((filteredOptions.length - end) * itemHeight));
     }
 
     if (typeof preservedScrollTop === 'number') {

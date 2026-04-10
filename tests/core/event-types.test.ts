@@ -118,7 +118,9 @@ describe('Typed event callbacks', () => {
 
   it('error event callback receives an Error object', async () => {
     const ts = ThekSelect.init(container, {
-      loadOptions: async () => { throw new Error('network failure'); },
+      loadOptions: async () => {
+        throw new Error('network failure');
+      },
       debounce: 0
     });
 
