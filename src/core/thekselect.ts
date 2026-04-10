@@ -374,7 +374,9 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     this.renderer.createDom();
     this.applyAccessibleName();
     this.setupListeners();
-    this.unsubscribeState = this.stateManager.subscribe(() => this.render());
+    this.unsubscribeState = this.stateManager.subscribe((state) =>
+      this.render(state as ThekSelectState<T>)
+    );
     this.render();
 
     this.originalElement.style.display = 'none';
@@ -420,21 +422,41 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     this.listenerController = new AbortController();
     const { signal } = this.listenerController;
 
-    this.renderer.control.addEventListener('click', () => {
-      if (this.config.disabled) return;
-      this.toggle();
-    }, { signal });
+    this.renderer.control.addEventListener(
+      'click',
+      () => {
+        if (this.config.disabled) return;
+        this.toggle();
+      },
+      { signal }
+    );
 
     if (this.config.searchable) {
-      this.renderer.input.addEventListener('input', (e) => {
-        const value = (e.target as HTMLInputElement).value;
-        // search() handles the setState({ inputValue }) call — no need to duplicate it here.
-        this.search(value);
-      }, { signal });
+      this.renderer.input.addEventListener(
+        'input',
+        (e) => {
+          const value = (e.target as HTMLInputElement).value;
+          // search() handles the setState({ inputValue }) call — no need to duplicate it here.
+          this.search(value);
+        },
+        { signal }
+      );
     }
 
     this.renderer.input.addEventListener('keydown', (e) => this.handleKeyDown(e), { signal });
     this.renderer.control.addEventListener('keydown', (e) => this.handleKeyDown(e), { signal });
+
+    const closeIfFocusLeft = (e: FocusEvent): void => {
+      const related = e.relatedTarget as Node | null;
+      if (
+        related === null ||
+        (!this.renderer.wrapper.contains(related) && !this.renderer.dropdown.contains(related))
+      ) {
+        this.close();
+      }
+    };
+    this.renderer.input.addEventListener('blur', closeIfFocusLeft, { signal });
+    this.renderer.control.addEventListener('blur', closeIfFocusLeft, { signal });
 
     this.unsubscribeEvents.push(
       globalEventManager.onClick((e: unknown) => {
@@ -529,11 +551,9 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     }
   }
 
-  private render(): void {
-    this.renderer.render(
-      this.stateManager.getState(),
-      this.getFilteredOptions()
-    );
+  private render(state?: ThekSelectState<T>): void {
+    const s = state ?? (this.stateManager.getState() as ThekSelectState<T>);
+    this.renderer.render(s, getFilteredOptions(this.config, s));
   }
 
   private syncOriginalElement(values: string[]): void {
@@ -622,7 +642,11 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     this.listenerController?.abort();
     this.listenerController = null;
     this.renderer.destroy();
-    if (typeof HTMLSelectElement !== 'undefined' && this.originalElement instanceof HTMLSelectElement && this.injectedOptionValues.size > 0) {
+    if (
+      typeof HTMLSelectElement !== 'undefined' &&
+      this.originalElement instanceof HTMLSelectElement &&
+      this.injectedOptionValues.size > 0
+    ) {
       const select = this.originalElement;
       Array.from(select.options)
         .filter((opt) => this.injectedOptionValues.has(opt.value))

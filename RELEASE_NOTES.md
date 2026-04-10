@@ -1,5 +1,13 @@
 # Release Notes
 
+## Unreleased
+
+### Fixed
+
+- **Tab/blur closes dropdown** — the dropdown now closes when keyboard focus moves outside the widget (Tab key or programmatic focus change). Previously, Tab-navigating away left the dropdown open. A `mousedown.preventDefault` on the dropdown prevents premature blur when clicking options.
+- **Virtual scroll rAF throttle** — the virtual-list scroll handler is now throttled via `requestAnimationFrame`, collapsing multiple rapid scroll events into a single DOM update per frame. Previously each scroll event triggered a synchronous full rebuild of the visible slice.
+- **Render clone cost** — `render()` now reuses the state snapshot already computed by the state subscriber instead of calling `getState()` twice per render cycle. Eliminates one redundant deep-clone of the full state tree on every state change.
+
 ## 1.2.2 (2026-04-09)
 
 ### Changed
@@ -37,7 +45,7 @@
 
 ### Fixed
 
-- **Destroy race window** — `ThekSelectDom.destroy()` now calls `super.destroy()` (aborting in-flight requests and debounced searches) *before* cleaning up the DOM, closing a race window where a resolving fetch could attempt to mutate a destroyed state.
+- **Destroy race window** — `ThekSelectDom.destroy()` now calls `super.destroy()` (aborting in-flight requests and debounced searches) _before_ cleaning up the DOM, closing a race window where a resolving fetch could attempt to mutate a destroyed state.
 - **Native select sync label** — `syncOriginalElement` now correctly uses the display label (instead of the raw value string) when injecting dynamically created options into the native `<select>`.
 
 ## 1.1.0 (2026-04-04)

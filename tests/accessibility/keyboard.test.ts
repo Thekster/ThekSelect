@@ -212,4 +212,83 @@ describe('Keyboard accessibility', () => {
 
     expect((document.querySelector('.thek-dropdown') as HTMLElement).hidden).toBe(true);
   });
+
+  // ── Blur / focus-loss closes dropdown ────────────────────────────────────
+
+  it('closes the dropdown when the search input loses focus to an external element', () => {
+    document.body.innerHTML = `
+      <div id="container"></div>
+      <input id="outside" />
+    `;
+    const localContainer = document.getElementById('container') as HTMLDivElement;
+    const outside = document.getElementById('outside') as HTMLInputElement;
+
+    ThekSelect.init(localContainer, {
+      searchable: true,
+      options: [{ value: '1', label: 'One' }]
+    });
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    control.click();
+    expect((document.querySelector('.thek-dropdown') as HTMLElement).hidden).toBe(false);
+
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    input.dispatchEvent(new FocusEvent('blur', { relatedTarget: outside, bubbles: true }));
+
+    expect((document.querySelector('.thek-dropdown') as HTMLElement).hidden).toBe(true);
+  });
+
+  it('closes the dropdown when the control loses focus to an external element in non-searchable mode', () => {
+    document.body.innerHTML = `
+      <div id="container"></div>
+      <input id="outside" />
+    `;
+    const localContainer = document.getElementById('container') as HTMLDivElement;
+    const outside = document.getElementById('outside') as HTMLInputElement;
+
+    ThekSelect.init(localContainer, {
+      searchable: false,
+      options: [{ value: '1', label: 'One' }]
+    });
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    control.click();
+    expect((document.querySelector('.thek-dropdown') as HTMLElement).hidden).toBe(false);
+
+    control.dispatchEvent(new FocusEvent('blur', { relatedTarget: outside, bubbles: true }));
+
+    expect((document.querySelector('.thek-dropdown') as HTMLElement).hidden).toBe(true);
+  });
+
+  it('does not close when focus moves from the control to the search input within the dropdown', () => {
+    ThekSelect.init(container, {
+      searchable: true,
+      options: [{ value: '1', label: 'One' }]
+    });
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+
+    // Simulate: control clicked → dropdown opens → control blurs to input inside dropdown
+    control.click();
+    expect((document.querySelector('.thek-dropdown') as HTMLElement).hidden).toBe(false);
+
+    control.dispatchEvent(new FocusEvent('blur', { relatedTarget: input, bubbles: true }));
+
+    // Still open — relatedTarget is inside the dropdown
+    expect((document.querySelector('.thek-dropdown') as HTMLElement).hidden).toBe(false);
+  });
+
+  it('does not close when focus moves between elements inside the wrapper', () => {
+    ThekSelect.init(container, {
+      searchable: false,
+      options: [{ value: '1', label: 'One' }]
+    });
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    control.click();
+    expect((document.querySelector('.thek-dropdown') as HTMLElement).hidden).toBe(false);
+
+    // Blur where relatedTarget is another element inside the wrapper (e.g. indicators)
+    const indicators = document.querySelector('.thek-indicators') as HTMLElement;
+    control.dispatchEvent(new FocusEvent('blur', { relatedTarget: indicators, bubbles: true }));
+
+    expect((document.querySelector('.thek-dropdown') as HTMLElement).hidden).toBe(false);
+  });
 });

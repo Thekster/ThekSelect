@@ -36,10 +36,23 @@ export class DomRenderer<T = unknown> {
     const elements = createRendererSkeleton(this.id, this.config, this.callbacks, signal);
     Object.assign(this, elements);
 
-    this.optionsList.addEventListener('scroll', () => this.handleOptionsScroll());
+    let scrollRafPending = false;
+    this.optionsList.addEventListener('scroll', () => {
+      if (scrollRafPending) return;
+      scrollRafPending = true;
+      requestAnimationFrame(() => {
+        scrollRafPending = false;
+        this.handleOptionsScroll();
+      });
+    });
     this.optionsList.addEventListener('wheel', (e) => this.handleOptionsWheel(e), {
       passive: false
     });
+
+    // Prevent mousedown on dropdown items from stealing focus away from the
+    // combobox input, which would fire a spurious blur and close the dropdown
+    // before the click handler on the option has a chance to fire.
+    this.dropdown.addEventListener('mousedown', (e) => e.preventDefault(), { signal });
 
     document.body.appendChild(this.dropdown);
     this.applyHeight(this.config.height);
@@ -81,9 +94,22 @@ export class DomRenderer<T = unknown> {
       this.indicatorsContainer.innerHTML = state.isLoading ? SVG_SPINNER : SVG_CHEVRON;
     }
 
-    renderSelectionContent(this.selectionContainer, this.placeholderElement, state, this.config, this.callbacks);
-    renderOptionsContent(this.optionsList, state, filteredOptions, this.config, this.callbacks, this.id);
-    
+    renderSelectionContent(
+      this.selectionContainer,
+      this.placeholderElement,
+      state,
+      this.config,
+      this.callbacks
+    );
+    renderOptionsContent(
+      this.optionsList,
+      state,
+      filteredOptions,
+      this.config,
+      this.callbacks,
+      this.id
+    );
+
     const activeDescendantId =
       state.focusedIndex >= 0 &&
       state.focusedIndex < filteredOptions.length &&
