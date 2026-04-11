@@ -1,1 +1,1 @@
-// exports added in Tasks 10 and 12
+export { useThekSelect } from './composable';
