@@ -37,7 +37,6 @@
     "build": "vite build && cross-env THEK_MINIFY=1 vite build --emptyOutDir false && tsc && shx mkdir -p dist/css && (shx cp -r src/themes/*.css dist/css || shx echo \"No theme CSS files to copy\")",
     "release:check": "npm run build && npm pack --dry-run --cache .npm-cache"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Thekster/ThekSelect.git"
