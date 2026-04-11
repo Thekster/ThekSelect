@@ -7,7 +7,7 @@
   ],
   "scripts": {
     "dev": "vite --open /showcase/index.html",
-    "build": "npm run build --workspace=packages/thekselect && npm run build --workspace=packages/thekselect-vue",
+    "build": "npm run build --workspace=packages/thekselect && npm run build --workspace=packages/thekselect-vue --if-present",
     "build:showcase": "vite build --config vite.showcase.config.ts",
     "test": "vitest",
     "coverage": "vitest run --coverage",
