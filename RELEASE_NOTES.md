@@ -1,5 +1,26 @@
 # Release Notes
 
+## 1.5.0 / thekselect-vue 1.1.0 (2026-04-11)
+
+### Added
+
+- **`setOptions(options)`** — replace the option list on a live instance without reinitialising. Selected values still present in the new list are preserved; options no longer in the list are removed from selection. This is the foundation for reactive options in framework wrappers.
+
+### Changed (`thekselect-vue`)
+
+- **Reactive `options` prop** — `<ThekSelect :options="list" />` now responds to changes in `list`. Previously options were read once at mount and subsequent changes were silently ignored. Requires `thekselect ≥ 1.5.0`.
+- **`v-model` clear** — setting `v-model` to `undefined` now clears the selection. Previously it was a no-op, making programmatic deselect impossible via v-model.
+
+### Fixed
+
+- **Event listener isolation** — a listener registered with `.on()` that throws no longer prevents subsequent listeners for the same event from being called. The error is reported to `console.error` instead of propagating.
+- **`scrollToSelected` positioning** — replaced `el.offsetTop` with `getBoundingClientRect()` arithmetic. The previous approach gave incorrect scroll offsets whenever the element's `offsetParent` was not the scroll container itself (e.g. when an absolutely-positioned ancestor was present).
+- **Spurious `as unknown as` cast removed** from `DomRenderer.setHeight()`. The double-cast was masking a TypeScript complaint about a mutation that is valid and intentional.
+
+### Documentation
+
+- **`ThekSelectOption<T>` JSDoc** — added explicit documentation clarifying that `T` constrains only the `data` field, and that the `[key: string]: unknown` index signature is required for dynamic `valueField`/`displayField` access. The generic does not add type safety to arbitrary extra fields; use `data` for strongly-typed domain data in render functions.
+
 ## 1.4.0 (2026-04-11)
 
 ### Added
