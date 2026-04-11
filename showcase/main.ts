@@ -1,4 +1,4 @@
-import { ThekSelect, ThekSelectHandle } from '../src/index.ts';
+import { ThekSelect, ThekSelectHandle } from '../packages/thekselect/src/index.ts';
 
 window.toggleCode = (btn: HTMLElement) => {
   const snippet = btn.nextElementSibling as HTMLElement;
