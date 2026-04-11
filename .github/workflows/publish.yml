@@ -5,6 +5,11 @@ on:
     types:
       - published
   workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to publish (thekselect or thekselect-vue)'
+        required: true
+        default: 'thekselect'
 
 permissions:
   contents: read
@@ -13,6 +18,9 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: [thekselect, thekselect-vue]
 
     steps:
       - name: Check out repository
@@ -30,6 +38,10 @@ jobs:
 
       - name: Verify release package
         run: npm run release:check
+        working-directory: packages/${{ matrix.package }}
 
       - name: Publish to npm
         run: npm publish
+        working-directory: packages/${{ matrix.package }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
