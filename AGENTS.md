@@ -2,27 +2,47 @@
 
 ## What This Repo Is
 
-ThekSelect is a zero-dependency TypeScript select component library published to npm as `thekselect`.
-It has a **headless core** (`ThekSelect`) that works without any DOM, and an optional **DOM layer**
-(`ThekSelectDom`) that wires the core to a rendered widget. CSS themes are distributed separately
-as importable CSS files.
+ThekSelect is a zero-dependency TypeScript select component library, published as an **npm workspaces monorepo**:
 
-Target environment: browser. Runtime dependencies: none.
+| Package | Path | Description |
+| --- | --- | --- |
+| `thekselect` | `packages/thekselect/` | Core library — headless + DOM renderer, no dependencies |
+| `thekselect-vue` | `packages/thekselect-vue/` | Vue 3 wrapper — `<ThekSelect>` component + `useThekSelect` composable |
+
+The core has a **headless layer** (`ThekSelect`) that works without any DOM, and an optional **DOM layer**
+(`ThekSelectDom`) that wires the core to a rendered widget. CSS themes are distributed as importable CSS files.
+
+Target environment: browser. Runtime dependencies: none (core), `vue` + `thekselect` (vue wrapper).
 
 ## Commands
 
+Run from the **repo root** unless noted.
+
+| Command                   | Purpose                                                      |
+| ------------------------- | ------------------------------------------------------------ |
+| `npm test -- --run`       | Run the full test suite once (no watch) — all packages       |
+| `npm test`                | Run tests in watch mode                                      |
+| `npm run lint`            | Run oxlint — must pass with 0 warnings and 0 errors          |
+| `npm run format`          | Auto-fix formatting with oxfmt                               |
+| `npm run format:check`    | Check formatting without modifying files                     |
+| `npm run build`           | Build both packages (`dist/` in each package dir)            |
+| `npm run dev`             | Start Vite dev server with the showcase page                 |
+
+Run from **`packages/thekselect/`**:
+
 | Command                 | Purpose                                              |
 | ----------------------- | ---------------------------------------------------- |
-| `npm test -- --run`     | Run the full test suite once (no watch)              |
-| `npm test`              | Run tests in watch mode                              |
-| `npm run lint`          | Run oxlint — must pass with 0 warnings and 0 errors  |
-| `npm run build`         | Compile library to `dist/` (ESM + UMD + types + CSS) |
-| `npm run dev`           | Start Vite dev server with the showcase page         |
-| `npm run release:check` | Full gate: tests + build + dry-run pack              |
+| `npm run release:check` | Full gate: build + dry-run pack                      |
+
+Run from **`packages/thekselect-vue/`**:
+
+| Command                 | Purpose                                              |
+| ----------------------- | ---------------------------------------------------- |
+| `npm run release:check` | Full gate: build + dry-run pack                      |
 
 ## File Map
 
-### src/core/
+### packages/thekselect/src/core/
 
 | File                 | Responsibility                                                                                                        |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------- |
@@ -35,7 +55,7 @@ Target environment: browser. Runtime dependencies: none.
 | `dom-renderer.ts`    | `DomRenderer` — orchestrator for DOM updates; delegates to `src/core/renderer/` modules                               |
 | `thekselect.ts`      | `ThekSelect` (exported headless class) and `ThekSelectDom` (unexported DOM subclass); `ThekSelect.init()` entry point |
 
-### src/core/renderer/ (Modular Renderer)
+### packages/thekselect/src/core/renderer/ (Modular Renderer)
 
 | File                     | Responsibility                                                     |
 | ------------------------ | ------------------------------------------------------------------ |
@@ -45,7 +65,7 @@ Target environment: browser. Runtime dependencies: none.
 | `options-renderer.ts`    | Dropdown list rendering, virtualization logic, and item creation   |
 | `dropdown-positioner.ts` | Layout math, viewport constraints, and "flip up" logic             |
 
-### src/utils/
+### packages/thekselect/src/utils/
 
 | File               | Responsibility                                                                                                      |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------- |
@@ -53,6 +73,17 @@ Target environment: browser. Runtime dependencies: none.
 | `dom.ts`           | `generateId()` — unique instance ID used for ARIA attribute wiring                                                  |
 | `event-manager.ts` | `GlobalEventManager` singleton — shared `resize`/`scroll`/`click` listeners with lazy attach and ref-counted detach |
 | `styles.ts`        | `injectStyles()` — injects base CSS into `<head>` once per document (DOM-presence check, not module flag)           |
+
+### packages/thekselect-vue/src/
+
+| File              | Responsibility                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------- |
+| `ThekSelect.vue`  | Vue 3 SFC — wraps `ThekSelect.init()`, maps props → config, forwards all events as Vue emits, watches reactive props (`modelValue`, `height`, `maxOptions`, `renderOption`) |
+| `composable.ts`   | `useThekSelect(el, options)` — headless composable; returns `{ instance, value }` refs |
+| `index.ts`        | Public entry: re-exports `ThekSelect` (default) and `useThekSelect`                   |
+
+Init-time props (`multiple`, `searchable`, `disabled`, `canCreate`, `loadOptions`, etc.) are read once at
+mount. To reconfigure after mount, destroy and remount with a `:key` change.
 
 ## Architecture Rules
 
@@ -65,8 +96,8 @@ post-init, and only because they also trigger a re-render or `forceNotify()`.
 
 **Rendering:** `DomRenderer.render()` is called by the state subscriber on every state change.
 It acts as a functional orchestrator, delegating specific rendering tasks (selection, options)
-to stateless modules in `src/core/renderer/`. `positionDropdown()` must NOT be called from
-inside `render()`; it is called from `open()`, `resize` handlers, and `scroll` handlers only.
+to stateless modules in `packages/thekselect/src/core/renderer/`. `positionDropdown()` must NOT be
+called from inside `render()`; it is called from `open()`, `resize` handlers, and `scroll` handlers only.
 
 The state subscriber passes its snapshot directly to `render(state)`. Do not call
 `stateManager.getState()` inside `render()` — the snapshot is already provided and calling it
@@ -89,12 +120,16 @@ It attaches lazily on first subscriber and detaches when all subscriber sets are
 Every `ThekSelectDom` instance unsubscribes its three handlers (`resize`, `scroll`, `click`) in
 `destroy()`.
 
+**Vue wrapper:** The Vue wrapper is a thin adapter — it must not contain business logic. All
+selection state, filtering, and event emission is handled by the core. The wrapper's only job is
+lifecycle bridging (mount → init, unmount → destroy) and prop/event mapping.
+
 ## Safety Rules
 
 - Use `textContent` for all user-supplied strings. Never use `innerHTML` for user content.
 - Every string shown in the UI (`noResultsText`, `loadingText`, `searchPlaceholder`) must be a
   `ThekSelectConfig` field with a sensible English default. Do not hardcode UI strings in `DomRenderer`.
-- Every bug fix must be accompanied by a regression test in `tests/regressions/`.
+- Every bug fix must be accompanied by a regression test in `packages/thekselect/tests/regressions/`.
 - The dropdown has a `mousedown.preventDefault` listener (added in `createDom()`). This is
   load-bearing: it prevents the combobox input from losing focus when the user clicks an option,
   which would fire a blur event and close the dropdown before the option's click handler fires.
@@ -113,12 +148,24 @@ Every `ThekSelectDom` instance unsubscribes its three handlers (`resize`, `scrol
 
 If you add a new resource in the constructor or `initialize()`, add its cleanup to `destroy()`.
 
+The Vue wrapper's `onUnmounted` hook calls all event unsubscribers first, then `instance.destroy()`.
+Follow the same order if adding new cleanup paths to the Vue wrapper.
+
 ## Test Layout
 
-| Directory              | What it covers                                                  |
-| ---------------------- | --------------------------------------------------------------- |
-| `tests/core/`          | Headless API, `StateManager` unit, config defaults, event types |
-| `tests/features/`      | Remote loading, `canCreate`, drag-and-drop reorder, UI features |
-| `tests/accessibility/` | ARIA attributes, keyboard navigation, label association         |
-| `tests/integration/`   | Full DOM init and interaction scenarios                         |
-| `tests/regressions/`   | One test per previously-found bug — never delete these          |
+### packages/thekselect/tests/
+
+| Directory      | What it covers                                                  |
+| -------------- | --------------------------------------------------------------- |
+| `core/`        | Headless API, `StateManager` unit, config defaults, event types |
+| `features/`    | Remote loading, `canCreate`, drag-and-drop reorder, UI features |
+| `accessibility/` | ARIA attributes, keyboard navigation, label association       |
+| `integration/` | Full DOM init and interaction scenarios                         |
+| `regressions/` | One test per previously-found bug — never delete these          |
+
+### packages/thekselect-vue/tests/
+
+| File                    | What it covers                                                                     |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| `composable.test.ts`    | `useThekSelect` mount/unmount lifecycle, value sync, instance ref                  |
+| `ThekSelect.test.ts`    | Component prop mapping, `v-model` two-way binding, event forwarding, reactive prop updates |
