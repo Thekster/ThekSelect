@@ -87,6 +87,25 @@ describe('useThekSelect', () => {
     wrapper.unmount();
   });
 
+  it('does not initialize when the element ref is null', async () => {
+    const { ThekSelect } = await import('thekselect');
+    const TestComponent = defineComponent({
+      setup() {
+        const el = ref<HTMLElement | null>(null);
+        // el is never bound to a DOM element — intentionally null at mount
+        useThekSelect(el);
+        return {};
+      },
+      template: '<div />',
+    });
+
+    const wrapper = mount(TestComponent, { attachTo: document.body });
+    await nextTick();
+
+    expect(ThekSelect.init).not.toHaveBeenCalled();
+    wrapper.unmount();
+  });
+
   it('returns the raw instance ref', async () => {
     const TestComponent = defineComponent({
       setup() {
