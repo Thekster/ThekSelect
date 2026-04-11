@@ -13,6 +13,7 @@
 ## File Map
 
 ### Modified at root
+
 - `package.json` — strip publish fields, add `"workspaces": ["packages/*"]`, keep shared devDeps
 - `vite.config.ts` — strip build section, keep only `test` with jsdom + include glob
 - `tsconfig.base.json` — **new** shared TS base config
@@ -22,6 +23,7 @@
 - `.github/workflows/ci.yml` — add `npm run build` for both packages
 
 ### Created: `packages/thekselect/`
+
 - `package.json` — same publish config as current root `package.json`
 - `vite.config.ts` — same as current root `vite.config.ts` minus `test` section
 - `tsconfig.json` — extends `../../tsconfig.base.json`
@@ -29,6 +31,7 @@
 - `tests/` — **moved** from `tests/` at root (no file edits)
 
 ### Created: `packages/thekselect-vue/`
+
 - `package.json` — publishes `thekselect-vue`, peers: `thekselect` + `vue`
 - `vite.config.ts` — library mode, ESM only, externals: vue + thekselect
 - `tsconfig.json` — extends `../../tsconfig.base.json`, includes `.vue` files
@@ -43,6 +46,7 @@
 ## Task 1: Create `tsconfig.base.json`
 
 **Files:**
+
 - Create: `tsconfig.base.json`
 
 - [ ] **Step 1: Create the file**
@@ -80,6 +84,7 @@ git commit -m "build: add shared tsconfig.base.json for monorepo"
 ## Task 2: Create `packages/thekselect/` and move core files
 
 **Files:**
+
 - Create dir: `packages/thekselect/`
 - Move: `src/` → `packages/thekselect/src/`
 - Move: `tests/` → `packages/thekselect/tests/`
@@ -104,22 +109,11 @@ Copy from current root `package.json` exactly, but remove the `"scripts"` sectio
   "name": "thekselect",
   "version": "1.2.2",
   "description": "A browser select library with a reusable core and themes.",
-  "keywords": [
-    "accessible",
-    "aria",
-    "autocomplete",
-    "multiselect",
-    "select",
-    "tagging"
-  ],
+  "keywords": ["accessible", "aria", "autocomplete", "multiselect", "select", "tagging"],
   "license": "MIT",
   "author": "Thekster",
-  "files": [
-    "dist"
-  ],
-  "sideEffects": [
-    "**/*.css"
-  ],
+  "files": ["dist"],
+  "sideEffects": ["**/*.css"],
   "type": "module",
   "main": "./dist/thekselect.js",
   "module": "./dist/thekselect.js",
@@ -237,6 +231,7 @@ git commit -m "build: move core library to packages/thekselect"
 ## Task 3: Update root `package.json` to workspace orchestrator
 
 **Files:**
+
 - Modify: `package.json`
 
 - [ ] **Step 1: Replace root `package.json`**
@@ -246,9 +241,7 @@ git commit -m "build: move core library to packages/thekselect"
   "name": "thekselect-root",
   "private": true,
   "version": "0.0.0",
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": ["packages/*"],
   "scripts": {
     "dev": "vite --open /showcase/index.html",
     "build": "npm run build --workspace=packages/thekselect && npm run build --workspace=packages/thekselect-vue",
@@ -286,6 +279,7 @@ git commit -m "build: convert root to npm workspaces orchestrator"
 ## Task 4: Update root `vite.config.ts` for test-only use
 
 **Files:**
+
 - Modify: `vite.config.ts`
 
 - [ ] **Step 1: Replace root `vite.config.ts`**
@@ -315,16 +309,20 @@ git commit -m "build: simplify root vite.config.ts to vitest entry point"
 ## Task 5: Update showcase to use new core paths
 
 **Files:**
+
 - Modify: `showcase/index.html`
 - Modify: `showcase/main.ts`
 
 - [ ] **Step 1: Update `showcase/main.ts`**
 
 Change the first line from:
+
 ```ts
 import { ThekSelect, ThekSelectHandle } from '../src/index.ts';
 ```
+
 to:
+
 ```ts
 import { ThekSelect, ThekSelectHandle } from '../packages/thekselect/src/index.ts';
 ```
@@ -401,6 +399,7 @@ git commit -m "build: remove root src/ and tests/ after monorepo migration"
 ## Task 7: Update CI workflows
 
 **Files:**
+
 - Modify: `.github/workflows/ci.yml`
 - Modify: `.github/workflows/publish.yml`
 
@@ -494,6 +493,7 @@ git commit -m "ci: update workflows for monorepo package structure"
 ## Task 8: Scaffold `packages/thekselect-vue/`
 
 **Files:**
+
 - Create: `packages/thekselect-vue/package.json`
 - Create: `packages/thekselect-vue/vite.config.ts`
 - Create: `packages/thekselect-vue/tsconfig.json`
@@ -519,9 +519,7 @@ git commit -m "ci: update workflows for monorepo package structure"
   ],
   "license": "MIT",
   "author": "Thekster",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "type": "module",
   "main": "./dist/thekselect-vue.js",
   "module": "./dist/thekselect-vue.js",
@@ -640,6 +638,7 @@ git commit -m "build: scaffold thekselect-vue package"
 ## Task 9: Write failing composable tests
 
 **Files:**
+
 - Create: `packages/thekselect-vue/tests/composable.test.ts`
 
 - [ ] **Step 1: Create the test file**
@@ -655,13 +654,13 @@ const mockInstance = {
   getValue: vi.fn<() => undefined>(() => undefined),
   setValue: vi.fn(),
   destroy: vi.fn(),
-  on: vi.fn((_event: string, _cb: (v: unknown) => void) => mockUnsubscribe),
+  on: vi.fn((_event: string, _cb: (v: unknown) => void) => mockUnsubscribe)
 };
 
 vi.mock('thekselect', () => ({
   ThekSelect: {
-    init: vi.fn(() => mockInstance),
-  },
+    init: vi.fn(() => mockInstance)
+  }
 }));
 
 describe('useThekSelect', () => {
@@ -677,17 +676,14 @@ describe('useThekSelect', () => {
         useThekSelect(el, { multiple: true });
         return { el };
       },
-      template: '<div ref="el" />',
+      template: '<div ref="el" />'
     });
 
     const wrapper = mount(TestComponent, { attachTo: document.body });
     await nextTick();
 
     expect(ThekSelect.init).toHaveBeenCalledOnce();
-    expect(ThekSelect.init).toHaveBeenCalledWith(
-      expect.any(HTMLElement),
-      { multiple: true }
-    );
+    expect(ThekSelect.init).toHaveBeenCalledWith(expect.any(HTMLElement), { multiple: true });
     wrapper.unmount();
   });
 
@@ -698,7 +694,7 @@ describe('useThekSelect', () => {
         useThekSelect(el);
         return { el };
       },
-      template: '<div ref="el" />',
+      template: '<div ref="el" />'
     });
 
     const wrapper = mount(TestComponent, { attachTo: document.body });
@@ -721,7 +717,7 @@ describe('useThekSelect', () => {
         const { value } = useThekSelect(el);
         return { el, value };
       },
-      template: '<div ref="el" />',
+      template: '<div ref="el" />'
     });
 
     const wrapper = mount(TestComponent, { attachTo: document.body });
@@ -741,7 +737,7 @@ describe('useThekSelect', () => {
         const { instance } = useThekSelect(el);
         return { el, instance };
       },
-      template: '<div ref="el" />',
+      template: '<div ref="el" />'
     });
 
     const wrapper = mount(TestComponent, { attachTo: document.body });
@@ -773,6 +769,7 @@ git commit -m "test(thekselect-vue): add failing composable tests"
 ## Task 10: Implement `useThekSelect` composable
 
 **Files:**
+
 - Create: `packages/thekselect-vue/src/composable.ts`
 - Modify: `packages/thekselect-vue/src/index.ts`
 
@@ -782,10 +779,7 @@ git commit -m "test(thekselect-vue): add failing composable tests"
 import { ref, onMounted, onUnmounted, type Ref } from 'vue';
 import { ThekSelect, type ThekSelectConfig } from 'thekselect';
 
-export function useThekSelect(
-  el: Ref<HTMLElement | null>,
-  options: ThekSelectConfig = {}
-) {
+export function useThekSelect(el: Ref<HTMLElement | null>, options: ThekSelectConfig = {}) {
   const instance = ref<ThekSelect | null>(null);
   const value = ref<string | string[] | undefined>(undefined);
 
@@ -834,6 +828,7 @@ git commit -m "feat(thekselect-vue): implement useThekSelect composable"
 ## Task 11: Write failing component tests
 
 **Files:**
+
 - Create: `packages/thekselect-vue/tests/ThekSelect.test.ts`
 
 - [ ] **Step 1: Create the test file**
@@ -852,13 +847,13 @@ const mockInstance = {
   setMaxOptions: vi.fn(),
   setRenderOption: vi.fn(),
   destroy: vi.fn(),
-  on: vi.fn((_event: string, _cb: (v: unknown) => void) => mockUnsubscribe),
+  on: vi.fn((_event: string, _cb: (v: unknown) => void) => mockUnsubscribe)
 };
 
 vi.mock('thekselect', () => ({
   ThekSelect: {
-    init: vi.fn(() => mockInstance),
-  },
+    init: vi.fn(() => mockInstance)
+  }
 }));
 
 describe('ThekSelect.vue', () => {
@@ -876,7 +871,7 @@ describe('ThekSelect.vue', () => {
     const { ThekSelect } = await import('thekselect');
     const wrapper = mount(ThekSelectComponent, {
       props: { options: [{ value: 'a', label: 'A' }], multiple: true },
-      attachTo: document.body,
+      attachTo: document.body
     });
     await nextTick();
 
@@ -898,7 +893,7 @@ describe('ThekSelect.vue', () => {
   it('calls setValue silently when modelValue prop changes', async () => {
     const wrapper = mount(ThekSelectComponent, {
       props: { modelValue: 'a' },
-      attachTo: document.body,
+      attachTo: document.body
     });
     await nextTick();
     await wrapper.setProps({ modelValue: 'b' });
@@ -909,7 +904,7 @@ describe('ThekSelect.vue', () => {
   it('calls setHeight when height prop changes', async () => {
     const wrapper = mount(ThekSelectComponent, {
       props: { height: 40 },
-      attachTo: document.body,
+      attachTo: document.body
     });
     await nextTick();
     await wrapper.setProps({ height: 60 });
@@ -920,7 +915,7 @@ describe('ThekSelect.vue', () => {
   it('calls setMaxOptions when maxOptions prop changes', async () => {
     const wrapper = mount(ThekSelectComponent, {
       props: { maxOptions: 10 },
-      attachTo: document.body,
+      attachTo: document.body
     });
     await nextTick();
     await wrapper.setProps({ maxOptions: 5 });
@@ -998,6 +993,7 @@ git commit -m "test(thekselect-vue): add failing ThekSelect.vue component tests"
 ## Task 12: Implement `ThekSelect.vue` component
 
 **Files:**
+
 - Create: `packages/thekselect-vue/src/ThekSelect.vue`
 - Modify: `packages/thekselect-vue/src/index.ts`
 
@@ -1006,11 +1002,7 @@ git commit -m "test(thekselect-vue): add failing ThekSelect.vue component tests"
 ```vue
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from 'vue';
-import {
-  ThekSelect,
-  type ThekSelectConfig,
-  type ThekSelectOption,
-} from 'thekselect';
+import { ThekSelect, type ThekSelectConfig, type ThekSelectOption } from 'thekselect';
 
 const props = defineProps<{
   modelValue?: string | string[];
@@ -1073,7 +1065,7 @@ onMounted(() => {
     virtualThreshold: props.virtualThreshold,
     loadOptions: props.loadOptions,
     renderOption: props.renderOption,
-    renderSelection: props.renderSelection,
+    renderSelection: props.renderSelection
   });
 
   if (props.modelValue !== undefined) {

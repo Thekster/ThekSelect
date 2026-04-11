@@ -8,13 +8,13 @@ const mockInstance = {
   getValue: vi.fn<() => undefined>(() => undefined),
   setValue: vi.fn(),
   destroy: vi.fn(),
-  on: vi.fn((_event: string, _cb: (v: unknown) => void) => mockUnsubscribe),
+  on: vi.fn((_event: string, _cb: (v: unknown) => void) => mockUnsubscribe)
 };
 
 vi.mock('thekselect', () => ({
   ThekSelect: {
-    init: vi.fn(() => mockInstance),
-  },
+    init: vi.fn(() => mockInstance)
+  }
 }));
 
 describe('useThekSelect', () => {
@@ -30,17 +30,14 @@ describe('useThekSelect', () => {
         useThekSelect(el, { multiple: true });
         return { el };
       },
-      template: '<div ref="el" />',
+      template: '<div ref="el" />'
     });
 
     const wrapper = mount(TestComponent, { attachTo: document.body });
     await nextTick();
 
     expect(ThekSelect.init).toHaveBeenCalledOnce();
-    expect(ThekSelect.init).toHaveBeenCalledWith(
-      expect.any(HTMLElement),
-      { multiple: true }
-    );
+    expect(ThekSelect.init).toHaveBeenCalledWith(expect.any(HTMLElement), { multiple: true });
     wrapper.unmount();
   });
 
@@ -51,7 +48,7 @@ describe('useThekSelect', () => {
         useThekSelect(el);
         return { el };
       },
-      template: '<div ref="el" />',
+      template: '<div ref="el" />'
     });
 
     const wrapper = mount(TestComponent, { attachTo: document.body });
@@ -74,7 +71,7 @@ describe('useThekSelect', () => {
         const { value } = useThekSelect(el);
         return { el, value };
       },
-      template: '<div ref="el" />',
+      template: '<div ref="el" />'
     });
 
     const wrapper = mount(TestComponent, { attachTo: document.body });
@@ -96,7 +93,7 @@ describe('useThekSelect', () => {
         useThekSelect(el);
         return {};
       },
-      template: '<div />',
+      template: '<div />'
     });
 
     const wrapper = mount(TestComponent, { attachTo: document.body });
@@ -113,7 +110,7 @@ describe('useThekSelect', () => {
         const { instance } = useThekSelect(el);
         return { el, instance };
       },
-      template: '<div ref="el" />',
+      template: '<div ref="el" />'
     });
 
     const wrapper = mount(TestComponent, { attachTo: document.body });

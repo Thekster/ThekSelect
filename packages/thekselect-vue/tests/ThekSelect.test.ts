@@ -11,13 +11,13 @@ const mockInstance = {
   setMaxOptions: vi.fn(),
   setRenderOption: vi.fn(),
   destroy: vi.fn(),
-  on: vi.fn((_event: string, _cb: (v: unknown) => void) => mockUnsubscribe),
+  on: vi.fn((_event: string, _cb: (v: unknown) => void) => mockUnsubscribe)
 };
 
 vi.mock('thekselect', () => ({
   ThekSelect: {
-    init: vi.fn(() => mockInstance),
-  },
+    init: vi.fn(() => mockInstance)
+  }
 }));
 
 describe('ThekSelect.vue', () => {
@@ -35,7 +35,7 @@ describe('ThekSelect.vue', () => {
     const { ThekSelect } = await import('thekselect');
     const wrapper = mount(ThekSelectComponent, {
       props: { options: [{ value: 'a', label: 'A' }], multiple: true },
-      attachTo: document.body,
+      attachTo: document.body
     });
     await nextTick();
 
@@ -57,7 +57,7 @@ describe('ThekSelect.vue', () => {
   it('calls setValue silently when modelValue prop changes', async () => {
     const wrapper = mount(ThekSelectComponent, {
       props: { modelValue: 'a' },
-      attachTo: document.body,
+      attachTo: document.body
     });
     await nextTick();
     await wrapper.setProps({ modelValue: 'b' });
@@ -68,7 +68,7 @@ describe('ThekSelect.vue', () => {
   it('calls setHeight when height prop changes', async () => {
     const wrapper = mount(ThekSelectComponent, {
       props: { height: 40 },
-      attachTo: document.body,
+      attachTo: document.body
     });
     await nextTick();
     await wrapper.setProps({ height: 60 });
@@ -79,7 +79,7 @@ describe('ThekSelect.vue', () => {
   it('calls setMaxOptions when maxOptions prop changes', async () => {
     const wrapper = mount(ThekSelectComponent, {
       props: { maxOptions: 10 },
-      attachTo: document.body,
+      attachTo: document.body
     });
     await nextTick();
     await wrapper.setProps({ maxOptions: 5 });

@@ -6,10 +6,10 @@ A lightweight, framework-agnostic browser select library with native drag-and-dr
 
 ## Packages
 
-| Package | Description |
-| --- | --- |
-| [`thekselect`](https://www.npmjs.com/package/thekselect) | Core library — vanilla JS, no dependencies |
-| [`thekselect-vue`](packages/thekselect-vue/README.md) | Vue 3 wrapper — `<ThekSelect>` component + `useThekSelect` composable |
+| Package                                                  | Description                                                           |
+| -------------------------------------------------------- | --------------------------------------------------------------------- |
+| [`thekselect`](https://www.npmjs.com/package/thekselect) | Core library — vanilla JS, no dependencies                            |
+| [`thekselect-vue`](packages/thekselect-vue/README.md)    | Vue 3 wrapper — `<ThekSelect>` component + `useThekSelect` composable |
 
 ## Features
 

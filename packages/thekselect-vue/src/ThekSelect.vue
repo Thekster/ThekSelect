@@ -4,7 +4,7 @@ import {
   ThekSelect,
   type ThekSelectHandle,
   type ThekSelectConfig,
-  type ThekSelectOption,
+  type ThekSelectOption
 } from 'thekselect';
 
 const props = defineProps<{
@@ -69,7 +69,7 @@ onMounted(() => {
     virtualThreshold: props.virtualThreshold,
     loadOptions: props.loadOptions,
     renderOption: props.renderOption,
-    renderSelection: props.renderSelection,
+    renderSelection: props.renderSelection
   });
 
   if (props.modelValue !== undefined) {
