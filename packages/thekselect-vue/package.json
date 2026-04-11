@@ -34,6 +34,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue/test-utils": "^2.4.6",
+    "thekselect": "*",
     "vue": "^3.5.13",
     "vue-tsc": "^2.2.10"
   },
