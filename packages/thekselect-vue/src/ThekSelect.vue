@@ -8,7 +8,7 @@ import {
 } from 'thekselect';
 
 const props = defineProps<{
-  modelValue?: string | string[];
+  modelValue?: string | string[] | null;
   options?: ThekSelectOption[];
   multiple?: boolean;
   searchable?: boolean;
@@ -72,7 +72,7 @@ onMounted(() => {
     renderSelection: props.renderSelection
   });
 
-  if (props.modelValue !== undefined) {
+  if (props.modelValue != null) {
     instance.setValue(props.modelValue);
   }
 

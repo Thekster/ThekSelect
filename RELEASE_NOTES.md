@@ -1,5 +1,15 @@
 # Release Notes
 
+## Unreleased (thekselect-vue)
+
+### Added
+
+- **Default export** — `import ThekSelect from 'thekselect-vue'` now works alongside the existing named import `import { ThekSelect } from 'thekselect-vue'`.
+
+### Changed
+
+- **`modelValue` accepts `null`** — the prop type is now `string | string[] | null`. Passing `null` clears the selection, consistent with the common Vue pattern of initializing refs to `null`.
+
 ## 1.5.0 / thekselect-vue 1.1.0 (2026-04-11)
 
 ### Added

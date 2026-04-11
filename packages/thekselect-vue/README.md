@@ -21,7 +21,7 @@ import 'thekselect/css/base.css';
 ```vue
 <script setup>
 import { ref } from 'vue';
-import { ThekSelect } from 'thekselect-vue';
+import ThekSelect from 'thekselect-vue'; // default export, or: import { ThekSelect } from 'thekselect-vue'
 import 'thekselect/css/base.css';
 
 const value = ref(null);
@@ -67,7 +67,7 @@ All [`ThekSelectConfig`](https://github.com/Thekster/ThekSelect#configuration) o
 
 | Prop                | Type                                     | Default              | Description                       |
 | ------------------- | ---------------------------------------- | -------------------- | --------------------------------- |
-| `modelValue`        | `string \| string[]`                     | —                    | Selected value(s) for `v-model`   |
+| `modelValue`        | `string \| string[] \| null`             | —                    | Selected value(s) for `v-model`; `null` or `undefined` clears the selection |
 | `options`           | `ThekSelectOption[]`                     | `[]`                 | Option list                       |
 | `multiple`          | `boolean`                                | `false`              | Enable multi-select               |
 | `searchable`        | `boolean`                                | `true`               | Enable search input               |
