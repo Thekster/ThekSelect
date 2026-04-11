@@ -4,6 +4,8 @@
 
 ### Added
 
+- **`thekselect-vue` 1.0.0** — Vue 3 wrapper package. Provides a `<ThekSelect>` component with full `v-model` support, typed props for all config options, and all core events forwarded as Vue emits. Also exports a `useThekSelect(el, options)` composable for headless/programmatic use. Published separately as `thekselect-vue` on npm.
+- **Monorepo** — Repository restructured as an npm workspaces monorepo. Core library moved to `packages/thekselect/`; Vue wrapper lives at `packages/thekselect-vue/`. Both packages publish independently. Existing `thekselect` API and package shape are unchanged.
 - **Page Themes** — The showcase now supports all available page themes (Gray, Red, Blue, Green) in addition to Light and Dark. Components in the "Base" theme now automatically inherit colors from the active page theme for better visual integration.
 
 ### Fixed

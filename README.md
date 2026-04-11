@@ -4,6 +4,13 @@ A lightweight, framework-agnostic browser select library with native drag-and-dr
 
 **[Live showcase →](https://thekster.github.io/ThekSelect/)**
 
+## Packages
+
+| Package | Description |
+| --- | --- |
+| [`thekselect`](https://www.npmjs.com/package/thekselect) | Core library — vanilla JS, no dependencies |
+| [`thekselect-vue`](packages/thekselect-vue/README.md) | Vue 3 wrapper — `<ThekSelect>` component + `useThekSelect` composable |
+
 ## Features
 
 - Reusable core with renderer/state separation
