@@ -1,8 +1,24 @@
+/**
+ * A single option in a ThekSelect instance.
+ *
+ * `value` and `label` are the default field names used when `valueField` and
+ * `displayField` are not customised. When using custom field names you still
+ * need to satisfy this interface — either keep `value`/`label` as aliases or
+ * use a cast. The library reads fields via `config.valueField` and
+ * `config.displayField` at runtime, not via `.value`/`.label` directly.
+ *
+ * The index signature `[key: string]: unknown` is required so TypeScript allows
+ * dynamic access like `option[config.valueField]`. It has the side-effect of
+ * making the generic parameter `T` apply only to the `data` field — `T` does
+ * **not** add type safety to arbitrary extra fields. To carry strongly-typed
+ * domain data into render functions, use the `data` field.
+ */
 export interface ThekSelectOption<T = unknown> {
   value: string;
   label: string;
   disabled?: boolean;
   selected?: boolean;
+  /** Carry strongly-typed domain data for use in custom render functions. */
   data?: T;
   [key: string]: unknown;
 }

@@ -191,18 +191,22 @@ export class DomRenderer<T = unknown> {
     } else {
       const el = document.getElementById(`${this.id}-opt-${selectedIndex}`);
       if (!el) return;
-      const elTop = el.offsetTop;
-      const elBottom = elTop + el.offsetHeight;
-      const listTop = list.scrollTop;
-      const listBottom = listTop + list.clientHeight;
-      if (elTop < listTop || elBottom > listBottom) {
-        list.scrollTop = elTop - list.clientHeight / 2 + el.offsetHeight / 2;
+      // getBoundingClientRect gives viewport-relative coords; subtract the list's
+      // top and add scrollTop to get the element's offset within the scroll container.
+      // This is correct regardless of what the element's offsetParent happens to be.
+      const elRect = el.getBoundingClientRect();
+      const listRect = list.getBoundingClientRect();
+      const elOffsetInList = elRect.top - listRect.top + list.scrollTop;
+      const elBottom = elOffsetInList + el.offsetHeight;
+      const listBottom = list.scrollTop + list.clientHeight;
+      if (elOffsetInList < list.scrollTop || elBottom > listBottom) {
+        list.scrollTop = elOffsetInList - list.clientHeight / 2 + el.offsetHeight / 2;
       }
     }
   }
 
   public setHeight(height: number | string): void {
-    this.config.height = height as unknown as string | number;
+    this.config.height = height;
     this.applyHeight(height);
   }
 

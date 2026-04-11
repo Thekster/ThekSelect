@@ -35,6 +35,48 @@ describe('ThekSelect Methods', () => {
     expect(Array.from(selectEl.selectedOptions).map((o) => o.value)).toEqual(['1', '2']);
   });
 
+  it('setOptions replaces the option list and re-renders', () => {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const ts = ThekSelect.init(container, {
+      options: [{ value: '1', label: 'One' }]
+    });
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    control.click();
+    expect(document.querySelectorAll('.thek-option').length).toBe(1);
+
+    ts.setOptions([
+      { value: '2', label: 'Two' },
+      { value: '3', label: 'Three' }
+    ]);
+    expect(document.querySelectorAll('.thek-option').length).toBe(2);
+    expect(ts.getState().options.map((o) => o.value)).toEqual(['2', '3']);
+    ts.destroy();
+  });
+
+  it('setOptions preserves selected values still present in the new list', () => {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const ts = ThekSelect.init(container, {
+      multiple: true,
+      options: [
+        { value: '1', label: 'One' },
+        { value: '2', label: 'Two' }
+      ]
+    });
+    ts.setValue(['1', '2']);
+
+    ts.setOptions([
+      { value: '1', label: 'One Updated' },
+      { value: '3', label: 'Three' }
+    ]);
+
+    // '1' still selected; '2' gone from options but value is preserved in map
+    expect((ts.getValue() as string[]).includes('1')).toBe(true);
+    expect(ts.getState().options.map((o) => o.value)).toEqual(['1', '3']);
+    ts.destroy();
+  });
+
   it('destroy should remove the wrapper and show the original element', () => {
     const ts = ThekSelect.init(selectEl);
     expect(selectEl.style.display).toBe('none');

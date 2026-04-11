@@ -93,4 +93,36 @@ describe('ThekSelect Edge Cases', () => {
     expect(document.querySelector('.thek-select')).toBeFalsy(); // wrapper removed
     expect(document.querySelector('.thek-dropdown')).toBeFalsy();
   });
+
+  it('a throwing listener does not silence subsequent listeners', () => {
+    const ts = ThekSelect.init(container, {
+      options: [{ value: '1', label: 'One' }]
+    });
+
+    const results: string[] = [];
+    ts.on('change', () => {
+      results.push('first');
+      throw new Error('boom');
+    });
+    ts.on('change', () => {
+      results.push('second');
+    });
+
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    control.click();
+    (document.querySelector('.thek-option') as HTMLElement).click();
+
+    // Both listeners must have been called despite the first throwing
+    expect(results).toEqual(['first', 'second']);
+  });
+
+  it('setValue with empty array clears single-select selection', () => {
+    const ts = ThekSelect.init(container, {
+      options: [{ value: '1', label: 'One', selected: true }]
+    });
+    expect(ts.getValue()).toBe('1');
+
+    ts.setValue([]);
+    expect(ts.getValue()).toBeUndefined();
+  });
 });

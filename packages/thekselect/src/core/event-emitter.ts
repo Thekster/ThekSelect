@@ -34,6 +34,13 @@ export class ThekSelectEventEmitter<T = unknown> {
 
   emit<K extends ThekSelectEvent>(event: K, data: ThekSelectEventPayloadMap<T>[K]): void {
     if (!this.listeners.has(event)) return;
-    this.listeners.get(event)!.forEach((listener) => listener(data));
+    this.listeners.get(event)!.forEach((listener) => {
+      try {
+        listener(data);
+      } catch (err) {
+        // Isolate listener errors so one bad handler cannot silence the rest.
+        console.error(`ThekSelect: uncaught error in '${event}' listener`, err);
+      }
+    });
   }
 }

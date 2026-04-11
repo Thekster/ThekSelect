@@ -100,7 +100,16 @@ onUnmounted(() => {
 watch(
   () => props.modelValue,
   (v) => {
-    if (instance && v !== undefined) instance.setValue(v, true);
+    if (!instance) return;
+    // v === undefined means the consumer cleared the binding — treat as deselect.
+    instance.setValue(v ?? [], true);
+  }
+);
+
+watch(
+  () => props.options,
+  (v) => {
+    if (instance && v !== undefined) instance.setOptions(v);
   }
 );
 

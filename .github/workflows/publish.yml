@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       package:
-        description: 'Package to publish (thekselect or thekselect-vue)'
-        required: true
-        default: 'thekselect'
+        description: 'Package to publish — thekselect, thekselect-vue, or leave empty for both'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -22,6 +22,10 @@ jobs:
       fail-fast: false
       matrix:
         package: [thekselect, thekselect-vue]
+    if: >
+      github.event_name != 'workflow_dispatch' ||
+      github.event.inputs.package == '' ||
+      github.event.inputs.package == matrix.package
 
     steps:
       - name: Check out repository
@@ -46,7 +50,7 @@ jobs:
         working-directory: packages/${{ matrix.package }}
 
       - name: Publish to npm
-        run: npm publish
+        run: npm publish --provenance
         working-directory: packages/${{ matrix.package }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

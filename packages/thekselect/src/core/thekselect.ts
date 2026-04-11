@@ -228,6 +228,19 @@ export class ThekSelect<T = unknown> {
     this.stateManager.forceNotify();
   }
 
+  public setOptions(options: ThekSelectOption<T>[]): void {
+    const state = this.stateManager.getState() as ThekSelectState<T>;
+    this.stateManager.setState({
+      options,
+      selectedOptionsByValue: mergeSelectedOptionsByValue(
+        this.config.valueField,
+        state.selectedValues,
+        state.selectedOptionsByValue,
+        options
+      )
+    });
+  }
+
   public getValue(): string | string[] | undefined {
     const state = this.stateManager.getState();
     return this.config.multiple ? state.selectedValues : state.selectedValues[0];
