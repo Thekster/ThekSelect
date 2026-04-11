@@ -1,0 +1,52 @@
+{
+  "name": "thekselect",
+  "version": "1.2.2",
+  "description": "A browser select library with a reusable core and themes.",
+  "keywords": [
+    "accessible",
+    "aria",
+    "autocomplete",
+    "multiselect",
+    "select",
+    "tagging"
+  ],
+  "license": "MIT",
+  "author": "Thekster",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "type": "module",
+  "main": "./dist/thekselect.js",
+  "module": "./dist/thekselect.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/thekselect.js"
+    },
+    "./min": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/thekselect.min.js"
+    },
+    "./css/*": "./dist/css/*"
+  },
+  "scripts": {
+    "build": "vite build && cross-env THEK_MINIFY=1 vite build --emptyOutDir false && tsc && shx mkdir -p dist/css && (shx cp -r src/themes/*.css dist/css || shx echo \"No theme CSS files to copy\")",
+    "release:check": "npm run build && npm pack --dry-run --cache .npm-cache"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Thekster/ThekSelect.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Thekster/ThekSelect/issues"
+  },
+  "homepage": "https://thekster.github.io/ThekSelect/",
+  "publishConfig": {
+    "access": "public"
+  }
+}

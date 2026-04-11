@@ -1,0 +1,15 @@
+html[data-thek-theme='tailwind'] {
+  --thek-primary: #0ea5e9;
+  --thek-primary-light: #e0f2fe;
+  --thek-bg-surface: #ffffff;
+  --thek-bg-panel: #f8fafc;
+  --thek-bg-subtle: #f1f5f9;
+  --thek-border: #cbd5e1;
+  --thek-border-strong: #94a3b8;
+  --thek-text-main: #0f172a;
+  --thek-text-muted: #64748b;
+  --thek-text-inverse: #ffffff;
+  --thek-danger: #f43f5e;
+  --thek-shadow: 0 10px 18px -10px rgba(15, 23, 42, 0.25);
+  --thek-border-radius: 8px;
+}

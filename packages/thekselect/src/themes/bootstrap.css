@@ -1,0 +1,15 @@
+html[data-thek-theme='bootstrap'] {
+  --thek-primary: #0d6efd;
+  --thek-primary-light: #cfe2ff;
+  --thek-bg-surface: #ffffff;
+  --thek-bg-panel: #f8f9fa;
+  --thek-bg-subtle: #e9ecef;
+  --thek-border: #dee2e6;
+  --thek-border-strong: #adb5bd;
+  --thek-text-main: #212529;
+  --thek-text-muted: #6c757d;
+  --thek-text-inverse: #ffffff;
+  --thek-danger: #dc3545;
+  --thek-shadow: 0 10px 20px -10px rgba(33, 37, 41, 0.25);
+  --thek-border-radius: 6px;
+}
