@@ -51,6 +51,11 @@ export function buildConfig<T = unknown>(
     ...config
   };
 
+  // If height spread in as undefined (explicit override), fall back to the default.
+  if (finalConfig.height == null) {
+    finalConfig.height = 40;
+  }
+
   // If loadOptions spread in as undefined (explicit override), fall back to NOOP so the
   // component treats the instance as local mode instead of crashing on invocation.
   if (typeof finalConfig.loadOptions !== 'function') {

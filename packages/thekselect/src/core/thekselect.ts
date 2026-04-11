@@ -542,6 +542,10 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     if (this.stateManager.getState().isOpen) return;
     super.open(); // sets isOpen: true, focusedIndex: 0, emits 'open'
     this.renderer.positionDropdown();
+    this.renderer.scrollToSelected(
+      this.stateManager.getState() as ThekSelectState<T>,
+      this.getFilteredOptions()
+    );
     if (this.config.searchable) {
       this.focusTimeoutId = setTimeout(() => {
         if (!this.isDestroyed && this.stateManager.getState().isOpen) {

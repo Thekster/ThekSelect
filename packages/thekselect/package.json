@@ -1,6 +1,6 @@
 {
   "name": "thekselect",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A browser select library with a reusable core and themes.",
   "keywords": [
     "accessible",
@@ -31,7 +31,9 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/thekselect.min.js"
     },
-    "./css/*": "./dist/css/*"
+    "./css/*": {
+      "default": "./dist/css/*"
+    }
   },
   "scripts": {
     "build": "vite build && cross-env THEK_MINIFY=1 vite build --emptyOutDir false && tsc && shx mkdir -p dist/css && (shx cp -r src/themes/*.css dist/css || shx echo \"No theme CSS files to copy\")",

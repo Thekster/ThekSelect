@@ -167,6 +167,40 @@ export class DomRenderer<T = unknown> {
     positionDropdown(this.dropdown, this.control, this.optionsList);
   }
 
+  public scrollToSelected(
+    state: ThekSelectState<T>,
+    filteredOptions: ThekSelectOption<T>[]
+  ): void {
+    if (state.selectedValues.length === 0) return;
+
+    const vField = this.config.valueField;
+    const selectedIndex = filteredOptions.findIndex((opt) =>
+      state.selectedValues.includes(opt[vField] as string)
+    );
+    if (selectedIndex < 0) return;
+
+    const list = this.optionsList;
+
+    if (
+      this.config.virtualize &&
+      filteredOptions.length >= this.config.virtualThreshold
+    ) {
+      const itemHeight = Math.max(20, this.config.virtualItemHeight);
+      const viewportHeight = list.clientHeight || 240;
+      list.scrollTop = Math.max(0, selectedIndex * itemHeight - viewportHeight / 2);
+    } else {
+      const el = document.getElementById(`${this.id}-opt-${selectedIndex}`);
+      if (!el) return;
+      const elTop = el.offsetTop;
+      const elBottom = elTop + el.offsetHeight;
+      const listTop = list.scrollTop;
+      const listBottom = listTop + list.clientHeight;
+      if (elTop < listTop || elBottom > listBottom) {
+        list.scrollTop = elTop - list.clientHeight / 2 + el.offsetHeight / 2;
+      }
+    }
+  }
+
   public setHeight(height: number | string): void {
     this.config.height = height as unknown as string | number;
     this.applyHeight(height);

@@ -1,5 +1,16 @@
 # Release Notes
 
+## 1.4.0 (2026-04-11)
+
+### Added
+
+- **Scroll to selected on open** — when the dropdown opens, the list automatically scrolls to bring the currently selected option into view. Previously the list always started at the top, requiring users to scroll to find a pre-selected value (e.g. "Germany" in a countries list). Works in both standard and virtualized mode.
+
+### Fixed
+
+- **CSS wildcard export conditions** — the `./css/*` subpath pattern in `package.json` exports was a bare string value rather than a conditions object. Vite's `builtin:vite-resolve` plugin rejected it under `["module", "browser", "development", "import"]` conditions, causing a resolve error when importing theme CSS files from a consuming project. Export is now `{ "default": "./dist/css/*" }`.
+- **`height: undefined` crash** — passing `height: undefined` explicitly in config caused a `TypeError: can't access property "trim"` because the spread `...config` overwrote the default value `40` with `undefined`, which then reached `normalizeHeight()`. A null-guard in `buildConfig()` restores the default when `height` is nullish, consistent with the existing `loadOptions` guard.
+
 ## 1.3.0 (2026-04-11)
 
 ### Added
