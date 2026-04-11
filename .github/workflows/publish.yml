@@ -36,6 +36,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build thekselect (required for thekselect-vue type checking)
+        if: matrix.package == 'thekselect-vue'
+        run: npm run build --workspace=packages/thekselect
+
       - name: Verify release package
         run: npm run release:check
         working-directory: packages/${{ matrix.package }}
