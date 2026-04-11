@@ -2,6 +2,7 @@
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 import {
   ThekSelect,
+  type ThekSelectHandle,
   type ThekSelectConfig,
   type ThekSelectOption,
 } from 'thekselect';
@@ -38,11 +39,11 @@ const emit = defineEmits<{
   search: [query: string];
   tagAdded: [option: ThekSelectOption];
   tagRemoved: [option: ThekSelectOption];
-  reordered: [options: ThekSelectOption[]];
+  reordered: [values: string[]];
 }>();
 
 const el = ref<HTMLDivElement | null>(null);
-let instance: ThekSelect | null = null;
+let instance: ThekSelectHandle | null = null;
 const unsubscribers: Array<() => void> = [];
 
 onMounted(() => {
@@ -85,7 +86,7 @@ onMounted(() => {
     instance.on('search', (q) => emit('search', q as string)),
     instance.on('tagAdded', (o) => emit('tagAdded', o as ThekSelectOption)),
     instance.on('tagRemoved', (o) => emit('tagRemoved', o as ThekSelectOption)),
-    instance.on('reordered', (o) => emit('reordered', o as ThekSelectOption[]))
+    instance.on('reordered', (o) => emit('reordered', o as string[]))
   );
 });
 
