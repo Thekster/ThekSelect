@@ -68,6 +68,36 @@ Run from **`packages/thekselect-vue/`**:
   5. `npm run release:check` in `packages/thekselect`
   6. `npm run release:check` in `packages/thekselect-vue`
 
+## Validation Rules
+
+- For non-trivial code changes, the minimum gate is:
+  1. `npm run format:check`
+  2. `npm run lint`
+  3. `npm test -- --run`
+  4. `npm run build`
+- For release-related changes, also run:
+  1. `npm run release:check` in `packages/thekselect`
+  2. `npm run release:check` in `packages/thekselect-vue`
+- If dependency or tooling versions change, rerun the full validation gate even if earlier checks
+  already passed.
+- If docs or workflow changes affect release behavior, commit and push those changes before creating
+  the release tag.
+
+## Versioning Rules
+
+- Package versions are independent, but releases can still be coupled.
+- If `thekselect-vue` starts depending on a newly added core capability, bump:
+  1. `packages/thekselect/package.json`
+  2. `packages/thekselect-vue/package.json`
+  3. the Vue peer dependency floor for `thekselect`
+- Update these together for a release:
+  1. package versions
+  2. `RELEASE_NOTES.md`
+  3. relevant README/package docs
+  4. lockfile changes caused by version or dependency updates
+- Treat widened compatibility such as `string` to `string | number` as a minor release unless it
+  breaks existing behavior or contracts.
+
 ## File Map
 
 ### packages/thekselect/src/core/
