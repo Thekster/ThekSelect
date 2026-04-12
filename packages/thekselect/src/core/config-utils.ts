@@ -1,4 +1,9 @@
-import { ThekSelectConfig, ThekSelectOption, ThekSelectState } from './types.js';
+import {
+  ThekSelectConfig,
+  ThekSelectOption,
+  ThekSelectPrimitive,
+  ThekSelectState
+} from './types.js';
 
 export const NOOP_LOAD_OPTIONS = async (_query: string): Promise<ThekSelectOption[]> => [];
 
@@ -113,13 +118,13 @@ export function buildInitialState<T = unknown>(
   selectedValues.forEach((value) => {
     const option = config.options.find((o) => o[valueField] === value);
     if (option) {
-      selectedOptionsByValue[value as string] = option;
+      selectedOptionsByValue[String(value)] = option;
     }
   });
 
   return {
     options: config.options,
-    selectedValues: selectedValues as string[],
+    selectedValues: selectedValues as ThekSelectPrimitive[],
     selectedOptionsByValue,
     isOpen: false,
     focusedIndex: -1,

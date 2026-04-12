@@ -1,9 +1,14 @@
-import { ThekSelectConfig, ThekSelectOption, ThekSelectState } from './types.js';
+import {
+  ThekSelectConfig,
+  ThekSelectOption,
+  ThekSelectPrimitive,
+  ThekSelectState
+} from './types.js';
 
 type TagEvent = 'tagAdded' | 'tagRemoved';
 
 export interface SelectionUpdate<T = unknown> {
-  selectedValues: string[];
+  selectedValues: ThekSelectPrimitive[];
   selectedOptionsByValue: Record<string, ThekSelectOption<T>>;
   inputValue?: string;
   tagEvent?: TagEvent;
@@ -16,13 +21,14 @@ export function applySelection<T = unknown>(
   option: ThekSelectOption<T>
 ): SelectionUpdate<T> {
   const valueField = config.valueField;
-  const optionValue = String(option[valueField]);
+  const optionValue = option[valueField] as ThekSelectPrimitive;
+  const optionKey = String(optionValue);
   const selectedOptionsByValue = { ...state.selectedOptionsByValue };
 
   if (config.multiple) {
     if (state.selectedValues.includes(optionValue)) {
       const selectedValues = state.selectedValues.filter((v) => v !== optionValue);
-      delete selectedOptionsByValue[optionValue];
+      delete selectedOptionsByValue[optionKey];
       return {
         selectedValues,
         selectedOptionsByValue,
@@ -33,7 +39,7 @@ export function applySelection<T = unknown>(
     }
 
     const selectedValues = [...state.selectedValues, optionValue];
-    selectedOptionsByValue[optionValue] = option;
+    selectedOptionsByValue[optionKey] = option;
     return {
       selectedValues,
       selectedOptionsByValue,
@@ -45,7 +51,7 @@ export function applySelection<T = unknown>(
 
   return {
     selectedValues: [optionValue],
-    selectedOptionsByValue: { [optionValue]: option },
+    selectedOptionsByValue: { [optionKey]: option },
     inputValue: ''
   };
 }
@@ -67,7 +73,7 @@ export function removeLastSelection<T = unknown>(
   config: Required<ThekSelectConfig<T>>,
   state: ThekSelectState<T>
 ): {
-  selectedValues: string[];
+  selectedValues: ThekSelectPrimitive[];
   selectedOptionsByValue: Record<string, ThekSelectOption<T>>;
   removedOption?: ThekSelectOption<T>;
 } {
@@ -81,13 +87,17 @@ export function removeLastSelection<T = unknown>(
 
   const removedOption =
     state.options.find((o) => o[valueField] === removedValue) ||
-    selectedOptionsByValue[removedValue];
-  delete selectedOptionsByValue[removedValue];
+    selectedOptionsByValue[String(removedValue)];
+  delete selectedOptionsByValue[String(removedValue)];
 
   return { selectedValues, selectedOptionsByValue, removedOption };
 }
 
-export function reorderSelectedValues(state: ThekSelectState, from: number, to: number): string[] {
+export function reorderSelectedValues(
+  state: ThekSelectState,
+  from: number,
+  to: number
+): ThekSelectPrimitive[] {
   if (!Number.isInteger(from) || !Number.isInteger(to)) {
     return [...state.selectedValues];
   }
@@ -120,23 +130,29 @@ export function resolveSelectedOptions<T = unknown>(
   return state.selectedValues.map(
     (value) =>
       state.options.find((o) => o[valueField] === value) ||
-      state.selectedOptionsByValue[value] ||
-      ({ value, label: value, [valueField]: value, [displayField]: value } as ThekSelectOption<T>)
+      state.selectedOptionsByValue[String(value)] ||
+      ({
+        value,
+        label: String(value),
+        [valueField]: value,
+        [displayField]: String(value)
+      } as ThekSelectOption<T>)
   );
 }
 
 export function buildSelectedOptionsMapFromValues<T = unknown>(
   config: Required<ThekSelectConfig<T>>,
   state: ThekSelectState<T>,
-  values: string[]
+  values: ThekSelectPrimitive[]
 ): Record<string, ThekSelectOption<T>> {
   const valueField = config.valueField;
   const selectedOptionsByValue: Record<string, ThekSelectOption<T>> = {};
   values.forEach((value) => {
     const option =
-      state.options.find((o) => o[valueField] === value) || state.selectedOptionsByValue[value];
+      state.options.find((o) => o[valueField] === value) ||
+      state.selectedOptionsByValue[String(value)];
     if (option) {
-      selectedOptionsByValue[value] = option;
+      selectedOptionsByValue[String(value)] = option;
     }
   });
   return selectedOptionsByValue;

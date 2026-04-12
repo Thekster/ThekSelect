@@ -1,5 +1,5 @@
 import { ref, shallowRef, onMounted, onUnmounted, type Ref } from 'vue';
-import { ThekSelect, type ThekSelectConfig } from 'thekselect';
+import { ThekSelect, type ThekSelectConfig, type ThekSelectValue } from 'thekselect';
 
 export function useThekSelect(
   el: Ref<HTMLElement | null>,
@@ -9,16 +9,16 @@ export function useThekSelect(
 ) {
   // ThekSelectHandle is not exported from thekselect; ThekSelect is the instance type.
   const instance = shallowRef<ThekSelect | null>(null);
-  const value = ref<string | string[] | undefined>(undefined);
+  const value = ref<ThekSelectValue>(undefined);
   let off: (() => void) | null = null;
 
   onMounted(() => {
     if (!el.value) return;
     const ts = ThekSelect.init(el.value, options);
     instance.value = ts;
-    value.value = ts.getValue() as string | string[] | undefined;
+    value.value = ts.getValue() as ThekSelectValue;
     off = ts.on('change', (v) => {
-      value.value = v as string | string[] | undefined;
+      value.value = v as ThekSelectValue;
     });
   });
 

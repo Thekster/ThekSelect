@@ -30,23 +30,24 @@ export function getFilteredOptions<T = unknown>(
 
 export function mergeSelectedOptionsByValue<T = unknown>(
   valueField: string,
-  selectedValues: string[],
+  selectedValues: Array<string | number>,
   previous: Record<string, ThekSelectOption<T>>,
   latestOptions: ThekSelectOption<T>[]
 ): Record<string, ThekSelectOption<T>> {
   const byValueFromLatest: Record<string, ThekSelectOption<T>> = {};
   latestOptions.forEach((option) => {
     const value = option[valueField];
-    if (typeof value === 'string') {
-      byValueFromLatest[value] = option;
+    if (typeof value === 'string' || typeof value === 'number') {
+      byValueFromLatest[String(value)] = option;
     }
   });
 
   const merged: Record<string, ThekSelectOption<T>> = {};
   selectedValues.forEach((value) => {
-    const option = byValueFromLatest[value] || previous[value];
+    const key = String(value);
+    const option = byValueFromLatest[key] || previous[key];
     if (option) {
-      merged[value] = option;
+      merged[key] = option;
     }
   });
   return merged;

@@ -1,6 +1,6 @@
 {
   "name": "thekselect-vue",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Vue 3 wrapper for ThekSelect",
   "keywords": [
     "accessible",
@@ -28,15 +28,15 @@
     }
   },
   "peerDependencies": {
-    "thekselect": ">=1.0.0",
+    "thekselect": ">=1.6.0",
     "vue": ">=3.0.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.3",
+    "@vitejs/plugin-vue": "^6.0.5",
     "@vue/test-utils": "^2.4.6",
     "thekselect": "*",
     "vue": "^3.5.13",
-    "vue-tsc": "^2.2.10"
+    "vue-tsc": "^3.2.6"
   },
   "scripts": {
     "build": "vite build && vue-tsc --project tsconfig.json",
@@ -51,5 +51,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@vue/tsconfig": "^0.9.1"
   }
 }

@@ -1,14 +1,18 @@
 # Release Notes
 
-## Unreleased (thekselect-vue)
+## 1.6.0 / thekselect-vue 1.2.0 (2026-04-12)
 
 ### Added
 
 - **Default export** — `import ThekSelect from 'thekselect-vue'` now works alongside the existing named import `import { ThekSelect } from 'thekselect-vue'`.
+- **Numeric value support** — `thekselect` and `thekselect-vue` now accept `string | number` option values, emitted values, and programmatic `setValue(...)` input. This removes the common consumer-side cast/wrapper layer for numeric ids.
+- **Vue exposed methods** — template refs on `<ThekSelect />` now expose `open()`, `close()`, `toggle()`, `getValue()`, and `setValue(...)`, so consuming apps can use the component directly instead of forwarding imperative methods through a wrapper.
+- **Vue loading prop** — `thekselect-vue` now supports a `loading` prop that disables interaction, marks the root `aria-busy`, and renders a lightweight loading overlay with a customizable `loading-indicator` slot.
 
 ### Changed
 
-- **`modelValue` accepts `null`** — the prop type is now `string | string[] | null`. Passing `null` clears the selection, consistent with the common Vue pattern of initializing refs to `null`.
+- **`modelValue` accepts `null`** — the prop type is now `string | number | Array<string | number> | null`. Passing `null` clears the selection, consistent with the common Vue pattern of initializing refs to `null`.
+- **Vue peer dependency floor** — `thekselect-vue` now declares `thekselect >= 1.6.0` so consumers get the numeric-value-compatible core required by the wrapper types and runtime behavior.
 
 ## 1.5.0 / thekselect-vue 1.1.0 (2026-04-11)
 

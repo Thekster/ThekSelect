@@ -21,7 +21,7 @@ export function updateOptionAttrs<T>(
   id: string
 ): void {
   const vField = config.valueField;
-  const isSelected = state.selectedValues.includes(option[vField] as string);
+  const isSelected = state.selectedValues.includes(option[vField] as string | number);
   li.id = `${id}-opt-${index}`;
   li.classList.toggle('thek-selected', isSelected);
   li.classList.toggle('thek-focused', state.focusedIndex === index);
@@ -86,7 +86,7 @@ export function createOptionItem<T>(
   if (config.multiple) {
     const checkbox = document.createElement('div');
     checkbox.className = 'thek-checkbox';
-    const isSelected = state.selectedValues.includes(option[config.valueField] as string);
+    const isSelected = state.selectedValues.includes(option[config.valueField] as string | number);
     if (isSelected) {
       checkbox.innerHTML = SVG_CHECK;
     }

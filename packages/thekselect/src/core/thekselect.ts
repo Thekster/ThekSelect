@@ -4,7 +4,9 @@ import {
   ThekSelectOption,
   ThekSelectState,
   ThekSelectEvent,
-  ThekSelectEventPayloadMap
+  ThekSelectEventPayloadMap,
+  ThekSelectPrimitive,
+  ThekSelectValue
 } from './types.js';
 import { debounce, DebouncedFn } from '../utils/debounce.js';
 import { buildConfig, buildInitialState } from './config-utils.js';
@@ -211,13 +213,19 @@ export class ThekSelect<T = unknown> {
     }
   }
 
-  public setValue(value: string | string[], silent: boolean = false): void {
+  public setValue(
+    value: ThekSelectPrimitive | ThekSelectPrimitive[],
+    silent: boolean = false
+  ): void {
     const state = this.stateManager.getState() as ThekSelectState<T>;
     const incomingValues = Array.isArray(value) ? value : [value];
-    const stringValues = incomingValues.filter((e): e is string => typeof e === 'string');
+    const normalizedValues = incomingValues.filter(
+      (entry): entry is ThekSelectPrimitive =>
+        typeof entry === 'string' || typeof entry === 'number'
+    );
     const values = this.config.multiple
-      ? Array.from(new Set(stringValues))
-      : stringValues.slice(0, 1);
+      ? Array.from(new Set(normalizedValues))
+      : normalizedValues.slice(0, 1);
     const selectedOptionsByValue = buildSelectedOptionsMapFromValues(this.config, state, values);
     this.stateManager.setState({ selectedValues: values, selectedOptionsByValue });
     if (!silent) this.emit('change', this.getValue());
@@ -241,7 +249,7 @@ export class ThekSelect<T = unknown> {
     });
   }
 
-  public getValue(): string | string[] | undefined {
+  public getValue(): ThekSelectValue {
     const state = this.stateManager.getState();
     return this.config.multiple ? state.selectedValues : state.selectedValues[0];
   }
@@ -573,22 +581,23 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     this.renderer.render(s, getFilteredOptions(this.config, s));
   }
 
-  private syncOriginalElement(values: string[]): void {
+  private syncOriginalElement(values: ThekSelectPrimitive[]): void {
     if (this.originalElement instanceof HTMLSelectElement) {
       const select = this.originalElement;
       Array.from(select.options).forEach((opt) => {
-        opt.selected = values.includes(opt.value);
+        opt.selected = values.some((value) => opt.value === String(value));
       });
       values.forEach((val) => {
-        if (!Array.from(select.options).some((opt) => opt.value === val)) {
+        const stringValue = String(val);
+        if (!Array.from(select.options).some((opt) => opt.value === stringValue)) {
           const state = this.stateManager.getState();
           const found =
             state.options.find((o) => o[this.config.valueField] === val) ||
-            state.selectedOptionsByValue[val];
-          const label = found ? String(found[this.config.displayField] ?? val) : val;
-          const opt = new Option(label, val, true, true);
+            state.selectedOptionsByValue[stringValue];
+          const label = found ? String(found[this.config.displayField] ?? val) : stringValue;
+          const opt = new Option(label, stringValue, true, true);
           select.add(opt);
-          this.injectedOptionValues.add(val);
+          this.injectedOptionValues.add(stringValue);
         }
       });
       select.dispatchEvent(new Event('change', { bubbles: true }));
@@ -610,7 +619,10 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
   }
 
   // Override setValue to also sync the native element
-  public override setValue(value: string | string[], silent: boolean = false): void {
+  public override setValue(
+    value: ThekSelectPrimitive | ThekSelectPrimitive[],
+    silent: boolean = false
+  ): void {
     super.setValue(value, silent);
     this.syncOriginalElement(this.stateManager.getState().selectedValues);
   }

@@ -7,6 +7,9 @@ const mockUnsubscribe = vi.fn();
 const mockInstance = {
   getValue: vi.fn<() => undefined>(() => undefined),
   setValue: vi.fn(),
+  open: vi.fn(),
+  close: vi.fn(),
+  toggle: vi.fn(),
   setHeight: vi.fn(),
   setMaxOptions: vi.fn(),
   setRenderOption: vi.fn(),
@@ -62,6 +65,17 @@ describe('ThekSelect.vue', () => {
     await nextTick();
     await wrapper.setProps({ modelValue: 'b' });
     expect(mockInstance.setValue).toHaveBeenCalledWith('b', true);
+    wrapper.unmount();
+  });
+
+  it('accepts number modelValue updates', async () => {
+    const wrapper = mount(ThekSelectComponent, {
+      props: { modelValue: 1 },
+      attachTo: document.body
+    });
+    await nextTick();
+    await wrapper.setProps({ modelValue: 2 });
+    expect(mockInstance.setValue).toHaveBeenCalledWith(2, true);
     wrapper.unmount();
   });
 
@@ -132,6 +146,37 @@ describe('ThekSelect.vue', () => {
     closeCallback?.();
     await nextTick();
     expect(wrapper.emitted('close')).toBeTruthy();
+    wrapper.unmount();
+  });
+
+  it('disables the core instance and renders loading UI when loading is true', async () => {
+    const { ThekSelect } = await import('thekselect');
+    const wrapper = mount(ThekSelectComponent, {
+      props: { loading: true, disabled: false },
+      attachTo: document.body
+    });
+    await nextTick();
+
+    expect(ThekSelect.init).toHaveBeenCalledWith(
+      expect.any(HTMLElement),
+      expect.objectContaining({ disabled: true })
+    );
+    expect(wrapper.find('.thekselect-vue--loading').exists()).toBe(true);
+    expect(wrapper.find('.thekselect-vue__overlay').exists()).toBe(true);
+    wrapper.unmount();
+  });
+
+  it('exposes imperative methods', async () => {
+    const wrapper = mount(ThekSelectComponent, { attachTo: document.body });
+    await nextTick();
+
+    (wrapper.vm as unknown as { open: () => void; close: () => void; toggle: () => void }).open();
+    (wrapper.vm as unknown as { close: () => void }).close();
+    (wrapper.vm as unknown as { toggle: () => void }).toggle();
+
+    expect(mockInstance.open).toHaveBeenCalledOnce();
+    expect(mockInstance.close).toHaveBeenCalledOnce();
+    expect(mockInstance.toggle).toHaveBeenCalledOnce();
     wrapper.unmount();
   });
 });

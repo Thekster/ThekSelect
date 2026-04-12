@@ -167,24 +167,18 @@ export class DomRenderer<T = unknown> {
     positionDropdown(this.dropdown, this.control, this.optionsList);
   }
 
-  public scrollToSelected(
-    state: ThekSelectState<T>,
-    filteredOptions: ThekSelectOption<T>[]
-  ): void {
+  public scrollToSelected(state: ThekSelectState<T>, filteredOptions: ThekSelectOption<T>[]): void {
     if (state.selectedValues.length === 0) return;
 
     const vField = this.config.valueField;
     const selectedIndex = filteredOptions.findIndex((opt) =>
-      state.selectedValues.includes(opt[vField] as string)
+      state.selectedValues.includes(opt[vField] as string | number)
     );
     if (selectedIndex < 0) return;
 
     const list = this.optionsList;
 
-    if (
-      this.config.virtualize &&
-      filteredOptions.length >= this.config.virtualThreshold
-    ) {
+    if (this.config.virtualize && filteredOptions.length >= this.config.virtualThreshold) {
       const itemHeight = Math.max(20, this.config.virtualItemHeight);
       const viewportHeight = list.clientHeight || 240;
       list.scrollTop = Math.max(0, selectedIndex * itemHeight - viewportHeight / 2);

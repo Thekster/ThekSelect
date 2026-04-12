@@ -4,15 +4,18 @@ import {
   ThekSelect,
   type ThekSelectHandle,
   type ThekSelectConfig,
-  type ThekSelectOption
+  type ThekSelectOption,
+  type ThekSelectPrimitive,
+  type ThekSelectValue
 } from 'thekselect';
 
 const props = defineProps<{
-  modelValue?: string | string[] | null;
+  modelValue?: ThekSelectPrimitive | ThekSelectPrimitive[] | null;
   options?: ThekSelectOption[];
   multiple?: boolean;
   searchable?: boolean;
   disabled?: boolean;
+  loading?: boolean;
   placeholder?: string;
   canCreate?: boolean;
   createText?: string;
@@ -32,19 +35,60 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string | string[] | undefined];
-  change: [value: string | string[] | undefined];
+  'update:modelValue': [value: ThekSelectValue];
+  change: [value: ThekSelectValue];
   open: [];
   close: [];
   search: [query: string];
   tagAdded: [option: ThekSelectOption];
   tagRemoved: [option: ThekSelectOption];
-  reordered: [values: string[]];
+  reordered: [values: ThekSelectPrimitive[]];
 }>();
 
+const root = ref<HTMLDivElement | null>(null);
 const el = ref<HTMLDivElement | null>(null);
 let instance: ThekSelectHandle | null = null;
 const unsubscribers: Array<() => void> = [];
+
+function setLoadingState(): void {
+  if (!root.value) return;
+  const isBusy = !!props.loading;
+  root.value.classList.toggle('thekselect-vue--loading', isBusy);
+  if (isBusy) {
+    root.value.setAttribute('aria-busy', 'true');
+  } else {
+    root.value.removeAttribute('aria-busy');
+  }
+}
+
+function open(): void {
+  instance?.open();
+}
+
+function close(): void {
+  instance?.close();
+}
+
+function toggle(): void {
+  instance?.toggle();
+}
+
+function getValue(): ThekSelectValue {
+  return instance?.getValue();
+}
+
+function setValue(value: ThekSelectPrimitive | ThekSelectPrimitive[], silent = false): void {
+  instance?.setValue(value, silent);
+}
+
+defineExpose({
+  open,
+  close,
+  toggle,
+  getValue,
+  setValue,
+  instance: () => instance
+});
 
 onMounted(() => {
   if (!el.value) return;
@@ -53,7 +97,7 @@ onMounted(() => {
     options: props.options,
     multiple: props.multiple,
     searchable: props.searchable,
-    disabled: props.disabled,
+    disabled: props.disabled || props.loading,
     placeholder: props.placeholder,
     canCreate: props.canCreate,
     createText: props.createText,
@@ -78,16 +122,18 @@ onMounted(() => {
 
   unsubscribers.push(
     instance.on('change', (v) => {
-      emit('update:modelValue', v as string | string[] | undefined);
-      emit('change', v as string | string[] | undefined);
+      emit('update:modelValue', v as ThekSelectValue);
+      emit('change', v as ThekSelectValue);
     }),
     instance.on('open', () => emit('open')),
     instance.on('close', () => emit('close')),
     instance.on('search', (q) => emit('search', q as string)),
     instance.on('tagAdded', (o) => emit('tagAdded', o as ThekSelectOption)),
     instance.on('tagRemoved', (o) => emit('tagRemoved', o as ThekSelectOption)),
-    instance.on('reordered', (o) => emit('reordered', o as string[]))
+    instance.on('reordered', (o) => emit('reordered', o as ThekSelectPrimitive[]))
   );
+
+  setLoadingState();
 });
 
 onUnmounted(() => {
@@ -133,8 +179,44 @@ watch(
     if (instance && v !== undefined) instance.setRenderOption(v);
   }
 );
+
+watch(
+  () => props.loading,
+  () => {
+    setLoadingState();
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
-  <div ref="el" />
+  <div ref="root" class="thekselect-vue">
+    <div ref="el" />
+    <div v-if="loading" class="thekselect-vue__overlay" aria-hidden="true">
+      <slot name="loading-indicator">
+        <span class="thekselect-vue__loading-text">Loading...</span>
+      </slot>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.thekselect-vue {
+  position: relative;
+}
+
+.thekselect-vue__overlay {
+  position: absolute;
+  inset-inline-end: 0.75rem;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.thekselect-vue__loading-text {
+  font-size: 0.75rem;
+  color: var(--thek-placeholder, #6b7280);
+}
+</style>

@@ -96,6 +96,18 @@ describe('ThekSelect headless core', () => {
     core.destroy();
   });
 
+  it('setValue() and getValue() support number values', () => {
+    const core = new ThekSelect({
+      options: [
+        { value: 1, label: 'One' },
+        { value: 2, label: 'Two' }
+      ]
+    });
+    core.setValue(2);
+    expect(core.getValue()).toBe(2);
+    core.destroy();
+  });
+
   it('on() emits change events', () => {
     const core = new ThekSelect({
       options: [{ value: '1', label: 'One' }]

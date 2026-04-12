@@ -255,7 +255,7 @@ Then open the local URL printed by Vite.
 
 ```ts
 interface ThekSelectOption {
-  value: string;
+  value: string | number;
   label: string;
   disabled?: boolean;
   selected?: boolean;
@@ -264,20 +264,20 @@ interface ThekSelectOption {
 }
 ```
 
-| Field           | Type      | Description                                                        |
-| --------------- | --------- | ------------------------------------------------------------------ |
-| `value`         | `string`  | Stable internal value used for selection state and emitted values. |
-| `label`         | `string`  | Default display text shown in dropdown and selected state.         |
-| `disabled`      | `boolean` | Prevents selecting the option when `true`.                         |
-| `selected`      | `boolean` | Marks initial selection when options are provided at init time.    |
-| `data`          | `any`     | Optional extra metadata for custom rendering and app logic.        |
-| `[key: string]` | `any`     | Allows custom fields for `displayField`/`valueField` mapping.      |
+| Field           | Type               | Description                                                        |
+| --------------- | ------------------ | ------------------------------------------------------------------ |
+| `value`         | `string \| number` | Stable internal value used for selection state and emitted values. |
+| `label`         | `string`           | Default display text shown in dropdown and selected state.         |
+| `disabled`      | `boolean`          | Prevents selecting the option when `true`.                         |
+| `selected`      | `boolean`          | Marks initial selection when options are provided at init time.    |
+| `data`          | `any`              | Optional extra metadata for custom rendering and app logic.        |
+| `[key: string]` | `any`              | Allows custom fields for `displayField`/`valueField` mapping.      |
 
 When using custom fields (`valueField`, `displayField`), keep `value` and `label` available if you share the same option objects across default and custom-field instances.
 
 ## API Methods
 
-- `getValue()`: Return selected value (`string`), values (`string[]`), or `undefined` when single-select has no selection.
+- `getValue()`: Return selected value (`string | number`), values (`Array<string | number>`), or `undefined` when single-select has no selection.
 - `getSelectedOptions()`: Return selected option object(s), or `undefined` when single-select has no selection.
 - `setValue(value, silent = false)`: Set current selection programmatically.
 - `setHeight(height)`: Update height at runtime (`number` = px or CSS string like `'2.75rem'`).
@@ -290,16 +290,16 @@ When using custom fields (`valueField`, `displayField`), keep `value` and `label
 
 ## API Reference
 
-| Method                      | Parameters                                              | Returns                                               | Description                                                                                   |
-| --------------------------- | ------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| `getValue()`                | none                                                    | `string \| string[] \| undefined`                     | Gets current selected value(s) from component state.                                          |
-| `getSelectedOptions()`      | none                                                    | `ThekSelectOption \| ThekSelectOption[] \| undefined` | Gets current selected option object(s).                                                       |
-| `setValue(value, silent?)`  | `value: string \| string[]`, `silent?: boolean`         | `void`                                                | Sets selected value(s). In single mode keeps first value; in multi mode de-duplicates values. |
-| `setHeight(height)`         | `height: number \| string`                              | `void`                                                | Sets control height for the instance. Numeric input is treated as px.                         |
-| `setMaxOptions(limit)`      | `limit: number \| null`                                 | `void`                                                | Limits filtered options rendered in dropdown (`null` disables limit).                         |
-| `setRenderOption(callback)` | `callback: (option) => string \| HTMLElement`           | `void`                                                | Overrides dropdown option rendering for this instance.                                        |
-| `on(event, callback)`       | `event: ThekSelectEvent`, `callback: (payload) => void` | `() => void`                                          | Subscribes to an event and returns an unsubscribe function.                                   |
-| `destroy()`                 | none                                                    | `void`                                                | Removes generated DOM/listeners and restores original element visibility.                     |
+| Method                      | Parameters                                                               | Returns                                                    | Description                                                                                   |
+| --------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `getValue()`                | none                                                                     | `string \| number \| Array<string \| number> \| undefined` | Gets current selected value(s) from component state.                                          |
+| `getSelectedOptions()`      | none                                                                     | `ThekSelectOption \| ThekSelectOption[] \| undefined`      | Gets current selected option object(s).                                                       |
+| `setValue(value, silent?)`  | `value: string \| number \| Array<string \| number>`, `silent?: boolean` | `void`                                                     | Sets selected value(s). In single mode keeps first value; in multi mode de-duplicates values. |
+| `setHeight(height)`         | `height: number \| string`                                               | `void`                                                     | Sets control height for the instance. Numeric input is treated as px.                         |
+| `setMaxOptions(limit)`      | `limit: number \| null`                                                  | `void`                                                     | Limits filtered options rendered in dropdown (`null` disables limit).                         |
+| `setRenderOption(callback)` | `callback: (option) => string \| HTMLElement`                            | `void`                                                     | Overrides dropdown option rendering for this instance.                                        |
+| `on(event, callback)`       | `event: ThekSelectEvent`, `callback: (payload) => void`                  | `() => void`                                               | Subscribes to an event and returns an unsubscribe function.                                   |
+| `destroy()`                 | none                                                                     | `void`                                                     | Removes generated DOM/listeners and restores original element visibility.                     |
 
 | Static Method                       | Parameters                                                    | Returns      | Description                                      |
 | ----------------------------------- | ------------------------------------------------------------- | ------------ | ------------------------------------------------ |

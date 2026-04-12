@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ThekSelect, ThekSelectOption } from '../../src/core/thekselect';
+import {
+  ThekSelect,
+  ThekSelectOption,
+  type ThekSelectPrimitive,
+  type ThekSelectValue
+} from '../../src/core/thekselect';
 
 describe('Typed event callbacks', () => {
   let container: HTMLDivElement;
@@ -27,8 +32,8 @@ describe('Typed event callbacks', () => {
     option.click();
 
     expect(handler).toHaveBeenCalledWith('1');
-    // TypeScript: handler param should be typed as string | string[] | undefined
-    const arg: string | string[] | undefined = handler.mock.calls[0][0];
+    // TypeScript: handler param should be typed as string | number | Array<string | number> | undefined
+    const arg: ThekSelectValue = handler.mock.calls[0][0];
     expect(arg).toBe('1');
   });
 
@@ -47,7 +52,7 @@ describe('Typed event callbacks', () => {
     option.click();
 
     expect(handler).toHaveBeenCalledWith(['1']);
-    const arg: string | string[] | undefined = handler.mock.calls[0][0];
+    const arg: ThekSelectValue = handler.mock.calls[0][0];
     expect(Array.isArray(arg)).toBe(true);
   });
 
@@ -91,7 +96,7 @@ describe('Typed event callbacks', () => {
     expect(typeof arg).toBe('string');
   });
 
-  it('reordered callback receives string[]', () => {
+  it('reordered callback receives primitive[]', () => {
     const ts = ThekSelect.init(container, {
       multiple: true,
       options: [
@@ -112,7 +117,7 @@ describe('Typed event callbacks', () => {
     tags[1].dispatchEvent(dropEvent);
 
     expect(handler).toHaveBeenCalledOnce();
-    const arg: string[] = handler.mock.calls[0][0];
+    const arg: ThekSelectPrimitive[] = handler.mock.calls[0][0];
     expect(Array.isArray(arg)).toBe(true);
   });
 

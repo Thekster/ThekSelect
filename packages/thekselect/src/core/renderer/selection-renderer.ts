@@ -17,7 +17,7 @@ export function safeRender<T>(
 
 export function createTagNode<T>(
   option: ThekSelectOption<T>,
-  val: string,
+  val: string | number,
   index: number,
   config: Required<ThekSelectConfig<T>>,
   callbacks: RendererCallbacks<T>
@@ -41,14 +41,14 @@ export function createTagNode<T>(
 export function updateTagNode<T>(
   tag: HTMLElement,
   option: ThekSelectOption<T>,
-  val: string,
+  val: string | number,
   index: number,
   config: Required<ThekSelectConfig<T>>,
   callbacks: RendererCallbacks<T>
 ): void {
   const dField = config.displayField;
   tag.dataset.index = index.toString();
-  tag.dataset.value = val;
+  tag.dataset.value = String(val);
 
   const label = tag.querySelector<HTMLElement>('.thek-tag-label');
   const removeBtn = tag.querySelector<HTMLButtonElement>('.thek-tag-remove');
@@ -116,11 +116,11 @@ export function renderSelectionContent<T>(
       state.selectedValues.forEach((val, i) => {
         const option =
           state.options.find((o) => o[vField] === val) ||
-          state.selectedOptionsByValue[val] ||
-          ({ [vField]: val, [dField]: val } as unknown as ThekSelectOption<T>);
-        let tag = existing.get(val);
+          state.selectedOptionsByValue[String(val)] ||
+          ({ [vField]: val, [dField]: String(val) } as unknown as ThekSelectOption<T>);
+        let tag = existing.get(String(val));
         if (tag) {
-          existing.delete(val);
+          existing.delete(String(val));
           updateTagNode(tag, option, val, i, config, callbacks);
         } else {
           tag = createTagNode(option, val, i, config, callbacks);
@@ -136,7 +136,7 @@ export function renderSelectionContent<T>(
     container.innerHTML = '';
     const val = state.selectedValues[0];
     const option =
-      state.options.find((o) => o[vField] === val) || state.selectedOptionsByValue[val];
+      state.options.find((o) => o[vField] === val) || state.selectedOptionsByValue[String(val)];
     if (option) {
       const content = safeRender(config.renderSelection, option, config, callbacks.onError);
       if (content instanceof HTMLElement) {

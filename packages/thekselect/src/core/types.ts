@@ -1,3 +1,6 @@
+export type ThekSelectPrimitive = string | number;
+export type ThekSelectValue = ThekSelectPrimitive | ThekSelectPrimitive[] | undefined;
+
 /**
  * A single option in a ThekSelect instance.
  *
@@ -14,7 +17,7 @@
  * domain data into render functions, use the `data` field.
  */
 export interface ThekSelectOption<T = unknown> {
-  value: string;
+  value: ThekSelectPrimitive;
   label: string;
   disabled?: boolean;
   selected?: boolean;
@@ -51,7 +54,7 @@ export interface ThekSelectConfig<T = unknown> {
 
 export interface ThekSelectState<T = unknown> {
   options: ThekSelectOption<T>[];
-  selectedValues: string[];
+  selectedValues: ThekSelectPrimitive[];
   selectedOptionsByValue: Record<string, ThekSelectOption<T>>;
   isOpen: boolean;
   focusedIndex: number;
@@ -70,12 +73,12 @@ export type ThekSelectEvent =
   | 'error';
 
 export interface ThekSelectEventPayloadMap<T = unknown> {
-  change: string | string[] | undefined;
+  change: ThekSelectValue;
   open: null;
   close: null;
   search: string;
   tagAdded: ThekSelectOption<T>;
   tagRemoved: ThekSelectOption<T>;
-  reordered: string[];
+  reordered: ThekSelectPrimitive[];
   error: Error;
 }

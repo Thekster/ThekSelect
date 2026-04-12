@@ -4,9 +4,9 @@
 
 ThekSelect is a zero-dependency TypeScript select component library, published as an **npm workspaces monorepo**:
 
-| Package | Path | Description |
-| --- | --- | --- |
-| `thekselect` | `packages/thekselect/` | Core library — headless + DOM renderer, no dependencies |
+| Package          | Path                       | Description                                                           |
+| ---------------- | -------------------------- | --------------------------------------------------------------------- |
+| `thekselect`     | `packages/thekselect/`     | Core library — headless + DOM renderer, no dependencies               |
 | `thekselect-vue` | `packages/thekselect-vue/` | Vue 3 wrapper — `<ThekSelect>` component + `useThekSelect` composable |
 
 The core has a **headless layer** (`ThekSelect`) that works without any DOM, and an optional **DOM layer**
@@ -18,27 +18,37 @@ Target environment: browser. Runtime dependencies: none (core), `vue` + `theksel
 
 Run from the **repo root** unless noted.
 
-| Command                   | Purpose                                                      |
-| ------------------------- | ------------------------------------------------------------ |
-| `npm test -- --run`       | Run the full test suite once (no watch) — all packages       |
-| `npm test`                | Run tests in watch mode                                      |
-| `npm run lint`            | Run oxlint — must pass with 0 warnings and 0 errors          |
-| `npm run format`          | Auto-fix formatting with oxfmt                               |
-| `npm run format:check`    | Check formatting without modifying files                     |
-| `npm run build`           | Build both packages (`dist/` in each package dir)            |
-| `npm run dev`             | Start Vite dev server with the showcase page                 |
+| Command                | Purpose                                                |
+| ---------------------- | ------------------------------------------------------ |
+| `npm test -- --run`    | Run the full test suite once (no watch) — all packages |
+| `npm test`             | Run tests in watch mode                                |
+| `npm run lint`         | Run oxlint — must pass with 0 warnings and 0 errors    |
+| `npm run format`       | Auto-fix formatting with oxfmt                         |
+| `npm run format:check` | Check formatting without modifying files               |
+| `npm run build`        | Build both packages (`dist/` in each package dir)      |
+| `npm run dev`          | Start Vite dev server with the showcase page           |
+
+Validation order for non-trivial changes:
+
+1. `npm run format:check`
+2. `npm run lint`
+3. `npm test -- --run`
+4. `npm run build`
+
+If `format:check` fails, run `npm run format` before re-running the gate. Do not ship changes with
+format drift or lint warnings.
 
 Run from **`packages/thekselect/`**:
 
-| Command                 | Purpose                                              |
-| ----------------------- | ---------------------------------------------------- |
-| `npm run release:check` | Full gate: build + dry-run pack                      |
+| Command                 | Purpose                         |
+| ----------------------- | ------------------------------- |
+| `npm run release:check` | Full gate: build + dry-run pack |
 
 Run from **`packages/thekselect-vue/`**:
 
-| Command                 | Purpose                                              |
-| ----------------------- | ---------------------------------------------------- |
-| `npm run release:check` | Full gate: build + dry-run pack                      |
+| Command                 | Purpose                         |
+| ----------------------- | ------------------------------- |
+| `npm run release:check` | Full gate: build + dry-run pack |
 
 ## File Map
 
@@ -76,11 +86,11 @@ Run from **`packages/thekselect-vue/`**:
 
 ### packages/thekselect-vue/src/
 
-| File              | Responsibility                                                                        |
-| ----------------- | ------------------------------------------------------------------------------------- |
-| `ThekSelect.vue`  | Vue 3 SFC — wraps `ThekSelect.init()`, maps props → config, forwards all events as Vue emits, watches reactive props (`modelValue`, `height`, `maxOptions`, `renderOption`) |
-| `composable.ts`   | `useThekSelect(el, options)` — headless composable; returns `{ instance, value }` refs |
-| `index.ts`        | Public entry: re-exports `ThekSelect` (default) and `useThekSelect`                   |
+| File             | Responsibility                                                                                                                                                              |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ThekSelect.vue` | Vue 3 SFC — wraps `ThekSelect.init()`, maps props → config, forwards all events as Vue emits, watches reactive props (`modelValue`, `height`, `maxOptions`, `renderOption`) |
+| `composable.ts`  | `useThekSelect(el, options)` — headless composable; returns `{ instance, value }` refs                                                                                      |
+| `index.ts`       | Public entry: re-exports `ThekSelect` (default) and `useThekSelect`                                                                                                         |
 
 Init-time props (`multiple`, `searchable`, `disabled`, `canCreate`, `loadOptions`, etc.) are read once at
 mount. To reconfigure after mount, destroy and remount with a `:key` change.
@@ -155,17 +165,17 @@ Follow the same order if adding new cleanup paths to the Vue wrapper.
 
 ### packages/thekselect/tests/
 
-| Directory      | What it covers                                                  |
-| -------------- | --------------------------------------------------------------- |
-| `core/`        | Headless API, `StateManager` unit, config defaults, event types |
-| `features/`    | Remote loading, `canCreate`, drag-and-drop reorder, UI features |
-| `accessibility/` | ARIA attributes, keyboard navigation, label association       |
-| `integration/` | Full DOM init and interaction scenarios                         |
-| `regressions/` | One test per previously-found bug — never delete these          |
+| Directory        | What it covers                                                  |
+| ---------------- | --------------------------------------------------------------- |
+| `core/`          | Headless API, `StateManager` unit, config defaults, event types |
+| `features/`      | Remote loading, `canCreate`, drag-and-drop reorder, UI features |
+| `accessibility/` | ARIA attributes, keyboard navigation, label association         |
+| `integration/`   | Full DOM init and interaction scenarios                         |
+| `regressions/`   | One test per previously-found bug — never delete these          |
 
 ### packages/thekselect-vue/tests/
 
-| File                    | What it covers                                                                     |
-| ----------------------- | ---------------------------------------------------------------------------------- |
-| `composable.test.ts`    | `useThekSelect` mount/unmount lifecycle, value sync, instance ref                  |
-| `ThekSelect.test.ts`    | Component prop mapping, `v-model` two-way binding, event forwarding, reactive prop updates |
+| File                 | What it covers                                                                             |
+| -------------------- | ------------------------------------------------------------------------------------------ |
+| `composable.test.ts` | `useThekSelect` mount/unmount lifecycle, value sync, instance ref                          |
+| `ThekSelect.test.ts` | Component prop mapping, `v-model` two-way binding, event forwarding, reactive prop updates |
