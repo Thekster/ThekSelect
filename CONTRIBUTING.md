@@ -21,6 +21,16 @@ npm run release:check   # tests + build + dry-run pack
 
 All tests must pass, lint must be clean, and the pack must succeed.
 
+## Releases
+
+- This repo publishes through GitHub Actions using **npm trusted publishing**.
+- The publish workflow is `.github/workflows/publish.yml`.
+- Release order is fixed:
+  1. `packages/thekselect`
+  2. `packages/thekselect-vue`
+- Do not switch this to parallel publish unless the Vue package stops depending on the newly published
+  core version being available first.
+
 ## Branching
 
 - Base your branch off `main`.

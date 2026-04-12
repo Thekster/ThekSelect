@@ -50,6 +50,24 @@ Run from **`packages/thekselect-vue/`**:
 | ----------------------- | ------------------------------- |
 | `npm run release:check` | Full gate: build + dry-run pack |
 
+## Release Notes
+
+- This repo publishes via **GitHub Actions + npm trusted publishing**. Do not assume local `npm publish`
+  is the primary release path.
+- The release workflow is `.github/workflows/publish.yml`.
+- Publish order matters:
+  1. `packages/thekselect`
+  2. `packages/thekselect-vue`
+- `thekselect-vue` depends on the newly published core version being available first because its
+  peer dependency floor tracks the current core release.
+- Before tagging or creating a GitHub Release, run:
+  1. `npm run format:check`
+  2. `npm run lint`
+  3. `npm test -- --run`
+  4. `npm run build`
+  5. `npm run release:check` in `packages/thekselect`
+  6. `npm run release:check` in `packages/thekselect-vue`
+
 ## File Map
 
 ### packages/thekselect/src/core/

@@ -33,8 +33,8 @@ npm install thekselect
 Before publishing:
 
 1. Ensure the package name and version in `package.json` are correct.
-2. Add an `NPM_TOKEN` repository secret in GitHub.
-3. Push the commit you want to publish.
+2. Push the commit you want to publish.
+3. Ensure npm trusted publishing is configured for this GitHub repository and workflow.
 
 Verify the package locally:
 
@@ -44,11 +44,18 @@ npm run release:check
 
 Publish through GitHub Actions:
 
-1. Bump `package.json` to the version you want to publish.
+1. Bump the package versions you want to publish.
 2. Push the version commit to GitHub.
 3. Trigger one of these:
    - Create and publish a GitHub Release.
    - Open `Actions` -> `Publish to npm` -> `Run workflow`.
+
+The publish workflow uses **npm trusted publishing** and publishes the monorepo packages in this order:
+
+1. `packages/thekselect`
+2. `packages/thekselect-vue`
+
+This order is required because `thekselect-vue` expects the matching core release to already exist on npm.
 
 Manual fallback from a local terminal:
 
@@ -57,7 +64,7 @@ npm run release:check
 npm publish --access public
 ```
 
-`prepublishOnly` runs the same release checks before `npm publish`.
+Use local `npm publish` only as a fallback when repository ownership and npm permissions are confirmed.
 
 ## CSS Themes
 

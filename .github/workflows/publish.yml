@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       package:
-        description: 'Informational only — both packages always publish (fail-fast: false keeps them independent)'
+        description: 'Informational only — the workflow always publishes core first, then the Vue wrapper'
         required: false
         default: ''
 
@@ -15,13 +15,38 @@ permissions:
   contents: read
   id-token: write
 
+# npm trusted publishing is configured for this repo/workflow.
+# Order matters: thekselect-vue publishes only after thekselect succeeds.
+
 jobs:
-  publish:
+  publish-core:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        package: [thekselect, thekselect-vue]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify thekselect release package
+        run: npm run release:check
+        working-directory: packages/thekselect
+
+      - name: Publish thekselect to npm
+        run: npm publish --provenance
+        working-directory: packages/thekselect
+
+  publish-vue:
+    runs-on: ubuntu-latest
+    needs: publish-core
 
     steps:
       - name: Check out repository
@@ -38,13 +63,12 @@ jobs:
         run: npm ci
 
       - name: Build thekselect (required for thekselect-vue type checking)
-        if: matrix.package == 'thekselect-vue'
         run: npm run build --workspace=packages/thekselect
 
-      - name: Verify release package
+      - name: Verify thekselect-vue release package
         run: npm run release:check
-        working-directory: packages/${{ matrix.package }}
+        working-directory: packages/thekselect-vue
 
-      - name: Publish to npm
+      - name: Publish thekselect-vue to npm
         run: npm publish --provenance
-        working-directory: packages/${{ matrix.package }}
+        working-directory: packages/thekselect-vue
