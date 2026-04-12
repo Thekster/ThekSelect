@@ -204,6 +204,25 @@ describe('Reviewer findings regressions', () => {
     expect(document.body.contains(dropdown)).toBe(false);
   });
 
+  it('removes dropdown from body when an ancestor subtree is removed without calling destroy()', async () => {
+    document.body.innerHTML = '<section id="outer"><div id="container"></div></section>';
+    container = document.getElementById('container') as HTMLDivElement;
+
+    ThekSelect.init(container, {
+      options: [{ value: '1', label: 'One' }]
+    });
+
+    const dropdown = document.querySelector('.thek-dropdown') as HTMLElement;
+    expect(document.body.contains(dropdown)).toBe(true);
+
+    const outer = document.getElementById('outer') as HTMLElement;
+    outer.remove();
+
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(document.body.contains(dropdown)).toBe(false);
+  });
+
   it('does not mutate state after destroy when a fetch is in-flight', async () => {
     let resolveRemote!: (opts: { value: string; label: string }[]) => void;
     const ts = ThekSelect.init(container, {

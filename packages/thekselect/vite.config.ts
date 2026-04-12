@@ -24,9 +24,12 @@ export default defineConfig({
         if (format === 'es') {
           return isMin ? 'thekselect.min.js' : 'thekselect.js';
         }
+        if (format === 'cjs') {
+          return isMin ? 'thekselect.min.cjs' : 'thekselect.cjs';
+        }
         return isMin ? 'thekselect.umd.min.js' : 'thekselect.umd.js';
       },
-      formats: ['es', 'umd']
+      formats: ['es', 'cjs', 'umd']
     },
     rollupOptions: {
       output: {

@@ -111,7 +111,7 @@ describe('Typed event callbacks', () => {
     const tags = document.querySelectorAll('.thek-tag');
     const dropEvent = new CustomEvent('drop', { bubbles: true }) as unknown as DragEvent;
     Object.defineProperty(dropEvent, 'dataTransfer', {
-      value: { getData: vi.fn().mockReturnValue('0') }
+      value: { getData: vi.fn().mockReturnValue('1') }
     });
     dropEvent.preventDefault = vi.fn();
     tags[1].dispatchEvent(dropEvent);

@@ -1,15 +1,40 @@
 import { ThekSelectConfig, ThekSelectState, ThekSelectOption } from '../types.js';
-import { RendererCallbacks, SVG_CHECK } from './constants.js';
+import { RendererCallbacks, createCheckIcon, replaceChildrenWithIcon } from './constants.js';
 import { safeRender } from './selection-renderer.js';
 
 export function createSpacer(height: number): HTMLLIElement {
   const spacer = document.createElement('li');
+  spacer.className = 'thek-virtual-spacer';
   spacer.style.height = `${height}px`;
   spacer.style.padding = '0';
   spacer.style.margin = '0';
   spacer.style.listStyle = 'none';
   spacer.setAttribute('aria-hidden', 'true');
   return spacer;
+}
+
+function getVirtualSpacer(
+  list: HTMLElement,
+  position: 'top' | 'bottom',
+  before?: Node | null
+): HTMLLIElement {
+  const selector = `.thek-virtual-spacer[data-position="${position}"]`;
+  let spacer = list.querySelector<HTMLLIElement>(selector);
+  if (!spacer) {
+    spacer = createSpacer(0);
+    spacer.dataset.position = position;
+    if (before) {
+      list.insertBefore(spacer, before);
+    } else {
+      list.appendChild(spacer);
+    }
+  }
+  return spacer;
+}
+
+function syncVirtualSpacerHeight(spacer: HTMLLIElement, height: number): void {
+  spacer.style.height = `${height}px`;
+  spacer.hidden = height === 0;
 }
 
 export function updateOptionAttrs<T>(
@@ -38,9 +63,9 @@ export function updateOptionAttrs<T>(
     if (checkbox) {
       const hasSvg = checkbox.querySelector('.thek-check') !== null;
       if (isSelected && !hasSvg) {
-        checkbox.innerHTML = SVG_CHECK;
+        replaceChildrenWithIcon(checkbox, createCheckIcon());
       } else if (!isSelected && hasSvg) {
-        checkbox.innerHTML = '';
+        checkbox.replaceChildren();
       }
     }
   }
@@ -88,7 +113,7 @@ export function createOptionItem<T>(
     checkbox.className = 'thek-checkbox';
     const isSelected = state.selectedValues.includes(option[config.valueField] as string | number);
     if (isSelected) {
-      checkbox.innerHTML = SVG_CHECK;
+      replaceChildrenWithIcon(checkbox, createCheckIcon());
     }
     li.appendChild(checkbox);
   }
@@ -140,7 +165,6 @@ export function renderOptionsContent<T>(
   const overscan = Math.max(0, config.virtualOverscan);
 
   if (shouldVirtualize) {
-    list.innerHTML = '';
     const viewportHeight = list.clientHeight || 240;
     if (alignFocused && state.focusedIndex >= 0 && state.focusedIndex < filteredOptions.length) {
       const focusedTop = state.focusedIndex * itemHeight;
@@ -178,7 +202,55 @@ export function renderOptionsContent<T>(
     if (typeof preservedScrollTop === 'number') {
       list.scrollTop = preservedScrollTop;
     }
+
+    for (const child of Array.from(list.children) as HTMLLIElement[]) {
+      if (
+        child.classList.contains('thek-loading') ||
+        child.classList.contains('thek-no-results') ||
+        child.classList.contains('thek-create')
+      ) {
+        list.removeChild(child);
+      }
+    }
+
+    const topSpacer = getVirtualSpacer(list, 'top', list.firstChild);
+    const bottomSpacer = getVirtualSpacer(list, 'bottom');
+    syncVirtualSpacerHeight(topSpacer, start * itemHeight);
+
+    const existingOptions = Array.from(
+      list.querySelectorAll<HTMLLIElement>(
+        '.thek-option:not(.thek-loading):not(.thek-no-results):not(.thek-create)'
+      )
+    );
+    const needed = end - start;
+
+    for (let offset = 0; offset < needed; offset++) {
+      const optionIndex = start + offset;
+      const option = filteredOptions[optionIndex];
+      let li = existingOptions[offset];
+      if (li) {
+        updateOptionAttrs(li, option, optionIndex, state, config, id);
+        updateOptionContent(li, option, config, callbacks);
+      } else {
+        li = createOptionItem(option, optionIndex, state, config, callbacks, id);
+        list.insertBefore(li, bottomSpacer);
+      }
+    }
+
+    for (let index = existingOptions.length - 1; index >= needed; index--) {
+      existingOptions[index].remove();
+    }
+
+    syncVirtualSpacerHeight(bottomSpacer, (filteredOptions.length - end) * itemHeight);
+    list.insertBefore(topSpacer, list.firstChild);
+    list.appendChild(bottomSpacer);
   } else {
+    for (const child of Array.from(list.children) as HTMLLIElement[]) {
+      if (child.classList.contains('thek-virtual-spacer')) {
+        list.removeChild(child);
+      }
+    }
+
     const existing = new Map<string, HTMLLIElement>();
     for (const child of Array.from(list.children) as HTMLLIElement[]) {
       const key = child.dataset.key;

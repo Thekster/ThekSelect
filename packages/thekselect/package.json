@@ -1,6 +1,6 @@
 {
   "name": "thekselect",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "A browser select library with a reusable core and themes.",
   "keywords": [
     "accessible",
@@ -19,17 +19,21 @@
     "**/*.css"
   ],
   "type": "module",
-  "main": "./dist/thekselect.js",
+  "main": "./dist/thekselect.cjs",
   "module": "./dist/thekselect.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/thekselect.js"
+      "import": "./dist/thekselect.js",
+      "require": "./dist/thekselect.cjs",
+      "default": "./dist/thekselect.js"
     },
     "./min": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/thekselect.min.js"
+      "import": "./dist/thekselect.min.js",
+      "require": "./dist/thekselect.min.cjs",
+      "default": "./dist/thekselect.min.js"
     },
     "./css/*": {
       "default": "./dist/css/*"

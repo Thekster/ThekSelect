@@ -12,12 +12,13 @@ export default defineConfig({
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'ThekSelectVue',
-      fileName: () => 'thekselect-vue.js',
-      formats: ['es']
+      fileName: (format) => (format === 'cjs' ? 'thekselect-vue.cjs' : 'thekselect-vue.js'),
+      formats: ['es', 'cjs']
     },
     rollupOptions: {
       external: ['vue', 'thekselect'],
       output: {
+        exports: 'named',
         globals: {
           vue: 'Vue',
           thekselect: 'ThekSelect'

@@ -1,5 +1,10 @@
 import { ThekSelectConfig } from '../types.js';
-import { RendererCallbacks, SVG_CHEVRON, SVG_SEARCH } from './constants.js';
+import {
+  RendererCallbacks,
+  createChevronIcon,
+  createSearchIcon,
+  replaceChildrenWithIcon
+} from './constants.js';
 
 export interface RendererElements {
   wrapper: HTMLElement;
@@ -43,7 +48,9 @@ export function createRendererSkeleton<T>(
     (e) => {
       const tag = (e.target as HTMLElement).closest<HTMLElement>('.thek-tag');
       if (!tag) return;
-      e.dataTransfer?.setData('text/plain', tag.dataset.index!);
+      if (tag.dataset.value !== undefined) {
+        e.dataTransfer?.setData('text/plain', tag.dataset.value);
+      }
       tag.classList.add('thek-dragging');
     },
     { signal }
@@ -85,8 +92,14 @@ export function createRendererSkeleton<T>(
       const tag = (e.target as HTMLElement).closest<HTMLElement>('.thek-tag');
       if (!tag) return;
       tag.classList.remove('thek-drag-over');
-      const fromIndex = parseInt(e.dataTransfer?.getData('text/plain') || '-1');
-      const toIndex = parseInt(tag.dataset.index!);
+      const draggedValue = e.dataTransfer?.getData('text/plain');
+      const targetValue = tag.dataset.value;
+      if (!draggedValue || !targetValue) return;
+      const values = Array.from(
+        selectionContainer.querySelectorAll<HTMLElement>('.thek-tag[data-value]')
+      ).map((item) => item.dataset.value);
+      const fromIndex = values.indexOf(draggedValue);
+      const toIndex = values.indexOf(targetValue);
       if (fromIndex !== -1 && fromIndex !== toIndex) {
         callbacks.onReorder(fromIndex, toIndex);
       }
@@ -100,7 +113,8 @@ export function createRendererSkeleton<T>(
 
   const indicatorsContainer = document.createElement('div');
   indicatorsContainer.className = 'thek-indicators';
-  indicatorsContainer.innerHTML = SVG_CHEVRON;
+  indicatorsContainer.setAttribute('aria-hidden', 'true');
+  replaceChildrenWithIcon(indicatorsContainer, createChevronIcon());
 
   control.appendChild(selectionContainer);
   control.appendChild(placeholderElement);
@@ -114,7 +128,7 @@ export function createRendererSkeleton<T>(
   if (config.searchable) {
     const searchWrapper = document.createElement('div');
     searchWrapper.className = 'thek-search-wrapper';
-    searchWrapper.innerHTML = SVG_SEARCH;
+    searchWrapper.appendChild(createSearchIcon());
 
     input = document.createElement('input');
     input.className = 'thek-input';
@@ -134,6 +148,7 @@ export function createRendererSkeleton<T>(
   } else {
     input = document.createElement('input');
     input.type = 'hidden';
+    input.setAttribute('aria-hidden', 'true');
   }
 
   const optionsList = document.createElement('ul');

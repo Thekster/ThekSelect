@@ -115,4 +115,30 @@ describe('Virtualization', () => {
     vi.runAllTimers();
     expect(scrollSpy).toHaveBeenCalledTimes(2);
   });
+
+  it('reuses existing option nodes while virtual scrolling', async () => {
+    ThekSelect.init(container, {
+      options: makeOptions(200),
+      virtualize: true,
+      virtualThreshold: 80,
+      virtualItemHeight: 40
+    });
+
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    control.click();
+
+    const list = document.querySelector('.thek-options') as HTMLElement;
+    const initialNodes = Array.from(document.querySelectorAll('.thek-options .thek-option'));
+    expect(initialNodes.length).toBeGreaterThan(0);
+
+    list.scrollTop = 400;
+    list.dispatchEvent(new Event('scroll'));
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    const nextNodes = Array.from(document.querySelectorAll('.thek-options .thek-option'));
+    expect(nextNodes.length).toBeGreaterThanOrEqual(initialNodes.length);
+    initialNodes.forEach((node, index) => {
+      expect(nextNodes[index]).toBe(node);
+    });
+  });
 });

@@ -1,6 +1,6 @@
 {
   "name": "thekselect-vue",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Vue 3 wrapper for ThekSelect",
   "keywords": [
     "accessible",
@@ -18,17 +18,19 @@
     "dist"
   ],
   "type": "module",
-  "main": "./dist/thekselect-vue.js",
+  "main": "./dist/thekselect-vue.cjs",
   "module": "./dist/thekselect-vue.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/thekselect-vue.js"
+      "import": "./dist/thekselect-vue.js",
+      "require": "./dist/thekselect-vue.cjs",
+      "default": "./dist/thekselect-vue.js"
     }
   },
   "peerDependencies": {
-    "thekselect": ">=1.6.0",
+    "thekselect": ">=1.7.0",
     "vue": ">=3.0.0"
   },
   "devDependencies": {

@@ -1,5 +1,20 @@
 # Release Notes
 
+## 1.7.0 / thekselect-vue 1.3.0 (2026-04-12)
+
+### Changed
+
+- **Virtualized DOM reuse** — the virtual list now reuses rendered option nodes while scrolling instead of clearing and recreating the visible window on each update. This cuts scroll-time DOM churn and makes virtualization behave more like a proper pooled renderer.
+- **Stable drag-and-drop identifiers** — tag reordering now resolves drag payloads by stable selected values instead of transient DOM indices, making reorder behavior resilient to stale `dataset.index` values.
+- **CommonJS package support** — both `thekselect` and `thekselect-vue` now ship explicit CommonJS builds alongside ESM output. Package exports now include `require` conditions and `main` points at the CJS entry, so CommonJS consumers have a supported import path again.
+- **Vue peer dependency floor** — `thekselect-vue` now declares `thekselect >= 1.7.0` to match the new core packaging and renderer behavior.
+
+### Fixed
+
+- **Ancestor subtree orphan cleanup** — removing an ancestor subtree without calling `.destroy()` now still tears down the detached dropdown and listeners. The fallback orphan observer no longer only handles direct wrapper removal.
+- **SVG renderer hygiene** — internal icons are now created as SVG DOM nodes rather than being injected with `innerHTML`, removing a fragile renderer pattern while preserving the same visual output.
+- **Loading semantics** — the active combobox element and listbox now expose `aria-busy` during remote loading, giving assistive technologies a clearer signal when results are in-flight.
+
 ## 1.6.0 / thekselect-vue 1.2.0 (2026-04-12)
 
 ### Added

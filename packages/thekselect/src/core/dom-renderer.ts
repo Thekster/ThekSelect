@@ -1,5 +1,10 @@
 import { ThekSelectConfig, ThekSelectState, ThekSelectOption } from './types.js';
-import { type RendererCallbacks, SVG_CHEVRON, SVG_SPINNER } from './renderer/constants.js';
+import {
+  type RendererCallbacks,
+  createChevronIcon,
+  createSpinnerIcon,
+  replaceChildrenWithIcon
+} from './renderer/constants.js';
 import { createRendererSkeleton } from './renderer/dom-assembly.js';
 import { renderSelectionContent } from './renderer/selection-renderer.js';
 import { renderOptionsContent } from './renderer/options-renderer.js';
@@ -64,20 +69,27 @@ export class DomRenderer<T = unknown> {
     this.dropdown.style.setProperty('--thek-input-height', resolved);
   }
 
-  /** Start watching parent for direct removal of this wrapper. Must be called after insertion. */
-  public startOrphanObserver(parent: Node): void {
+  /** Start watching the document for detached wrappers so destroy() still runs on subtree removals. */
+  public startOrphanObserver(_parent: Node): void {
+    const root =
+      typeof document !== 'undefined' && document.body ? document.body : document.documentElement;
+    if (!root) return;
+
     this._orphanObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         for (const removed of Array.from(mutation.removedNodes)) {
-          if (removed === this.wrapper) {
+          if (
+            removed === this.wrapper ||
+            (removed.nodeType === 1 && (removed as Element).contains(this.wrapper)) ||
+            !this.wrapper.isConnected
+          ) {
             this.callbacks.onOrphan();
             return;
           }
         }
       }
     });
-    // childList only — no subtree. We know the wrapper is a direct child of parent.
-    this._orphanObserver.observe(parent, { childList: true });
+    this._orphanObserver.observe(root, { childList: true, subtree: true });
   }
 
   public render(state: ThekSelectState<T>, filteredOptions: ThekSelectOption<T>[]): void {
@@ -86,12 +98,17 @@ export class DomRenderer<T = unknown> {
     this.lastFilteredOptions = filteredOptions;
     const ariaTarget = this.config.searchable ? this.input : this.control;
     ariaTarget.setAttribute('aria-expanded', state.isOpen.toString());
+    ariaTarget.setAttribute('aria-busy', state.isLoading ? 'true' : 'false');
+    this.optionsList.setAttribute('aria-busy', state.isLoading ? 'true' : 'false');
     this.dropdown.hidden = !state.isOpen;
     this.wrapper.classList.toggle('thek-open', state.isOpen);
 
     // Only touch the indicator DOM when the loading state actually changes.
     if (state.isLoading !== prevState?.isLoading) {
-      this.indicatorsContainer.innerHTML = state.isLoading ? SVG_SPINNER : SVG_CHEVRON;
+      replaceChildrenWithIcon(
+        this.indicatorsContainer,
+        state.isLoading ? createSpinnerIcon() : createChevronIcon()
+      );
     }
 
     renderSelectionContent(

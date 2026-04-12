@@ -224,6 +224,45 @@ describe('ARIA state correctness', () => {
     resolve([]);
   });
 
+  it('marks the searchable combobox and listbox as busy while loading', async () => {
+    let resolve!: (v: { value: string; label: string }[]) => void;
+    ThekSelect.init(container, {
+      searchable: true,
+      debounce: 0,
+      loadOptions: () =>
+        new Promise((r) => {
+          resolve = r;
+        })
+    });
+
+    const input = document.querySelector('.thek-input') as HTMLInputElement;
+    const listbox = document.querySelector('[role="listbox"]') as HTMLElement;
+    input.value = 'x';
+    input.dispatchEvent(new Event('input'));
+    await new Promise((r) => setTimeout(r, 10));
+
+    expect(input.getAttribute('aria-busy')).toBe('true');
+    expect(listbox.getAttribute('aria-busy')).toBe('true');
+
+    resolve([]);
+    await new Promise((r) => setTimeout(r, 10));
+
+    expect(input.getAttribute('aria-busy')).toBe('false');
+    expect(listbox.getAttribute('aria-busy')).toBe('false');
+  });
+
+  it('marks the non-searchable combobox and listbox as not busy by default', () => {
+    ThekSelect.init(container, {
+      searchable: false,
+      options: [{ value: '1', label: 'One' }]
+    });
+
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    const listbox = document.querySelector('[role="listbox"]') as HTMLElement;
+    expect(control.getAttribute('aria-busy')).toBe('false');
+    expect(listbox.getAttribute('aria-busy')).toBe('false');
+  });
+
   // ── combobox role placement ───────────────────────────────────────────────
 
   it('places role="combobox" on the input element in searchable mode', () => {
