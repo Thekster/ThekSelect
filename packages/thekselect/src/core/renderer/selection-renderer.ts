@@ -1,4 +1,10 @@
-import { ThekSelectConfig, ThekSelectState, ThekSelectOption } from '../types.js';
+import {
+  ThekSelectConfig,
+  ThekSelectState,
+  ThekSelectOption,
+  getOptionField,
+  valuesMatch
+} from '../types.js';
 import { RendererCallbacks } from './constants.js';
 
 export function safeRender<T>(
@@ -11,7 +17,7 @@ export function safeRender<T>(
     return fn(option);
   } catch (err) {
     onError(err instanceof Error ? err : new Error(String(err)));
-    return String(option[config.displayField] ?? '');
+    return String(getOptionField(option, config.displayField) ?? '');
   }
 }
 
@@ -56,7 +62,8 @@ export function updateTagNode<T>(
 
   label.textContent = '';
   const content = safeRender(config.renderSelection, option, config, callbacks.onError);
-  const displayText = content instanceof HTMLElement ? String(option[dField] ?? val) : content;
+  const displayText =
+    content instanceof HTMLElement ? String(getOptionField(option, dField) ?? val) : content;
   if (content instanceof HTMLElement) {
     label.appendChild(content);
   } else {
@@ -115,7 +122,7 @@ export function renderSelectionContent<T>(
 
       state.selectedValues.forEach((val, i) => {
         const option =
-          state.options.find((o) => o[vField] === val) ||
+          state.options.find((o) => valuesMatch(getOptionField(o, vField), val)) ||
           state.selectedOptionsByValue[String(val)] ||
           ({ [vField]: val, [dField]: String(val) } as unknown as ThekSelectOption<T>);
         let tag = existing.get(String(val));
@@ -136,7 +143,8 @@ export function renderSelectionContent<T>(
     container.innerHTML = '';
     const val = state.selectedValues[0];
     const option =
-      state.options.find((o) => o[vField] === val) || state.selectedOptionsByValue[String(val)];
+      state.options.find((o) => valuesMatch(getOptionField(o, vField), val)) ||
+      state.selectedOptionsByValue[String(val)];
     if (option) {
       const content = safeRender(config.renderSelection, option, config, callbacks.onError);
       if (content instanceof HTMLElement) {

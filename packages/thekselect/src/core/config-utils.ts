@@ -2,7 +2,9 @@ import {
   ThekSelectConfig,
   ThekSelectOption,
   ThekSelectPrimitive,
-  ThekSelectState
+  ThekSelectState,
+  getOptionField,
+  valuesMatch
 } from './types.js';
 
 export const NOOP_LOAD_OPTIONS = async (_query: string): Promise<ThekSelectOption[]> => [];
@@ -61,6 +63,12 @@ export function buildConfig<T = unknown>(
     finalConfig.height = 40;
   }
 
+  // maxSelectedLabels: 0 would collapse every selection to a summary line immediately,
+  // which is never useful. Clamp to a minimum of 1.
+  if (finalConfig.maxSelectedLabels < 1) {
+    finalConfig.maxSelectedLabels = 1;
+  }
+
   // If loadOptions spread in as undefined (explicit override), fall back to NOOP so the
   // component treats the instance as local mode instead of crashing on invocation.
   if (typeof finalConfig.loadOptions !== 'function') {
@@ -94,10 +102,12 @@ export function buildConfig<T = unknown>(
   const hasCustomRenderSelection = !!(globalDefaults.renderSelection || config.renderSelection);
 
   if (!hasCustomRenderOption) {
-    finalConfig.renderOption = (o: ThekSelectOption<T>) => o[finalConfig.displayField] as string;
+    finalConfig.renderOption = (o: ThekSelectOption<T>) =>
+      getOptionField(o, finalConfig.displayField) as string;
   }
   if (!hasCustomRenderSelection) {
-    finalConfig.renderSelection = (o: ThekSelectOption<T>) => o[finalConfig.displayField] as string;
+    finalConfig.renderSelection = (o: ThekSelectOption<T>) =>
+      getOptionField(o, finalConfig.displayField) as string;
   }
 
   return finalConfig;
@@ -109,14 +119,14 @@ export function buildInitialState<T = unknown>(
   const valueField = config.valueField;
   const firstSelected = config.options.find((o) => o.selected);
   const selectedValues = config.multiple
-    ? config.options.filter((o) => o.selected).map((o) => o[valueField])
-    : firstSelected && valueField in firstSelected
-      ? [firstSelected[valueField]]
+    ? config.options.filter((o) => o.selected).map((o) => getOptionField(o, valueField))
+    : firstSelected && valueField in (firstSelected as unknown as Record<string, unknown>)
+      ? [getOptionField(firstSelected, valueField)]
       : [];
 
   const selectedOptionsByValue: Record<string, ThekSelectOption<T>> = {};
   selectedValues.forEach((value) => {
-    const option = config.options.find((o) => o[valueField] === value);
+    const option = config.options.find((o) => valuesMatch(getOptionField(o, valueField), value));
     if (option) {
       selectedOptionsByValue[String(value)] = option;
     }

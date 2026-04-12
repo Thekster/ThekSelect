@@ -1,5 +1,32 @@
 # Release Notes
 
+## 1.8.0 / thekselect-vue 1.3.1 (2026-04-12)
+
+### Breaking
+
+- **`ThekSelectOption` index signature removed** — `[key: string]: unknown` no longer appears on the public interface. TypeScript consumers who indexed options with dynamic string keys (`option['myProp']`) will receive a compilation error. **Migration:** place typed domain data in the `data: T` generic field, or add an explicit `(option as Record<string, unknown>)['myProp']` cast at the use site. Runtime behaviour is unchanged.
+
+### Fixed
+
+- **Value type mismatch** — `setValue('1')` now correctly matches options whose `value` field is the number `1`, and vice versa. All internal comparisons now coerce both sides to string before comparing, eliminating silent mismatches between numeric and string representations of the same value.
+- **`setOptions` + remote mode** — calling `setOptions(list)` now persists correctly when a remote search query is later cleared. Previously clearing the query restored the constructor-time option list instead of the list last passed to `setOptions`.
+- **`loadOptions` non-array return** — if `loadOptions` resolves with a non-array value the library now emits an `'error'` event and leaves the current state intact, rather than crashing the renderer with a `TypeError`.
+- **`create('')` blank option** — calling `ts.create('')` programmatically no longer inserts a blank option; the method returns early when `label.trim()` is empty.
+- **Events fire after `destroy()`** — `on()` listeners are now cleared during `destroy()`. Previously, programmatic API calls made after destroy still emitted events to retained listeners.
+- **Listener error surfacing** — uncaught errors in `on()` callbacks are now re-thrown asynchronously via `setTimeout(..., 0)`, reaching global error handlers (Sentry, `window.onerror`, etc.) while still allowing subsequent listeners for the same event to run. Previously they were swallowed after a `console.error`.
+
+### Changed
+
+- **`maxSelectedLabels` clamped** — values below `1` are clamped to `1` in `buildConfig`. Setting `maxSelectedLabels: 0` previously caused any selection to collapse immediately into a summary count.
+
+### Performance
+
+- `StateManager.getState()` now caches the frozen deep-clone between state mutations. Multiple `getState()` calls within a single render cycle (render dispatch, `getFilteredOptions`, keyboard handlers) now pay the clone cost once instead of on every call.
+
+### thekselect-vue 1.3.1
+
+- Peer dependency floor raised to `thekselect >= 1.8.0` to match the updated core. No other changes.
+
 ## 1.7.0 / thekselect-vue 1.3.0 (2026-04-12)
 
 ### Changed

@@ -89,7 +89,7 @@ export interface RendererCallbacks<T = unknown> {
   onSelect: (option: ThekSelectOption<T>) => void;
   onCreate: (label: string) => void;
   onRemove: (option: ThekSelectOption<T>) => void;
-  onReorder: (from: number, to: number) => void;
+  onReorder: (draggedValue: string, targetValue: string) => void;
   onError: (err: Error) => void;
   onOrphan: () => void;
 }

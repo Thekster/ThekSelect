@@ -2,7 +2,9 @@ import {
   ThekSelectConfig,
   ThekSelectOption,
   ThekSelectPrimitive,
-  ThekSelectState
+  ThekSelectState,
+  getOptionField,
+  valuesMatch
 } from './types.js';
 
 type TagEvent = 'tagAdded' | 'tagRemoved';
@@ -21,13 +23,13 @@ export function applySelection<T = unknown>(
   option: ThekSelectOption<T>
 ): SelectionUpdate<T> {
   const valueField = config.valueField;
-  const optionValue = option[valueField] as ThekSelectPrimitive;
+  const optionValue = getOptionField(option, valueField) as ThekSelectPrimitive;
   const optionKey = String(optionValue);
   const selectedOptionsByValue = { ...state.selectedOptionsByValue };
 
   if (config.multiple) {
-    if (state.selectedValues.includes(optionValue)) {
-      const selectedValues = state.selectedValues.filter((v) => v !== optionValue);
+    if (state.selectedValues.some((v) => valuesMatch(v, optionValue))) {
+      const selectedValues = state.selectedValues.filter((v) => !valuesMatch(v, optionValue));
       delete selectedOptionsByValue[optionKey];
       return {
         selectedValues,
@@ -86,7 +88,7 @@ export function removeLastSelection<T = unknown>(
   }
 
   const removedOption =
-    state.options.find((o) => o[valueField] === removedValue) ||
+    state.options.find((o) => valuesMatch(getOptionField(o, valueField), removedValue)) ||
     selectedOptionsByValue[String(removedValue)];
   delete selectedOptionsByValue[String(removedValue)];
 
@@ -129,14 +131,14 @@ export function resolveSelectedOptions<T = unknown>(
 
   return state.selectedValues.map(
     (value) =>
-      state.options.find((o) => o[valueField] === value) ||
+      state.options.find((o) => valuesMatch(getOptionField(o, valueField), value)) ||
       state.selectedOptionsByValue[String(value)] ||
       ({
         value,
         label: String(value),
         [valueField]: value,
         [displayField]: String(value)
-      } as ThekSelectOption<T>)
+      } as unknown as ThekSelectOption<T>)
   );
 }
 
@@ -149,7 +151,7 @@ export function buildSelectedOptionsMapFromValues<T = unknown>(
   const selectedOptionsByValue: Record<string, ThekSelectOption<T>> = {};
   values.forEach((value) => {
     const option =
-      state.options.find((o) => o[valueField] === value) ||
+      state.options.find((o) => valuesMatch(getOptionField(o, valueField), value)) ||
       state.selectedOptionsByValue[String(value)];
     if (option) {
       selectedOptionsByValue[String(value)] = option;

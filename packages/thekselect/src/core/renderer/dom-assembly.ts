@@ -94,15 +94,8 @@ export function createRendererSkeleton<T>(
       tag.classList.remove('thek-drag-over');
       const draggedValue = e.dataTransfer?.getData('text/plain');
       const targetValue = tag.dataset.value;
-      if (!draggedValue || !targetValue) return;
-      const values = Array.from(
-        selectionContainer.querySelectorAll<HTMLElement>('.thek-tag[data-value]')
-      ).map((item) => item.dataset.value);
-      const fromIndex = values.indexOf(draggedValue);
-      const toIndex = values.indexOf(targetValue);
-      if (fromIndex !== -1 && fromIndex !== toIndex) {
-        callbacks.onReorder(fromIndex, toIndex);
-      }
+      if (!draggedValue || !targetValue || draggedValue === targetValue) return;
+      callbacks.onReorder(draggedValue, targetValue);
     },
     { signal }
   );

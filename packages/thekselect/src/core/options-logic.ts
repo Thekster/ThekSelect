@@ -1,4 +1,4 @@
-import { ThekSelectConfig, ThekSelectOption, ThekSelectState } from './types.js';
+import { ThekSelectConfig, ThekSelectOption, ThekSelectState, getOptionField } from './types.js';
 import { NOOP_LOAD_OPTIONS } from './config-utils.js';
 
 export function isRemoteMode<T = unknown>(config: Required<ThekSelectConfig<T>>): boolean {
@@ -16,7 +16,7 @@ export function getFilteredOptions<T = unknown>(
   const query = state.inputValue.toLowerCase();
   const displayField = config.displayField;
   const filtered = state.options.filter((option) => {
-    const value = option[displayField];
+    const value = getOptionField(option, displayField);
     return value != null && value.toString().toLowerCase().includes(query);
   });
 
@@ -36,7 +36,7 @@ export function mergeSelectedOptionsByValue<T = unknown>(
 ): Record<string, ThekSelectOption<T>> {
   const byValueFromLatest: Record<string, ThekSelectOption<T>> = {};
   latestOptions.forEach((option) => {
-    const value = option[valueField];
+    const value = getOptionField(option, valueField);
     if (typeof value === 'string' || typeof value === 'number') {
       byValueFromLatest[String(value)] = option;
     }

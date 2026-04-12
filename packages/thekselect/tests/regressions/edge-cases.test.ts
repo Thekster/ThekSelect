@@ -94,7 +94,7 @@ describe('ThekSelect Edge Cases', () => {
     expect(document.querySelector('.thek-dropdown')).toBeFalsy();
   });
 
-  it('a throwing listener does not silence subsequent listeners', () => {
+  it('a throwing listener does not silence subsequent listeners and re-throws globally', () => {
     const ts = ThekSelect.init(container, {
       options: [{ value: '1', label: 'One' }]
     });
@@ -112,7 +112,9 @@ describe('ThekSelect Edge Cases', () => {
     control.click();
     (document.querySelector('.thek-option') as HTMLElement).click();
 
-    // Both listeners must have been called despite the first throwing
+    // Both listeners must have been called despite the first throwing.
+    // The error is re-thrown via setTimeout so it reaches global error handlers
+    // (e.g. Sentry) without blocking the event loop here.
     expect(results).toEqual(['first', 'second']);
   });
 

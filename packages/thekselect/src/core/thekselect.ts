@@ -6,7 +6,9 @@ import {
   ThekSelectEvent,
   ThekSelectEventPayloadMap,
   ThekSelectPrimitive,
-  ThekSelectValue
+  ThekSelectValue,
+  getOptionField,
+  valuesMatch
 } from './types.js';
 import { debounce, DebouncedFn } from '../utils/debounce.js';
 import { buildConfig, buildInitialState } from './config-utils.js';
@@ -126,6 +128,7 @@ export class ThekSelect<T = unknown> {
 
   public create(label: string): void {
     if (this.config.disabled) return;
+    if (!label.trim()) return;
     const newOption = createOptionFromLabel(this.config, label);
     const state = this.stateManager.getState();
     this.stateManager.setState({ options: [...state.options, newOption] });
@@ -171,7 +174,9 @@ export class ThekSelect<T = unknown> {
       this.config.canCreate &&
       state.inputValue &&
       !filteredOptions.some(
-        (o) => (o[displayField] as string)?.toLowerCase() === state.inputValue.toLowerCase()
+        (o) =>
+          (getOptionField(o, displayField) as string)?.toLowerCase() ===
+          state.inputValue.toLowerCase()
       );
     const maxIndex = hasCreateSlot ? filteredOptions.length : filteredOptions.length - 1;
     let next = state.focusedIndex + 1;
@@ -238,6 +243,8 @@ export class ThekSelect<T = unknown> {
 
   public setOptions(options: ThekSelectOption<T>[]): void {
     const state = this.stateManager.getState() as ThekSelectState<T>;
+    // Keep config.options in sync so remote-mode query-clear restores this list.
+    this.config.options = options;
     this.stateManager.setState({
       options,
       selectedOptionsByValue: mergeSelectedOptionsByValue(
@@ -273,6 +280,7 @@ export class ThekSelect<T = unknown> {
     this.currentSearchAbortController?.abort();
     this.currentSearchAbortController = null;
     this.debouncedSearch.cancel();
+    this.events.clear();
   }
 
   // ── Static API ────────────────────────────────────────────────────────────
@@ -305,8 +313,14 @@ export class ThekSelect<T = unknown> {
           const requestId = ++this.remoteRequestId;
           this.stateManager.setState({ isLoading: true });
           try {
-            const options = await this.config.loadOptions!(query, signal);
+            const result = await this.config.loadOptions!(query, signal);
             if (this.isDestroyed || requestId !== this.remoteRequestId) return;
+            if (!Array.isArray(result)) {
+              this.stateManager.setState({ isLoading: false });
+              this.emit('error', new Error('ThekSelect: loadOptions must resolve to an array'));
+              return;
+            }
+            const options = result;
             const state = this.stateManager.getState();
             this.stateManager.setState({
               options,
@@ -381,7 +395,12 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
       onSelect: (option) => this.select(option),
       onCreate: (label) => this.create(label),
       onRemove: (option) => this.select(option),
-      onReorder: (from, to) => this.reorder(from, to),
+      onReorder: (draggedValue, targetValue) => {
+        const sv = (this.stateManager.getState() as ThekSelectState<T>).selectedValues;
+        const from = sv.findIndex((v) => String(v) === draggedValue);
+        const to = sv.findIndex((v) => String(v) === targetValue);
+        this.reorder(from, to);
+      },
       onError: (err) => this.emit('error', err),
       onOrphan: () => this.destroy()
     };
@@ -592,9 +611,12 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
         if (!Array.from(select.options).some((opt) => opt.value === stringValue)) {
           const state = this.stateManager.getState();
           const found =
-            state.options.find((o) => o[this.config.valueField] === val) ||
-            state.selectedOptionsByValue[stringValue];
-          const label = found ? String(found[this.config.displayField] ?? val) : stringValue;
+            state.options.find((o) =>
+              valuesMatch(getOptionField(o, this.config.valueField), val)
+            ) || state.selectedOptionsByValue[stringValue];
+          const label = found
+            ? String(getOptionField(found, this.config.displayField) ?? val)
+            : stringValue;
           const opt = new Option(label, stringValue, true, true);
           select.add(opt);
           this.injectedOptionValues.add(stringValue);

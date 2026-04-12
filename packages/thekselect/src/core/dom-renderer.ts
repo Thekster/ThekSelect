@@ -1,4 +1,10 @@
-import { ThekSelectConfig, ThekSelectState, ThekSelectOption } from './types.js';
+import {
+  ThekSelectConfig,
+  ThekSelectState,
+  ThekSelectOption,
+  getOptionField,
+  valuesMatch
+} from './types.js';
 import {
   type RendererCallbacks,
   createChevronIcon,
@@ -189,7 +195,7 @@ export class DomRenderer<T = unknown> {
 
     const vField = this.config.valueField;
     const selectedIndex = filteredOptions.findIndex((opt) =>
-      state.selectedValues.includes(opt[vField] as string | number)
+      state.selectedValues.some((v) => valuesMatch(v, getOptionField(opt, vField)))
     );
     if (selectedIndex < 0) return;
 

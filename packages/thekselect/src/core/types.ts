@@ -10,11 +10,8 @@ export type ThekSelectValue = ThekSelectPrimitive | ThekSelectPrimitive[] | unde
  * use a cast. The library reads fields via `config.valueField` and
  * `config.displayField` at runtime, not via `.value`/`.label` directly.
  *
- * The index signature `[key: string]: unknown` is required so TypeScript allows
- * dynamic access like `option[config.valueField]`. It has the side-effect of
- * making the generic parameter `T` apply only to the `data` field — `T` does
- * **not** add type safety to arbitrary extra fields. To carry strongly-typed
- * domain data into render functions, use the `data` field.
+ * To carry strongly-typed domain data into render functions, use the `data`
+ * field. The generic parameter `T` provides type safety exclusively there.
  */
 export interface ThekSelectOption<T = unknown> {
   value: ThekSelectPrimitive;
@@ -23,7 +20,6 @@ export interface ThekSelectOption<T = unknown> {
   selected?: boolean;
   /** Carry strongly-typed domain data for use in custom render functions. */
   data?: T;
-  [key: string]: unknown;
 }
 
 export interface ThekSelectConfig<T = unknown> {
@@ -35,6 +31,12 @@ export interface ThekSelectConfig<T = unknown> {
   canCreate?: boolean;
   createText?: string; // Default "Create '{%t}'..."
   height?: number | string;
+  /**
+   * Milliseconds to wait before firing `loadOptions` after each keystroke.
+   * Defaults to 300. Setting to 0 still defers execution to the next event
+   * loop tick (via `setTimeout(..., 0)`) — it does not make the call
+   * synchronous.
+   */
   debounce?: number;
   maxSelectedLabels?: number;
   displayField?: string;
@@ -60,6 +62,25 @@ export interface ThekSelectState<T = unknown> {
   focusedIndex: number;
   inputValue: string;
   isLoading: boolean;
+}
+
+/**
+ * @internal Read a runtime-configurable field name from an option object.
+ * Required because `valueField`/`displayField` are strings known only at
+ * runtime, and `ThekSelectOption` intentionally carries no index signature.
+ */
+export function getOptionField(option: unknown, field: string): unknown {
+  return (option as Record<string, unknown>)[field];
+}
+
+/**
+ * @internal Compare two option values for equality after coercing both to
+ * strings.  This prevents mismatches when options use numeric `value` fields
+ * but external callers pass the equivalent string (e.g. setValue('1') against
+ * { value: 1 }).
+ */
+export function valuesMatch(a: unknown, b: unknown): boolean {
+  return String(a) === String(b);
 }
 
 export type ThekSelectEvent =

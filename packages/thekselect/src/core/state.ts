@@ -17,13 +17,17 @@ function cloneAndFreeze(value: unknown): unknown {
 export class StateManager<T extends object> {
   private state: T;
   private listeners: Set<StateListener<T>> = new Set();
+  private frozenCache: Readonly<T> | null = null;
 
   constructor(initialState: T) {
     this.state = { ...initialState };
   }
 
   getState(): Readonly<T> {
-    return cloneAndFreeze(this.state) as Readonly<T>;
+    if (!this.frozenCache) {
+      this.frozenCache = cloneAndFreeze(this.state) as Readonly<T>;
+    }
+    return this.frozenCache;
   }
 
   setState(newState: Partial<T>): void {
@@ -40,6 +44,7 @@ export class StateManager<T extends object> {
     });
 
     if (hasChanged) {
+      this.frozenCache = null;
       this.notify();
     }
   }
@@ -51,6 +56,7 @@ export class StateManager<T extends object> {
 
   /** Force all subscribers to re-run regardless of state changes. Used when config mutates. */
   forceNotify(): void {
+    this.frozenCache = null;
     this.notify();
   }
 

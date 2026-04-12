@@ -1,4 +1,10 @@
-import { ThekSelectConfig, ThekSelectState, ThekSelectOption } from '../types.js';
+import {
+  ThekSelectConfig,
+  ThekSelectState,
+  ThekSelectOption,
+  getOptionField,
+  valuesMatch
+} from '../types.js';
 import { RendererCallbacks, createCheckIcon, replaceChildrenWithIcon } from './constants.js';
 import { safeRender } from './selection-renderer.js';
 
@@ -46,12 +52,14 @@ export function updateOptionAttrs<T>(
   id: string
 ): void {
   const vField = config.valueField;
-  const isSelected = state.selectedValues.includes(option[vField] as string | number);
+  const isSelected = state.selectedValues.some((v) =>
+    valuesMatch(v, getOptionField(option, vField))
+  );
   li.id = `${id}-opt-${index}`;
   li.classList.toggle('thek-selected', isSelected);
   li.classList.toggle('thek-focused', state.focusedIndex === index);
   li.setAttribute('aria-selected', isSelected.toString());
-  const isDisabled = !!(option as Record<string, unknown>)['disabled'];
+  const isDisabled = !!getOptionField(option, 'disabled');
   li.classList.toggle('thek-disabled', isDisabled);
   if (isDisabled) {
     li.setAttribute('aria-disabled', 'true');
@@ -111,7 +119,9 @@ export function createOptionItem<T>(
   if (config.multiple) {
     const checkbox = document.createElement('div');
     checkbox.className = 'thek-checkbox';
-    const isSelected = state.selectedValues.includes(option[config.valueField] as string | number);
+    const isSelected = state.selectedValues.some((v) =>
+      valuesMatch(v, getOptionField(option, config.valueField))
+    );
     if (isSelected) {
       replaceChildrenWithIcon(checkbox, createCheckIcon());
     }
@@ -155,9 +165,10 @@ export function renderOptionsContent<T>(
     return;
   }
 
-  const exactMatch = filteredOptions.some(
-    (o) => o[dField] && o[dField].toString().toLowerCase() === state.inputValue.toLowerCase()
-  );
+  const exactMatch = filteredOptions.some((o) => {
+    const v = getOptionField(o, dField);
+    return v != null && v.toString().toLowerCase() === state.inputValue.toLowerCase();
+  });
   const canCreate = config.canCreate && !!state.inputValue && !exactMatch;
   const shouldVirtualize =
     config.virtualize && filteredOptions.length >= config.virtualThreshold && !canCreate;
@@ -184,20 +195,6 @@ export function renderOptionsContent<T>(
       filteredOptions.length,
       Math.ceil((scrollTop + viewportHeight) / itemHeight) + overscan
     );
-
-    if (start > 0) {
-      list.appendChild(createSpacer(start * itemHeight));
-    }
-
-    for (let index = start; index < end; index++) {
-      list.appendChild(
-        createOptionItem(filteredOptions[index], index, state, config, callbacks, id)
-      );
-    }
-
-    if (end < filteredOptions.length) {
-      list.appendChild(createSpacer((filteredOptions.length - end) * itemHeight));
-    }
 
     if (typeof preservedScrollTop === 'number') {
       list.scrollTop = preservedScrollTop;
@@ -258,7 +255,8 @@ export function renderOptionsContent<T>(
     }
 
     filteredOptions.forEach((option, index) => {
-      const key = option[vField] != null ? `v:${String(option[vField])}` : `i:${index}`;
+      const fv = getOptionField(option, vField);
+      const key = fv != null ? `v:${String(fv)}` : `i:${index}`;
       let li = existing.get(key);
       if (li) {
         existing.delete(key);
