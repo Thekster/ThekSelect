@@ -49,7 +49,9 @@ export function buildConfig<T = unknown>(
     renderSelection: (o: ThekSelectOption<T>) => o.label,
     searchPlaceholder: 'Search...',
     noResultsText: 'No results found',
-    loadingText: 'Loading...'
+    loadingText: 'Loading...',
+    required: false,
+    describedBy: ''
   };
 
   const finalConfig = {

@@ -308,6 +308,33 @@ html[data-thek-theme='dark'],
     opacity: 0.7;
     border-color: var(--thek-border);
 }
+
+/* Keyboard focus indicator for reorderable tags. */
+.thek-tag:focus-visible {
+    outline: 2px solid var(--thek-primary);
+    outline-offset: 2px;
+}
+
+/* Reveal all tags when the user is navigating by keyboard so focused remove
+   buttons are never clipped by the overflow mask. */
+.thek-control:focus-within .thek-selection {
+    -webkit-mask-image: none;
+    mask-image: none;
+    overflow-x: auto;
+}
+
+/* Visually hidden but screen-reader accessible element for live announcements. */
+.thek-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
 `;
 
 export function injectStyles() {

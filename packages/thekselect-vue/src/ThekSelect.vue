@@ -181,9 +181,17 @@ watch(
 );
 
 watch(
+  () => props.disabled,
+  () => {
+    instance?.setDisabled(!!(props.disabled || props.loading));
+  }
+);
+
+watch(
   () => props.loading,
   () => {
     setLoadingState();
+    instance?.setDisabled(!!(props.disabled || props.loading));
   },
   { immediate: true }
 );

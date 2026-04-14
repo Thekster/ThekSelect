@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ThekSelect } from '../../src/core/thekselect';
 
 describe('ThekSelect Edge Cases', () => {
@@ -11,6 +11,7 @@ describe('ThekSelect Edge Cases', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     document.body.innerHTML = '';
   });
 
@@ -95,6 +96,8 @@ describe('ThekSelect Edge Cases', () => {
   });
 
   it('a throwing listener does not silence subsequent listeners and re-throws globally', () => {
+    vi.useFakeTimers();
+
     const ts = ThekSelect.init(container, {
       options: [{ value: '1', label: 'One' }]
     });
@@ -112,10 +115,13 @@ describe('ThekSelect Edge Cases', () => {
     control.click();
     (document.querySelector('.thek-option') as HTMLElement).click();
 
-    // Both listeners must have been called despite the first throwing.
-    // The error is re-thrown via setTimeout so it reaches global error handlers
-    // (e.g. Sentry) without blocking the event loop here.
+    // Both listeners ran — the throw did not silence the second one.
     expect(results).toEqual(['first', 'second']);
+
+    // Advance the fake clock: the queued setTimeout fires and throws.
+    // Wrapping in expect().toThrow() both asserts the re-throw happened and
+    // prevents it escaping as an unhandled exception in the test runner.
+    expect(() => vi.runAllTimers()).toThrow('boom');
   });
 
   it('setValue with empty array clears single-select selection', () => {

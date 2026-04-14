@@ -130,14 +130,9 @@ export function createOptionItem<T>(
 
   const label = document.createElement('span');
   label.className = 'thek-option-label';
-  const content = safeRender(config.renderOption, option, config, callbacks.onError);
-  if (content instanceof HTMLElement) {
-    label.appendChild(content);
-  } else {
-    label.textContent = content;
-  }
   li.appendChild(label);
 
+  // updateOptionContent populates the label and wires onclick — do not render inline here.
   updateOptionContent(li, option, config, callbacks);
   return li;
 }
@@ -160,6 +155,7 @@ export function renderOptionsContent<T>(
     const li = document.createElement('li');
     li.className = 'thek-option thek-loading';
     li.dataset.key = '__loading__';
+    li.setAttribute('aria-hidden', 'true');
     li.textContent = config.loadingText;
     list.appendChild(li);
     return;
@@ -276,6 +272,8 @@ export function renderOptionsContent<T>(
       if (!createLi) {
         createLi = document.createElement('li');
         createLi.className = 'thek-option thek-create';
+        createLi.setAttribute('role', 'option');
+        createLi.setAttribute('aria-selected', 'false');
         createLi.dataset.key = createKey;
       }
       createLi.onclick = (e) => {
@@ -294,6 +292,7 @@ export function renderOptionsContent<T>(
       if (!noLi) {
         noLi = document.createElement('li');
         noLi.className = 'thek-option thek-no-results';
+        noLi.setAttribute('aria-hidden', 'true');
         noLi.dataset.key = noResultsKey;
       }
       noLi.textContent = config.noResultsText;

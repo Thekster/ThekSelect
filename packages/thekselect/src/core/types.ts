@@ -52,6 +52,10 @@ export interface ThekSelectConfig<T = unknown> {
   searchPlaceholder?: string;
   noResultsText?: string;
   loadingText?: string;
+  /** Mark the combobox as required for form validation (sets aria-required). */
+  required?: boolean;
+  /** ID of an external element containing help or validation text (sets aria-describedby). */
+  describedBy?: string;
 }
 
 export interface ThekSelectState<T = unknown> {

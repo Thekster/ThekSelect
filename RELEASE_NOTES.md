@@ -1,5 +1,32 @@
 # Release Notes
 
+## 1.9.0 / thekselect-vue 1.4.0 (2026-04-14)
+
+### Added
+
+- **`setDisabled(disabled: boolean)` API** — programmatically enable or disable a live instance without re-initialising. Updates `tabindex`, `aria-disabled`, the wrapper's `thek-disabled` CSS class, and closes the dropdown when disabling. The searchable input is also toggled when present.
+- **Screen reader live region** — a `role="status"` / `aria-live="polite"` element is now injected alongside the wrapper. Selecting or deselecting an option announces `"X selected"` / `"X removed"` to assistive technologies so the current state is always communicated without relying on visual cues alone.
+- **Focusable multi-select tags** — each tag now carries `tabindex="0"`, `role="group"`, and `aria-roledescription="tag"`. This lets keyboard users navigate into the tag list and reach remove buttons without a mouse.
+- **Tag reorder via keyboard** — `Alt+ArrowLeft` / `Alt+ArrowRight` while a tag is focused moves it one position in the selection order and re-announces the new position via the live region.
+- **Tag remove focus recovery** — after removing a tag via its button, focus automatically moves to the adjacent tag (or back to the combobox when the last tag is removed), preventing focus from jumping to `<body>`.
+- **`aria-label` with reorder hint on tags** — each tag's accessible name includes its position within the selection and an `"Alt+Left/Right to reorder"` instruction so screen reader users discover the keyboard shortcut automatically.
+- **Listbox label propagation** — `setListboxLabel()` now connects the listbox's `aria-labelledby` (or `aria-label`) to the same label as the combobox, satisfying the ARIA listbox naming requirement.
+- **`aria-required` support** — a new `required` config option (default `false`) sets `aria-required="true"` on the combobox element.
+- **`describedBy` config option** — links the combobox to an existing `aria-describedby` element so hint / validation text is surfaced to screen readers.
+- **Tag overflow reveal on focus** — when keyboard focus enters the control's tag list the overflow mask is removed and the container scrolls horizontally, ensuring focused remove buttons are never clipped.
+
+### Fixed
+
+- **Double-render in `createOptionItem`** — the option label was populated twice on creation (once inline, once by `updateOptionContent`). The inline render has been removed; `updateOptionContent` is now the sole path.
+- **Falsy-value selection removal** — `removeLastSelection` previously treated `0` and `''` as absent values because it used a loose `if (!removedValue)` guard. Changed to `=== undefined` so numeric `0` and empty-string values are handled correctly.
+- **`role="option"` and `aria-selected` on create / no-results items** — the "Create …" list item now carries `role="option"` and `aria-selected="false"`. The loading and no-results items carry `aria-hidden="true"` so they are not announced as interactive choices.
+
+### thekselect-vue 1.4.0
+
+- **Reactive `disabled` prop** — changing `:disabled` or `:loading` on a live component instance now calls `setDisabled()` on the underlying core without re-mounting. Previously the prop change was silently ignored after initial render.
+- **`@vue/tsconfig` moved to `devDependencies`** — it was incorrectly listed under `dependencies`, which caused downstream consumers to install a build-only tool.
+- **Peer dependency floor raised to `thekselect >= 1.9.0`** to match the updated core.
+
 ## 1.8.0 / thekselect-vue 1.3.1 (2026-04-12)
 
 ### Breaking

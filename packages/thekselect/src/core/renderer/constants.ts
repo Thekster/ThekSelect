@@ -90,6 +90,8 @@ export interface RendererCallbacks<T = unknown> {
   onCreate: (label: string) => void;
   onRemove: (option: ThekSelectOption<T>) => void;
   onReorder: (draggedValue: string, targetValue: string) => void;
+  onReorderKey: (value: string, direction: -1 | 1) => void;
+  onFocusCombobox: () => void;
   onError: (err: Error) => void;
   onOrphan: () => void;
 }

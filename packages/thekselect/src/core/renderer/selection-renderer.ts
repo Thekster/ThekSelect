@@ -31,6 +31,9 @@ export function createTagNode<T>(
   const tag = document.createElement('span');
   tag.className = 'thek-tag';
   tag.draggable = true;
+  tag.setAttribute('tabindex', '0');
+  tag.setAttribute('role', 'group');
+  tag.setAttribute('aria-roledescription', 'tag');
 
   const label = document.createElement('span');
   label.className = 'thek-tag-label';
@@ -70,11 +73,36 @@ export function updateTagNode<T>(
     label.textContent = content;
   }
 
+  // Accessible label on the tag itself describes reorder keys for keyboard users.
+  tag.setAttribute('aria-label', `${displayText}, use Alt+Left and Alt+Right to reorder`);
+
+  tag.onkeydown = (e: KeyboardEvent) => {
+    if (!e.altKey) return;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      e.stopPropagation();
+      callbacks.onReorderKey(String(val), e.key === 'ArrowLeft' ? -1 : 1);
+    }
+  };
+
   removeBtn.textContent = '×';
   removeBtn.setAttribute('aria-label', `Remove ${displayText}`);
   removeBtn.onclick = (e) => {
     e.stopPropagation();
+    // Capture adjacent tag before state update removes this node from DOM.
+    const allTags = tag.parentElement
+      ? Array.from(tag.parentElement.querySelectorAll<HTMLElement>('.thek-tag'))
+      : [];
+    const idx = allTags.indexOf(tag);
+    const nextFocus = allTags[idx + 1] ?? allTags[idx - 1] ?? null;
     callbacks.onSelect(option);
+    requestAnimationFrame(() => {
+      if (nextFocus?.isConnected) {
+        nextFocus.focus();
+      } else {
+        callbacks.onFocusCombobox();
+      }
+    });
   };
 }
 

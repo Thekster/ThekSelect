@@ -33,6 +33,7 @@ export class DomRenderer<T = unknown> {
   private _destroyed = false;
   private _listenerController: AbortController | null = null;
   private _orphanObserver: MutationObserver | null = null;
+  private statusRegion: HTMLElement | null = null;
 
   constructor(
     private config: Required<ThekSelectConfig<T>>,
@@ -67,6 +68,15 @@ export class DomRenderer<T = unknown> {
 
     document.body.appendChild(this.dropdown);
     this.applyHeight(this.config.height);
+
+    // Visually hidden live region — announces state changes to screen readers.
+    const statusRegion = document.createElement('div');
+    statusRegion.className = 'thek-sr-only';
+    statusRegion.setAttribute('role', 'status');
+    statusRegion.setAttribute('aria-live', 'polite');
+    statusRegion.setAttribute('aria-atomic', 'true');
+    this.wrapper.appendChild(statusRegion);
+    this.statusRegion = statusRegion;
   }
 
   private applyHeight(height: number | string): void {
@@ -183,6 +193,27 @@ export class DomRenderer<T = unknown> {
         delta *= list.clientHeight || 240;
       }
       list.scrollTop += delta;
+    }
+  }
+
+  /** Announce a message to screen readers via the polite live region. */
+  public announce(message: string): void {
+    if (!this.statusRegion) return;
+    // Clear first so identical consecutive messages are still re-announced.
+    this.statusRegion.textContent = '';
+    requestAnimationFrame(() => {
+      if (this.statusRegion) this.statusRegion.textContent = message;
+    });
+  }
+
+  /** Propagate the combobox's label reference to the listbox so both share the same name. */
+  public setListboxLabel(labelledBy: string | null, label: string | null): void {
+    if (labelledBy) {
+      this.optionsList.setAttribute('aria-labelledby', labelledBy);
+    } else if (label) {
+      this.optionsList.setAttribute('aria-label', label);
+    } else {
+      this.optionsList.setAttribute('aria-label', 'Options');
     }
   }
 

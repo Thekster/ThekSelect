@@ -83,7 +83,7 @@ export function removeLastSelection<T = unknown>(
   const selectedValues = [...state.selectedValues];
   const selectedOptionsByValue = { ...state.selectedOptionsByValue };
   const removedValue = selectedValues.pop();
-  if (!removedValue) {
+  if (removedValue === undefined) {
     return { selectedValues, selectedOptionsByValue };
   }
 

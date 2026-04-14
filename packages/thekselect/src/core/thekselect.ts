@@ -31,6 +31,7 @@ import { globalEventManager } from '../utils/event-manager.js';
 export type ThekSelectHandle<T = unknown> = ThekSelect<T> & {
   setHeight(height: number | string): void;
   setRenderOption(fn: (option: ThekSelectOption<T>) => string | HTMLElement): void;
+  setDisabled(disabled: boolean): void;
 };
 
 export class ThekSelect<T = unknown> {
@@ -401,6 +402,25 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
         const to = sv.findIndex((v) => String(v) === targetValue);
         this.reorder(from, to);
       },
+      onReorderKey: (value, direction) => {
+        const sv = (this.stateManager.getState() as ThekSelectState<T>).selectedValues;
+        const from = sv.findIndex((v) => String(v) === value);
+        const to = from + direction;
+        this.reorder(from, to);
+        // Restore focus to the moved tag after the re-render settles.
+        requestAnimationFrame(() => {
+          const tags = this.renderer.selectionContainer.querySelectorAll<HTMLElement>('.thek-tag');
+          const target = tags[Math.max(0, Math.min(to, tags.length - 1))];
+          target?.focus();
+        });
+      },
+      onFocusCombobox: () => {
+        if (this.config.searchable) {
+          this.renderer.input.focus();
+        } else {
+          this.renderer.control.focus();
+        }
+      },
       onError: (err) => this.emit('error', err),
       onOrphan: () => this.destroy()
     };
@@ -434,27 +454,42 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     // In non-searchable mode it lives on the control div.
     const labelTarget = this.config.searchable ? this.renderer.input : this.renderer.control;
 
+    let resolvedLabelledBy: string | null = null;
+    let resolvedLabel: string | null = null;
+
     const existingLabelledBy = el.getAttribute('aria-labelledby');
     if (existingLabelledBy) {
       labelTarget.setAttribute('aria-labelledby', existingLabelledBy);
-      return;
-    }
-
-    const ariaLabel = el.getAttribute('aria-label');
-    if (ariaLabel) {
-      labelTarget.setAttribute('aria-label', ariaLabel);
-      return;
-    }
-
-    const id = el.id;
-    if (id) {
-      const label = document.querySelector<HTMLLabelElement>(`label[for="${id}"]`);
-      if (label) {
-        if (!label.id) {
-          label.id = `${id}-label`;
+      resolvedLabelledBy = existingLabelledBy;
+    } else {
+      const ariaLabel = el.getAttribute('aria-label');
+      if (ariaLabel) {
+        labelTarget.setAttribute('aria-label', ariaLabel);
+        resolvedLabel = ariaLabel;
+      } else {
+        const id = el.id;
+        if (id) {
+          const label = document.querySelector<HTMLLabelElement>(`label[for="${id}"]`);
+          if (label) {
+            if (!label.id) {
+              label.id = `${id}-label`;
+            }
+            labelTarget.setAttribute('aria-labelledby', label.id);
+            resolvedLabelledBy = label.id;
+          }
         }
-        labelTarget.setAttribute('aria-labelledby', label.id);
       }
+    }
+
+    // Propagate the same label to the listbox so both share a name.
+    this.renderer.setListboxLabel(resolvedLabelledBy, resolvedLabel);
+
+    // Form-association attributes.
+    if (this.config.required) {
+      labelTarget.setAttribute('aria-required', 'true');
+    }
+    if (this.config.describedBy) {
+      labelTarget.setAttribute('aria-describedby', this.config.describedBy);
     }
   }
 
@@ -626,12 +661,22 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     }
   }
 
-  // Override select to also sync the native element
+  // Override select to also sync the native element and announce to screen readers.
   public override select(option: ThekSelectOption<T>): void {
+    const wasSelected = this.stateManager.getState().selectedValues.some((v) =>
+      valuesMatch(v, getOptionField(option, this.config.valueField))
+    );
     super.select(option);
     this.syncOriginalElement(this.stateManager.getState().selectedValues);
-    // Clear the renderer input field
     this.renderer.input.value = '';
+    const label = String(getOptionField(option, this.config.displayField) ?? '');
+    this.renderer.announce(
+      this.config.multiple
+        ? wasSelected
+          ? `${label} removed`
+          : `${label} selected`
+        : `${label} selected`
+    );
   }
 
   // Override close to also clear renderer input
@@ -665,6 +710,20 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     this.config.height = height;
     this.renderer.setHeight(height);
     this.renderer.positionDropdown();
+  }
+
+  public setDisabled(disabled: boolean): void {
+    this.config.disabled = disabled;
+    this.renderer.control.setAttribute('tabindex', disabled ? '-1' : '0');
+    this.renderer.control.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+    this.renderer.wrapper.classList.toggle('thek-disabled', disabled);
+    if (this.config.searchable) {
+      this.renderer.input.disabled = disabled;
+      this.renderer.input.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+    }
+    if (disabled && this.stateManager.getState().isOpen) {
+      this.close();
+    }
   }
 
   public setRenderOption(fn: (option: ThekSelectOption<T>) => string | HTMLElement): void {
