@@ -7,9 +7,9 @@ import {
 } from '../types.js';
 import { RendererCallbacks } from './constants.js';
 
-export function safeRender<T>(
-  fn: (o: ThekSelectOption<T>) => string | HTMLElement,
-  option: ThekSelectOption<T>,
+export function safeRender<T extends object = ThekSelectOption>(
+  fn: (o: T) => string | HTMLElement,
+  option: T,
   config: Required<ThekSelectConfig<T>>,
   onError: (err: Error) => void
 ): string | HTMLElement {
@@ -21,8 +21,8 @@ export function safeRender<T>(
   }
 }
 
-export function createTagNode<T>(
-  option: ThekSelectOption<T>,
+export function createTagNode<T extends object = ThekSelectOption>(
+  option: T,
   val: string | number,
   index: number,
   config: Required<ThekSelectConfig<T>>,
@@ -47,9 +47,9 @@ export function createTagNode<T>(
   return tag;
 }
 
-export function updateTagNode<T>(
+export function updateTagNode<T extends object = ThekSelectOption>(
   tag: HTMLElement,
-  option: ThekSelectOption<T>,
+  option: T,
   val: string | number,
   index: number,
   config: Required<ThekSelectConfig<T>>,
@@ -106,7 +106,7 @@ export function updateTagNode<T>(
   };
 }
 
-export function renderSelectionContent<T>(
+export function renderSelectionContent<T extends object = ThekSelectOption>(
   container: HTMLElement,
   placeholder: HTMLElement,
   state: ThekSelectState<T>,
@@ -152,7 +152,7 @@ export function renderSelectionContent<T>(
         const option =
           state.options.find((o) => valuesMatch(getOptionField(o, vField), val)) ||
           state.selectedOptionsByValue[String(val)] ||
-          ({ [vField]: val, [dField]: String(val) } as unknown as ThekSelectOption<T>);
+          ({ [vField]: val, [dField]: String(val) } as unknown as T);
         let tag = existing.get(String(val));
         if (tag) {
           existing.delete(String(val));

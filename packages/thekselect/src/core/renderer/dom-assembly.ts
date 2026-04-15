@@ -1,4 +1,4 @@
-import { ThekSelectConfig } from '../types.js';
+import { ThekSelectConfig, ThekSelectOption } from '../types.js';
 import {
   RendererCallbacks,
   createChevronIcon,
@@ -17,7 +17,7 @@ export interface RendererElements {
   optionsList: HTMLElement;
 }
 
-export function createRendererSkeleton<T>(
+export function createRendererSkeleton<T extends object = ThekSelectOption>(
   id: string,
   config: Required<ThekSelectConfig<T>>,
   callbacks: RendererCallbacks<T>,

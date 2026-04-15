@@ -85,10 +85,10 @@ export function replaceChildrenWithIcon(container: HTMLElement, icon: SVGSVGElem
   container.replaceChildren(icon);
 }
 
-export interface RendererCallbacks<T = unknown> {
-  onSelect: (option: ThekSelectOption<T>) => void;
+export interface RendererCallbacks<T extends object = ThekSelectOption> {
+  onSelect: (option: T) => void;
   onCreate: (label: string) => void;
-  onRemove: (option: ThekSelectOption<T>) => void;
+  onRemove: (option: T) => void;
   onReorder: (draggedValue: string, targetValue: string) => void;
   onReorderKey: (value: string, direction: -1 | 1) => void;
   onFocusCombobox: () => void;

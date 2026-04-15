@@ -18,7 +18,7 @@ import { positionDropdown, normalizeHeight } from './renderer/dropdown-positione
 
 export type { RendererCallbacks };
 
-export class DomRenderer<T = unknown> {
+export class DomRenderer<T extends object = ThekSelectOption> {
   public wrapper!: HTMLElement;
   public control!: HTMLElement;
   public selectionContainer!: HTMLElement;
@@ -29,7 +29,7 @@ export class DomRenderer<T = unknown> {
   public optionsList!: HTMLElement;
 
   private lastState: ThekSelectState<T> | null = null;
-  private lastFilteredOptions: ThekSelectOption<T>[] = [];
+  private lastFilteredOptions: T[] = [];
   private _destroyed = false;
   private _listenerController: AbortController | null = null;
   private _orphanObserver: MutationObserver | null = null;
@@ -108,7 +108,7 @@ export class DomRenderer<T = unknown> {
     this._orphanObserver.observe(root, { childList: true, subtree: true });
   }
 
-  public render(state: ThekSelectState<T>, filteredOptions: ThekSelectOption<T>[]): void {
+  public render(state: ThekSelectState<T>, filteredOptions: T[]): void {
     const prevState = this.lastState;
     this.lastState = state;
     this.lastFilteredOptions = filteredOptions;
@@ -221,7 +221,7 @@ export class DomRenderer<T = unknown> {
     positionDropdown(this.dropdown, this.control, this.optionsList);
   }
 
-  public scrollToSelected(state: ThekSelectState<T>, filteredOptions: ThekSelectOption<T>[]): void {
+  public scrollToSelected(state: ThekSelectState<T>, filteredOptions: T[]): void {
     if (state.selectedValues.length === 0) return;
 
     const vField = this.config.valueField;

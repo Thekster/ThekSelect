@@ -1,6 +1,6 @@
-import { ThekSelectEvent, ThekSelectEventPayloadMap } from './types.js';
+import { ThekSelectEvent, ThekSelectEventPayloadMap, ThekSelectOption } from './types.js';
 
-export class ThekSelectEventEmitter<T = unknown> {
+export class ThekSelectEventEmitter<T extends object = ThekSelectOption> {
   private listeners: Map<
     string,
     Set<(payload: ThekSelectEventPayloadMap<T>[ThekSelectEvent]) => void>

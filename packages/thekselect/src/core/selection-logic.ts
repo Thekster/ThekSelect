@@ -9,18 +9,18 @@ import {
 
 type TagEvent = 'tagAdded' | 'tagRemoved';
 
-export interface SelectionUpdate<T = unknown> {
+export interface SelectionUpdate<T extends object = ThekSelectOption> {
   selectedValues: ThekSelectPrimitive[];
-  selectedOptionsByValue: Record<string, ThekSelectOption<T>>;
+  selectedOptionsByValue: Record<string, T>;
   inputValue?: string;
   tagEvent?: TagEvent;
-  tagOption?: ThekSelectOption<T>;
+  tagOption?: T;
 }
 
-export function applySelection<T = unknown>(
+export function applySelection<T extends object = ThekSelectOption>(
   config: Required<ThekSelectConfig<T>>,
   state: ThekSelectState<T>,
-  option: ThekSelectOption<T>
+  option: T
 ): SelectionUpdate<T> {
   const valueField = config.valueField;
   const optionValue = getOptionField(option, valueField) as ThekSelectPrimitive;
@@ -58,26 +58,26 @@ export function applySelection<T = unknown>(
   };
 }
 
-export function createOptionFromLabel<T = unknown>(
+export function createOptionFromLabel<T extends object = ThekSelectOption>(
   config: Required<ThekSelectConfig<T>>,
   label: string
-): ThekSelectOption<T> {
-  const value = label;
+): T {
+  // Creates a minimal option with only the required display and value fields.
+  // Other fields on T are not populated — callers using canCreate with custom T
+  // should provide a loadOptions or onCreate handler instead.
   return {
-    value,
-    label,
-    [config.valueField]: value,
+    [config.valueField]: label,
     [config.displayField]: label
-  };
+  } as unknown as T;
 }
 
-export function removeLastSelection<T = unknown>(
+export function removeLastSelection<T extends object = ThekSelectOption>(
   config: Required<ThekSelectConfig<T>>,
   state: ThekSelectState<T>
 ): {
   selectedValues: ThekSelectPrimitive[];
-  selectedOptionsByValue: Record<string, ThekSelectOption<T>>;
-  removedOption?: ThekSelectOption<T>;
+  selectedOptionsByValue: Record<string, T>;
+  removedOption?: T;
 } {
   const valueField = config.valueField;
   const selectedValues = [...state.selectedValues];
@@ -96,7 +96,7 @@ export function removeLastSelection<T = unknown>(
 }
 
 export function reorderSelectedValues(
-  state: ThekSelectState,
+  state: { selectedValues: ThekSelectPrimitive[] },
   from: number,
   to: number
 ): ThekSelectPrimitive[] {
@@ -122,10 +122,10 @@ export function reorderSelectedValues(
   return selectedValues;
 }
 
-export function resolveSelectedOptions<T = unknown>(
+export function resolveSelectedOptions<T extends object = ThekSelectOption>(
   config: Required<ThekSelectConfig<T>>,
   state: ThekSelectState<T>
-): ThekSelectOption<T>[] {
+): T[] {
   const valueField = config.valueField;
   const displayField = config.displayField;
 
@@ -134,21 +134,19 @@ export function resolveSelectedOptions<T = unknown>(
       state.options.find((o) => valuesMatch(getOptionField(o, valueField), value)) ||
       state.selectedOptionsByValue[String(value)] ||
       ({
-        value,
-        label: String(value),
         [valueField]: value,
         [displayField]: String(value)
-      } as unknown as ThekSelectOption<T>)
+      } as unknown as T)
   );
 }
 
-export function buildSelectedOptionsMapFromValues<T = unknown>(
+export function buildSelectedOptionsMapFromValues<T extends object = ThekSelectOption>(
   config: Required<ThekSelectConfig<T>>,
   state: ThekSelectState<T>,
   values: ThekSelectPrimitive[]
-): Record<string, ThekSelectOption<T>> {
+): Record<string, T> {
   const valueField = config.valueField;
-  const selectedOptionsByValue: Record<string, ThekSelectOption<T>> = {};
+  const selectedOptionsByValue: Record<string, T> = {};
   values.forEach((value) => {
     const option =
       state.options.find((o) => valuesMatch(getOptionField(o, valueField), value)) ||

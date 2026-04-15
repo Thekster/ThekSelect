@@ -43,9 +43,9 @@ function syncVirtualSpacerHeight(spacer: HTMLLIElement, height: number): void {
   spacer.hidden = height === 0;
 }
 
-export function updateOptionAttrs<T>(
+export function updateOptionAttrs<T extends object = ThekSelectOption>(
   li: HTMLLIElement,
-  option: ThekSelectOption<T>,
+  option: T,
   index: number,
   state: ThekSelectState<T>,
   config: Required<ThekSelectConfig<T>>,
@@ -59,7 +59,8 @@ export function updateOptionAttrs<T>(
   li.classList.toggle('thek-selected', isSelected);
   li.classList.toggle('thek-focused', state.focusedIndex === index);
   li.setAttribute('aria-selected', isSelected.toString());
-  const isDisabled = !!getOptionField(option, 'disabled');
+  // `disabled` is a ThekSelectOption convention; T may not declare it.
+  const isDisabled = !!((option as Record<string, unknown>)['disabled']);
   li.classList.toggle('thek-disabled', isDisabled);
   if (isDisabled) {
     li.setAttribute('aria-disabled', 'true');
@@ -79,9 +80,9 @@ export function updateOptionAttrs<T>(
   }
 }
 
-export function updateOptionContent<T>(
+export function updateOptionContent<T extends object = ThekSelectOption>(
   li: HTMLLIElement,
-  option: ThekSelectOption<T>,
+  option: T,
   config: Required<ThekSelectConfig<T>>,
   callbacks: RendererCallbacks<T>
 ): void {
@@ -102,8 +103,8 @@ export function updateOptionContent<T>(
   };
 }
 
-export function createOptionItem<T>(
-  option: ThekSelectOption<T>,
+export function createOptionItem<T extends object = ThekSelectOption>(
+  option: T,
   index: number,
   state: ThekSelectState<T>,
   config: Required<ThekSelectConfig<T>>,
@@ -137,10 +138,10 @@ export function createOptionItem<T>(
   return li;
 }
 
-export function renderOptionsContent<T>(
+export function renderOptionsContent<T extends object = ThekSelectOption>(
   list: HTMLElement,
   state: ThekSelectState<T>,
-  filteredOptions: ThekSelectOption<T>[],
+  filteredOptions: T[],
   config: Required<ThekSelectConfig<T>>,
   callbacks: RendererCallbacks<T>,
   id: string,

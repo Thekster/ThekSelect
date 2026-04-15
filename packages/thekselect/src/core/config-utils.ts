@@ -18,16 +18,21 @@ export function parseSelectOptions(select: HTMLSelectElement): ThekSelectOption[
   }));
 }
 
-export function buildConfig<T = unknown>(
+export function buildConfig<T extends object = ThekSelectOption>(
   element: HTMLElement | null,
   config: ThekSelectConfig<T>,
   globalDefaults: Partial<ThekSelectConfig<T>> = {}
 ): Required<ThekSelectConfig<T>> {
   const isSelect = element instanceof HTMLSelectElement;
-  const initialOptions = isSelect ? parseSelectOptions(element) : config.options || [];
+  // parseSelectOptions always produces ThekSelectOption shape. When T is the
+  // default ThekSelectOption this is an identity cast; for custom T it is a
+  // structural cast that is safe only when used with a native <select> element.
+  const initialOptions = isSelect
+    ? (parseSelectOptions(element) as unknown as T[])
+    : config.options || [];
 
   const defaultConfig: Required<ThekSelectConfig<T>> = {
-    options: initialOptions as ThekSelectOption<T>[],
+    options: initialOptions,
     multiple: isSelect ? element.multiple : false,
     searchable: true,
     disabled: isSelect ? element.disabled : false,
@@ -37,16 +42,19 @@ export function buildConfig<T = unknown>(
     height: 40,
     debounce: 300,
     maxSelectedLabels: 3,
-    displayField: 'label',
-    valueField: 'value',
+    displayField: 'label' as keyof T & string,
+    valueField: 'value' as keyof T & string,
     maxOptions: null,
     virtualize: false,
     virtualItemHeight: 40,
     virtualOverscan: 4,
     virtualThreshold: 80,
-    loadOptions: NOOP_LOAD_OPTIONS as (query: string) => Promise<ThekSelectOption<T>[]>,
-    renderOption: (o: ThekSelectOption<T>) => o.label,
-    renderSelection: (o: ThekSelectOption<T>) => o.label,
+    loadOptions: NOOP_LOAD_OPTIONS as unknown as (
+      query: string,
+      signal: AbortSignal
+    ) => Promise<T[]>,
+    renderOption: (o: T) => String(getOptionField(o, 'label' as keyof T & string) ?? ''),
+    renderSelection: (o: T) => String(getOptionField(o, 'label' as keyof T & string) ?? ''),
     searchPlaceholder: 'Search...',
     noResultsText: 'No results found',
     loadingText: 'Loading...',
@@ -60,23 +68,19 @@ export function buildConfig<T = unknown>(
     ...config
   };
 
-  // If height spread in as undefined (explicit override), fall back to the default.
   if (finalConfig.height == null) {
     finalConfig.height = 40;
   }
 
-  // maxSelectedLabels: 0 would collapse every selection to a summary line immediately,
-  // which is never useful. Clamp to a minimum of 1.
   if (finalConfig.maxSelectedLabels < 1) {
     finalConfig.maxSelectedLabels = 1;
   }
 
-  // If loadOptions spread in as undefined (explicit override), fall back to NOOP so the
-  // component treats the instance as local mode instead of crashing on invocation.
   if (typeof finalConfig.loadOptions !== 'function') {
-    finalConfig.loadOptions = NOOP_LOAD_OPTIONS as (
-      query: string
-    ) => Promise<ThekSelectOption<T>[]>;
+    finalConfig.loadOptions = NOOP_LOAD_OPTIONS as unknown as (
+      query: string,
+      signal: AbortSignal
+    ) => Promise<T[]>;
   }
 
   // Runtime validation of field names — catches typos early.
@@ -90,12 +94,12 @@ export function buildConfig<T = unknown>(
     const sample = finalConfig.options[0];
     if (!(finalConfig.valueField in sample)) {
       console.warn(
-        `ThekSelect: valueField "${finalConfig.valueField}" not found on first option. Check your config.`
+        `ThekSelect: valueField "${String(finalConfig.valueField)}" not found on first option. Check your config.`
       );
     }
     if (!(finalConfig.displayField in sample)) {
       console.warn(
-        `ThekSelect: displayField "${finalConfig.displayField}" not found on first option. Check your config.`
+        `ThekSelect: displayField "${String(finalConfig.displayField)}" not found on first option. Check your config.`
       );
     }
   }
@@ -104,31 +108,41 @@ export function buildConfig<T = unknown>(
   const hasCustomRenderSelection = !!(globalDefaults.renderSelection || config.renderSelection);
 
   if (!hasCustomRenderOption) {
-    finalConfig.renderOption = (o: ThekSelectOption<T>) =>
-      getOptionField(o, finalConfig.displayField) as string;
+    finalConfig.renderOption = (o: T) =>
+      String(getOptionField(o, finalConfig.displayField) ?? '');
   }
   if (!hasCustomRenderSelection) {
-    finalConfig.renderSelection = (o: ThekSelectOption<T>) =>
-      getOptionField(o, finalConfig.displayField) as string;
+    finalConfig.renderSelection = (o: T) =>
+      String(getOptionField(o, finalConfig.displayField) ?? '');
   }
 
   return finalConfig;
 }
 
-export function buildInitialState<T = unknown>(
+export function buildInitialState<T extends object = ThekSelectOption>(
   config: Required<ThekSelectConfig<T>>
 ): ThekSelectState<T> {
   const valueField = config.valueField;
-  const firstSelected = config.options.find((o) => o.selected);
-  const selectedValues = config.multiple
-    ? config.options.filter((o) => o.selected).map((o) => getOptionField(o, valueField))
-    : firstSelected && valueField in (firstSelected as unknown as Record<string, unknown>)
-      ? [getOptionField(firstSelected, valueField)]
+
+  // `selected` is a convention on ThekSelectOption (and native <select> options).
+  // For custom T shapes it may not exist; the cast is intentional.
+  const isPreSelected = (o: T): boolean =>
+    !!(o as Record<string, unknown>)['selected'];
+
+  const firstSelected = config.options.find(isPreSelected);
+  const selectedValues: ThekSelectPrimitive[] = config.multiple
+    ? config.options
+        .filter(isPreSelected)
+        .map((o) => getOptionField(o, valueField) as ThekSelectPrimitive)
+    : firstSelected
+      ? [getOptionField(firstSelected, valueField) as ThekSelectPrimitive]
       : [];
 
-  const selectedOptionsByValue: Record<string, ThekSelectOption<T>> = {};
+  const selectedOptionsByValue: Record<string, T> = {};
   selectedValues.forEach((value) => {
-    const option = config.options.find((o) => valuesMatch(getOptionField(o, valueField), value));
+    const option = config.options.find((o) =>
+      valuesMatch(getOptionField(o, valueField), value)
+    );
     if (option) {
       selectedOptionsByValue[String(value)] = option;
     }
@@ -136,7 +150,7 @@ export function buildInitialState<T = unknown>(
 
   return {
     options: config.options,
-    selectedValues: selectedValues as ThekSelectPrimitive[],
+    selectedValues,
     selectedOptionsByValue,
     isOpen: false,
     focusedIndex: -1,

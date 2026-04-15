@@ -28,14 +28,14 @@ import { generateId } from '../utils/dom.js';
 import { globalEventManager } from '../utils/event-manager.js';
 
 /** Returned by ThekSelect.init() — the core instance augmented with DOM-specific methods. */
-export type ThekSelectHandle<T = unknown> = ThekSelect<T> & {
+export type ThekSelectHandle<T extends object = ThekSelectOption> = ThekSelect<T> & {
   setHeight(height: number | string): void;
-  setRenderOption(fn: (option: ThekSelectOption<T>) => string | HTMLElement): void;
+  setRenderOption(fn: (option: T) => string | HTMLElement): void;
   setDisabled(disabled: boolean): void;
 };
 
-export class ThekSelect<T = unknown> {
-  private static globalDefaults: Partial<ThekSelectConfig> = {};
+export class ThekSelect<T extends object = ThekSelectOption> {
+  private static globalDefaults: Partial<ThekSelectConfig<ThekSelectOption>> = {};
 
   /** @internal Config is readable by DomRenderer. Do not reassign the reference. */
   protected readonly config: Required<ThekSelectConfig<T>>;
@@ -73,7 +73,7 @@ export class ThekSelect<T = unknown> {
     return this.stateManager.getState();
   }
 
-  public getFilteredOptions(): ThekSelectOption<T>[] {
+  public getFilteredOptions(): T[] {
     return getFilteredOptions(this.config, this.stateManager.getState() as ThekSelectState<T>);
   }
 
@@ -86,7 +86,7 @@ export class ThekSelect<T = unknown> {
     // points at an item the user cannot select.
     const filteredOptions = this.getFilteredOptions();
     let initialFocus = 0;
-    while (initialFocus < filteredOptions.length && !!filteredOptions[initialFocus]?.disabled) {
+    while (initialFocus < filteredOptions.length && !!((filteredOptions[initialFocus] as Record<string, unknown>)?.['disabled'])) {
       initialFocus++;
     }
     this.stateManager.setState({
@@ -110,9 +110,9 @@ export class ThekSelect<T = unknown> {
     }
   }
 
-  public select(option: ThekSelectOption<T>): void {
+  public select(option: T): void {
     if (this.config.disabled) return;
-    if (option.disabled) return;
+    if ((option as Record<string, unknown>)['disabled']) return;
     const state = this.stateManager.getState() as ThekSelectState<T>;
     const update = applySelection(this.config, state, option);
     if (!this.config.multiple) this.close();
@@ -182,7 +182,7 @@ export class ThekSelect<T = unknown> {
     const maxIndex = hasCreateSlot ? filteredOptions.length : filteredOptions.length - 1;
     let next = state.focusedIndex + 1;
     // Skip disabled items; the create slot (index === filteredOptions.length) is never disabled.
-    while (next < filteredOptions.length && !!filteredOptions[next]?.disabled) {
+    while (next < filteredOptions.length && !!((filteredOptions[next] as Record<string, unknown>)?.['disabled'])) {
       next++;
     }
     if (next <= maxIndex) {
@@ -196,7 +196,7 @@ export class ThekSelect<T = unknown> {
     const filteredOptions = this.getFilteredOptions();
     let prev = state.focusedIndex - 1;
     // Skip disabled items.
-    while (prev >= 0 && !!filteredOptions[prev]?.disabled) {
+    while (prev >= 0 && !!((filteredOptions[prev] as Record<string, unknown>)?.['disabled'])) {
       prev--;
     }
     if (prev >= 0) {
@@ -242,7 +242,7 @@ export class ThekSelect<T = unknown> {
     this.stateManager.forceNotify();
   }
 
-  public setOptions(options: ThekSelectOption<T>[]): void {
+  public setOptions(options: T[]): void {
     const state = this.stateManager.getState() as ThekSelectState<T>;
     // Keep config.options in sync so remote-mode query-clear restores this list.
     this.config.options = options;
@@ -262,7 +262,7 @@ export class ThekSelect<T = unknown> {
     return this.config.multiple ? state.selectedValues : state.selectedValues[0];
   }
 
-  public getSelectedOptions(): ThekSelectOption<T> | ThekSelectOption<T>[] | undefined {
+  public getSelectedOptions(): T | T[] | undefined {
     const state = this.stateManager.getState() as ThekSelectState<T>;
     const selected = resolveSelectedOptions(this.config, state);
     return this.config.multiple ? selected : selected[0];
@@ -286,14 +286,14 @@ export class ThekSelect<T = unknown> {
 
   // ── Static API ────────────────────────────────────────────────────────────
 
-  public static init<T = unknown>(
+  public static init<T extends object = ThekSelectOption>(
     element: string | HTMLElement,
     config: ThekSelectConfig<T> = {}
   ): ThekSelectHandle<T> {
     return new ThekSelectDom<T>(element, config) as unknown as ThekSelectHandle<T>;
   }
 
-  public static setDefaults(defaults: Partial<ThekSelectConfig>): void {
+  public static setDefaults(defaults: Partial<ThekSelectConfig<ThekSelectOption>>): void {
     ThekSelect.globalDefaults = { ...ThekSelect.globalDefaults, ...defaults };
   }
 
@@ -368,7 +368,7 @@ export class ThekSelect<T = unknown> {
 // ── ThekSelectDom — wires ThekSelect core + DomRenderer ──────────────────────
 // Not exported: consumers use ThekSelect.init() which returns ThekSelectHandle<T>.
 
-class ThekSelectDom<T = unknown> extends ThekSelect<T> {
+class ThekSelectDom<T extends object = ThekSelectOption> extends ThekSelect<T> {
   /** @internal accessible via cast in tests */
   private renderer: DomRenderer<T>;
   private readonly originalElement: HTMLElement;
@@ -662,7 +662,7 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
   }
 
   // Override select to also sync the native element and announce to screen readers.
-  public override select(option: ThekSelectOption<T>): void {
+  public override select(option: T): void {
     const wasSelected = this.stateManager.getState().selectedValues.some((v) =>
       valuesMatch(v, getOptionField(option, this.config.valueField))
     );
@@ -726,11 +726,9 @@ class ThekSelectDom<T = unknown> extends ThekSelect<T> {
     }
   }
 
-  public setRenderOption(fn: (option: ThekSelectOption<T>) => string | HTMLElement): void {
+  public setRenderOption(fn: (option: T) => string | HTMLElement): void {
     this.config.renderOption = fn;
-    this.renderer.updateConfig({
-      renderOption: fn as (option: ThekSelectOption) => string | HTMLElement
-    });
+    this.renderer.updateConfig({ renderOption: fn });
     this.render();
   }
 
