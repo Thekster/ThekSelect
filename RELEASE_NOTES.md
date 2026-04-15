@@ -1,6 +1,18 @@
 # Release Notes
 
-## 1.9.0 / thekselect-vue 1.4.0 (2026-04-14)
+## 2.0.0 / thekselect-vue 2.0.0 (2026-04-15)
+
+### Breaking
+
+- **Generic `T` now represents the full option shape** — `T` in `ThekSelectConfig<T>`, `ThekSelectState<T>`, and all related types previously typed the `data` payload field on `ThekSelectOption`. It now represents the option object itself. `valueField` and `displayField` are now `keyof T & string`, giving compile-time safety against invalid field names.
+
+  **Migration:** if you typed `ThekSelect<MyData>` to get `option.data: MyData` in render callbacks, change to `ThekSelect<MyOption>` where `MyOption` is your full option shape, and access fields directly on `option` instead of via `option.data`.
+
+  Consumers that used the default untyped API (`ThekSelect` with no generic) are unaffected — the default `ThekSelectOption` shape (`{ value, label, disabled?, selected? }`) is unchanged.
+
+- **`ThekSelectOption` is no longer generic** — `ThekSelectOption<T>` is removed. Use `ThekSelectOption` (plain) for the default shape, or your own custom type as the generic parameter on `ThekSelectConfig<T>`.
+
+- **`data` field removed from `ThekSelectOption`** — the `data?: T` field no longer exists on the default option interface. Domain data should be included directly on the option object via a custom `T`.
 
 ### Added
 
@@ -17,15 +29,17 @@
 
 ### Fixed
 
+- **Virtual scroll spacer reinserts** — virtual list spacer nodes were unconditionally reinserted into the DOM on every scroll tick even when already in position. They are now guarded with a position check, eliminating unnecessary DOM mutations during scroll.
+- **`innerHTML = ''` replaced with `replaceChildren()`** — five internal DOM clears in the selection and options renderers now use `replaceChildren()` instead of `innerHTML = ''`, aligning with strict security policies.
 - **Double-render in `createOptionItem`** — the option label was populated twice on creation (once inline, once by `updateOptionContent`). The inline render has been removed; `updateOptionContent` is now the sole path.
 - **Falsy-value selection removal** — `removeLastSelection` previously treated `0` and `''` as absent values because it used a loose `if (!removedValue)` guard. Changed to `=== undefined` so numeric `0` and empty-string values are handled correctly.
 - **`role="option"` and `aria-selected` on create / no-results items** — the "Create …" list item now carries `role="option"` and `aria-selected="false"`. The loading and no-results items carry `aria-hidden="true"` so they are not announced as interactive choices.
 
-### thekselect-vue 1.4.0
+### thekselect-vue 2.0.0
 
+- **Peer dependency floor raised to `thekselect >= 2.0.0`** to match the updated core.
 - **Reactive `disabled` prop** — changing `:disabled` or `:loading` on a live component instance now calls `setDisabled()` on the underlying core without re-mounting. Previously the prop change was silently ignored after initial render.
 - **`@vue/tsconfig` moved to `devDependencies`** — it was incorrectly listed under `dependencies`, which caused downstream consumers to install a build-only tool.
-- **Peer dependency floor raised to `thekselect >= 1.9.0`** to match the updated core.
 
 ## 1.8.0 / thekselect-vue 1.3.1 (2026-04-12)
 

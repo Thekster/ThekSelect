@@ -15,7 +15,7 @@ describe('ThekSelectConfig type safety', () => {
       valueField: 'id',
       displayField: 'name'
     };
-    expectTypeOf(config.valueField).toEqualTypeOf<keyof ProductOption & string | undefined>();
+    expectTypeOf(config.valueField).toEqualTypeOf<(keyof ProductOption & string) | undefined>();
   });
 
   it('renderOption callback receives T directly', () => {

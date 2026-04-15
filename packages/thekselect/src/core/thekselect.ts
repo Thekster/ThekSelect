@@ -86,7 +86,10 @@ export class ThekSelect<T extends object = ThekSelectOption> {
     // points at an item the user cannot select.
     const filteredOptions = this.getFilteredOptions();
     let initialFocus = 0;
-    while (initialFocus < filteredOptions.length && !!((filteredOptions[initialFocus] as Record<string, unknown>)?.['disabled'])) {
+    while (
+      initialFocus < filteredOptions.length &&
+      !!(filteredOptions[initialFocus] as Record<string, unknown>)?.['disabled']
+    ) {
       initialFocus++;
     }
     this.stateManager.setState({
@@ -182,7 +185,10 @@ export class ThekSelect<T extends object = ThekSelectOption> {
     const maxIndex = hasCreateSlot ? filteredOptions.length : filteredOptions.length - 1;
     let next = state.focusedIndex + 1;
     // Skip disabled items; the create slot (index === filteredOptions.length) is never disabled.
-    while (next < filteredOptions.length && !!((filteredOptions[next] as Record<string, unknown>)?.['disabled'])) {
+    while (
+      next < filteredOptions.length &&
+      !!(filteredOptions[next] as Record<string, unknown>)?.['disabled']
+    ) {
       next++;
     }
     if (next <= maxIndex) {
@@ -196,7 +202,7 @@ export class ThekSelect<T extends object = ThekSelectOption> {
     const filteredOptions = this.getFilteredOptions();
     let prev = state.focusedIndex - 1;
     // Skip disabled items.
-    while (prev >= 0 && !!((filteredOptions[prev] as Record<string, unknown>)?.['disabled'])) {
+    while (prev >= 0 && !!(filteredOptions[prev] as Record<string, unknown>)?.['disabled']) {
       prev--;
     }
     if (prev >= 0) {
@@ -663,9 +669,9 @@ class ThekSelectDom<T extends object = ThekSelectOption> extends ThekSelect<T> {
 
   // Override select to also sync the native element and announce to screen readers.
   public override select(option: T): void {
-    const wasSelected = this.stateManager.getState().selectedValues.some((v) =>
-      valuesMatch(v, getOptionField(option, this.config.valueField))
-    );
+    const wasSelected = this.stateManager
+      .getState()
+      .selectedValues.some((v) => valuesMatch(v, getOptionField(option, this.config.valueField)));
     super.select(option);
     this.syncOriginalElement(this.stateManager.getState().selectedValues);
     this.renderer.input.value = '';

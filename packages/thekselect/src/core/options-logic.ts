@@ -4,7 +4,10 @@ import { NOOP_LOAD_OPTIONS } from './config-utils.js';
 export function isRemoteMode<T extends object = ThekSelectOption>(
   config: Required<ThekSelectConfig<T>>
 ): boolean {
-  return config.loadOptions !== (NOOP_LOAD_OPTIONS as unknown as Required<ThekSelectConfig<T>>['loadOptions']);
+  return (
+    config.loadOptions !==
+    (NOOP_LOAD_OPTIONS as unknown as Required<ThekSelectConfig<T>>['loadOptions'])
+  );
 }
 
 export function getFilteredOptions<T extends object = ThekSelectOption>(

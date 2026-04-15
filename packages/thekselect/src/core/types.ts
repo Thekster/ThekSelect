@@ -70,10 +70,7 @@ export interface ThekSelectState<T extends object = ThekSelectOption> {
  * Generic `K extends keyof T` ensures the field is a known key of `T` at the
  * call site, eliminating `as Record<string, unknown>` casts across the codebase.
  */
-export function getOptionField<T extends object, K extends keyof T>(
-  option: T,
-  field: K
-): T[K] {
+export function getOptionField<T extends object, K extends keyof T>(option: T, field: K): T[K] {
   return option[field];
 }
 

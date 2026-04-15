@@ -13,6 +13,7 @@
 ### Task 1: DOM fixes — `replaceChildren()` and spacer guard
 
 **Files:**
+
 - Modify: `packages/thekselect/src/core/renderer/selection-renderer.ts`
 - Modify: `packages/thekselect/src/core/renderer/options-renderer.ts`
 - Modify: `packages/thekselect/tests/features/virtualization.test.ts`
@@ -36,50 +37,50 @@ import { buildConfig, buildInitialState } from '../../src/core/config-utils';
 Then add this test inside the `describe('Virtualization', ...)` block:
 
 ```ts
-  it('does not reinsert spacers when already in position on repeated render', () => {
-    const list = document.createElement('ul');
-    list.style.height = '200px';
-    document.body.appendChild(list);
+it('does not reinsert spacers when already in position on repeated render', () => {
+  const list = document.createElement('ul');
+  list.style.height = '200px';
+  document.body.appendChild(list);
 
-    const options = makeOptions(100);
-    const config = buildConfig<{ value: string; label: string }>(null, {
-      options,
-      virtualize: true,
-      virtualThreshold: 80,
-      virtualItemHeight: 40
-    });
-    const state = buildInitialState(config);
-    const callbacks = {
-      onSelect: () => {},
-      onCreate: () => {},
-      onRemove: () => {},
-      onReorder: () => {},
-      onReorderKey: () => {},
-      onFocusCombobox: () => {},
-      onError: () => {},
-      onOrphan: () => {}
-    };
-
-    // First render — creates and positions spacers
-    renderOptionsContent(list, state, options, config, callbacks, 'test');
-
-    const topSpacer = list.firstChild as HTMLElement;
-    const bottomSpacer = list.lastChild as HTMLElement;
-
-    expect(topSpacer?.dataset?.position).toBe('top');
-    expect(bottomSpacer?.dataset?.position).toBe('bottom');
-
-    const insertSpy = vi.spyOn(list, 'insertBefore');
-    const appendSpy = vi.spyOn(list, 'appendChild');
-
-    // Second render — same scroll, same state; spacers are already in position
-    renderOptionsContent(list, state, options, config, callbacks, 'test');
-
-    expect(insertSpy).not.toHaveBeenCalledWith(topSpacer, expect.anything());
-    expect(appendSpy).not.toHaveBeenCalledWith(bottomSpacer);
-
-    document.body.removeChild(list);
+  const options = makeOptions(100);
+  const config = buildConfig<{ value: string; label: string }>(null, {
+    options,
+    virtualize: true,
+    virtualThreshold: 80,
+    virtualItemHeight: 40
   });
+  const state = buildInitialState(config);
+  const callbacks = {
+    onSelect: () => {},
+    onCreate: () => {},
+    onRemove: () => {},
+    onReorder: () => {},
+    onReorderKey: () => {},
+    onFocusCombobox: () => {},
+    onError: () => {},
+    onOrphan: () => {}
+  };
+
+  // First render — creates and positions spacers
+  renderOptionsContent(list, state, options, config, callbacks, 'test');
+
+  const topSpacer = list.firstChild as HTMLElement;
+  const bottomSpacer = list.lastChild as HTMLElement;
+
+  expect(topSpacer?.dataset?.position).toBe('top');
+  expect(bottomSpacer?.dataset?.position).toBe('bottom');
+
+  const insertSpy = vi.spyOn(list, 'insertBefore');
+  const appendSpy = vi.spyOn(list, 'appendChild');
+
+  // Second render — same scroll, same state; spacers are already in position
+  renderOptionsContent(list, state, options, config, callbacks, 'test');
+
+  expect(insertSpy).not.toHaveBeenCalledWith(topSpacer, expect.anything());
+  expect(appendSpy).not.toHaveBeenCalledWith(bottomSpacer);
+
+  document.body.removeChild(list);
+});
 ```
 
 - [ ] **Step 2: Run the test to confirm it fails**
@@ -95,17 +96,17 @@ Expected: the new test FAILS (insertBefore/appendChild ARE called before the gua
 Find the two lines at the very bottom of the `if (shouldVirtualize)` branch (currently lines 238–239):
 
 ```ts
-    syncVirtualSpacerHeight(bottomSpacer, (filteredOptions.length - end) * itemHeight);
-    list.insertBefore(topSpacer, list.firstChild);
-    list.appendChild(bottomSpacer);
+syncVirtualSpacerHeight(bottomSpacer, (filteredOptions.length - end) * itemHeight);
+list.insertBefore(topSpacer, list.firstChild);
+list.appendChild(bottomSpacer);
 ```
 
 Replace with:
 
 ```ts
-    syncVirtualSpacerHeight(bottomSpacer, (filteredOptions.length - end) * itemHeight);
-    if (list.firstChild !== topSpacer) list.insertBefore(topSpacer, list.firstChild);
-    if (list.lastChild !== bottomSpacer) list.appendChild(bottomSpacer);
+syncVirtualSpacerHeight(bottomSpacer, (filteredOptions.length - end) * itemHeight);
+if (list.firstChild !== topSpacer) list.insertBefore(topSpacer, list.firstChild);
+if (list.lastChild !== bottomSpacer) list.appendChild(bottomSpacer);
 ```
 
 - [ ] **Step 4: Replace `innerHTML = ''` with `replaceChildren()` in `options-renderer.ts`**
@@ -113,13 +114,13 @@ Replace with:
 Find (line 154):
 
 ```ts
-    list.innerHTML = '';
+list.innerHTML = '';
 ```
 
 Replace with:
 
 ```ts
-    list.replaceChildren();
+list.replaceChildren();
 ```
 
 - [ ] **Step 5: Replace `innerHTML = ''` with `replaceChildren()` in `selection-renderer.ts`**
@@ -127,43 +128,55 @@ Replace with:
 There are four occurrences. Replace each:
 
 Line 121:
+
 ```ts
-    container.innerHTML = '';
+container.innerHTML = '';
 ```
+
 →
+
 ```ts
-    container.replaceChildren();
+container.replaceChildren();
 ```
 
 Line 134:
+
 ```ts
-        container.innerHTML = '';
+container.innerHTML = '';
 ```
+
 →
+
 ```ts
-        container.replaceChildren();
+container.replaceChildren();
 ```
 
 Line 143:
+
 ```ts
-      if (isCurrentlySummary) {
-        container.innerHTML = '';
-      }
+if (isCurrentlySummary) {
+  container.innerHTML = '';
+}
 ```
+
 →
+
 ```ts
-      if (isCurrentlySummary) {
-        container.replaceChildren();
-      }
+if (isCurrentlySummary) {
+  container.replaceChildren();
+}
 ```
 
 Line 171:
+
 ```ts
-    container.innerHTML = '';
+container.innerHTML = '';
 ```
+
 →
+
 ```ts
-    container.replaceChildren();
+container.replaceChildren();
 ```
 
 - [ ] **Step 6: Run tests to confirm all pass**
@@ -188,6 +201,7 @@ git commit -m "fix: replace innerHTML='' with replaceChildren() and guard spacer
 ### Task 2: Redesign `types.ts` — core type changes
 
 **Files:**
+
 - Modify: `packages/thekselect/src/core/types.ts`
 
 - [ ] **Step 1: Replace the full contents of `types.ts`**
@@ -265,10 +279,7 @@ export interface ThekSelectState<T extends object = ThekSelectOption> {
  * Generic `K extends keyof T` ensures the field is a known key of `T` at the
  * call site, eliminating `as Record<string, unknown>` casts across the codebase.
  */
-export function getOptionField<T extends object, K extends keyof T>(
-  option: T,
-  field: K
-): T[K] {
+export function getOptionField<T extends object, K extends keyof T>(option: T, field: K): T[K] {
   return option[field];
 }
 
@@ -324,6 +335,7 @@ git commit -m "refactor!: redesign T as full option shape in ThekSelectConfig"
 ### Task 3: Update `constants.ts` — `RendererCallbacks<T>`
 
 **Files:**
+
 - Modify: `packages/thekselect/src/core/renderer/constants.ts`
 
 - [ ] **Step 1: Update `RendererCallbacks` generics**
@@ -373,6 +385,7 @@ Expected: error count should be the same or lower than after Task 2.
 ### Task 4: Update `config-utils.ts`
 
 **Files:**
+
 - Modify: `packages/thekselect/src/core/config-utils.ts`
 
 - [ ] **Step 1: Replace the full contents of `config-utils.ts`**
@@ -488,8 +501,7 @@ export function buildConfig<T extends object = ThekSelectOption>(
   const hasCustomRenderSelection = !!(globalDefaults.renderSelection || config.renderSelection);
 
   if (!hasCustomRenderOption) {
-    finalConfig.renderOption = (o: T) =>
-      String(getOptionField(o, finalConfig.displayField) ?? '');
+    finalConfig.renderOption = (o: T) => String(getOptionField(o, finalConfig.displayField) ?? '');
   }
   if (!hasCustomRenderSelection) {
     finalConfig.renderSelection = (o: T) =>
@@ -506,8 +518,7 @@ export function buildInitialState<T extends object = ThekSelectOption>(
 
   // `selected` is a convention on ThekSelectOption (and native <select> options).
   // For custom T shapes it may not exist; the cast is intentional.
-  const isPreSelected = (o: T): boolean =>
-    !!(o as Record<string, unknown>)['selected'];
+  const isPreSelected = (o: T): boolean => !!(o as Record<string, unknown>)['selected'];
 
   const firstSelected = config.options.find(isPreSelected);
   const selectedValues: ThekSelectPrimitive[] = config.multiple
@@ -520,9 +531,7 @@ export function buildInitialState<T extends object = ThekSelectOption>(
 
   const selectedOptionsByValue: Record<string, T> = {};
   selectedValues.forEach((value) => {
-    const option = config.options.find((o) =>
-      valuesMatch(getOptionField(o, valueField), value)
-    );
+    const option = config.options.find((o) => valuesMatch(getOptionField(o, valueField), value));
     if (option) {
       selectedOptionsByValue[String(value)] = option;
     }
@@ -551,6 +560,7 @@ cd packages/thekselect && npx tsc --noEmit 2>&1 | wc -l
 ### Task 5: Update logic files — `options-logic.ts` and `selection-logic.ts`
 
 **Files:**
+
 - Modify: `packages/thekselect/src/core/options-logic.ts`
 - Modify: `packages/thekselect/src/core/selection-logic.ts`
 
@@ -790,6 +800,7 @@ cd packages/thekselect && npx tsc --noEmit 2>&1 | wc -l
 ### Task 6: Update renderer files — `dom-assembly.ts`, `selection-renderer.ts`, `options-renderer.ts`
 
 **Files:**
+
 - Modify: `packages/thekselect/src/core/renderer/dom-assembly.ts`
 - Modify: `packages/thekselect/src/core/renderer/selection-renderer.ts`
 - Modify: `packages/thekselect/src/core/renderer/options-renderer.ts`
@@ -875,12 +886,15 @@ export function renderSelectionContent<T extends object = ThekSelectOption>(
 Inside `renderSelectionContent`, the fallback synthetic option construction now needs a cast since `T` may not have `value`/`label`:
 
 Find:
+
 ```ts
-        ({ [vField]: val, [dField]: String(val) } as unknown as ThekSelectOption<T>);
+({ [vField]: val, [dField]: String(val) }) as unknown as ThekSelectOption<T>;
 ```
+
 Replace with:
+
 ```ts
-        ({ [vField]: val, [dField]: String(val) } as unknown as T);
+({ [vField]: val, [dField]: String(val) }) as unknown as T;
 ```
 
 - [ ] **Step 3: Update generics in `options-renderer.ts`**
@@ -903,14 +917,14 @@ export function updateOptionAttrs<T extends object = ThekSelectOption>(
 Inside `updateOptionAttrs`, the `disabled` field access needs the intentional internal cast (the only remaining one in the codebase). Find:
 
 ```ts
-  const isDisabled = !!getOptionField(option, 'disabled');
+const isDisabled = !!getOptionField(option, 'disabled');
 ```
 
 Replace with:
 
 ```ts
-  // `disabled` is a ThekSelectOption convention; T may not declare it.
-  const isDisabled = !!((option as Record<string, unknown>)['disabled']);
+// `disabled` is a ThekSelectOption convention; T may not declare it.
+const isDisabled = !!(option as Record<string, unknown>)['disabled'];
 ```
 
 ```ts
@@ -957,6 +971,7 @@ cd packages/thekselect && npx tsc --noEmit 2>&1 | wc -l
 ### Task 7: Update `dom-renderer.ts`
 
 **Files:**
+
 - Modify: `packages/thekselect/src/core/dom-renderer.ts`
 
 - [ ] **Step 1: Update class declaration and all method signatures**
@@ -1004,6 +1019,7 @@ cd packages/thekselect && npx tsc --noEmit 2>&1 | wc -l
 ### Task 8: Update `thekselect.ts` — core class
 
 **Files:**
+
 - Modify: `packages/thekselect/src/core/thekselect.ts`
 
 - [ ] **Step 1: Update exported types and class declaration**
@@ -1046,21 +1062,25 @@ These are already correct — no changes needed.
 - [ ] **Step 3: Update method signatures that reference `ThekSelectOption<T>`**
 
 `select`:
+
 ```ts
   public select(option: T): void {
 ```
 
 `setOptions`:
+
 ```ts
   public setOptions(options: T[]): void {
 ```
 
 `getSelectedOptions`:
+
 ```ts
   public getSelectedOptions(): T | T[] | undefined {
 ```
 
 `on`:
+
 ```ts
   public on<K extends ThekSelectEvent>(
     event: K,
@@ -1069,6 +1089,7 @@ These are already correct — no changes needed.
 ```
 
 `init` static method:
+
 ```ts
   public static init<T extends object = ThekSelectOption>(
     element: string | HTMLElement,
@@ -1077,6 +1098,7 @@ These are already correct — no changes needed.
 ```
 
 `setDefaults` static method:
+
 ```ts
   public static setDefaults(defaults: Partial<ThekSelectConfig<ThekSelectOption>>): void {
 ```
@@ -1134,28 +1156,37 @@ Update `select` override — parameter is now `T`:
 These methods call `filteredOptions[next]?.disabled` directly. Since `T` may not have `disabled`, add a cast:
 
 Find in `focusNext`:
+
 ```ts
     while (next < filteredOptions.length && !!filteredOptions[next]?.disabled) {
 ```
+
 Replace with:
+
 ```ts
     while (next < filteredOptions.length && !!((filteredOptions[next] as Record<string, unknown>)?.['disabled'])) {
 ```
 
 Find in `focusPrev`:
+
 ```ts
     while (prev >= 0 && !!filteredOptions[prev]?.disabled) {
 ```
+
 Replace with:
+
 ```ts
     while (prev >= 0 && !!((filteredOptions[prev] as Record<string, unknown>)?.['disabled'])) {
 ```
 
 Find in `open`:
+
 ```ts
     while (initialFocus < filteredOptions.length && !!filteredOptions[initialFocus]?.disabled) {
 ```
+
 Replace with:
+
 ```ts
     while (initialFocus < filteredOptions.length && !!((filteredOptions[initialFocus] as Record<string, unknown>)?.['disabled'])) {
 ```
@@ -1188,6 +1219,7 @@ git commit -m "refactor!: update all call sites to T extends object = ThekSelect
 ### Task 9: Add type-level tests
 
 **Files:**
+
 - Create: `packages/thekselect/tests/core/types.test-d.ts`
 
 - [ ] **Step 1: Create the type-level test file**
@@ -1210,7 +1242,7 @@ describe('ThekSelectConfig type safety', () => {
       valueField: 'id',
       displayField: 'name'
     };
-    expectTypeOf(config.valueField).toEqualTypeOf<keyof ProductOption & string | undefined>();
+    expectTypeOf(config.valueField).toEqualTypeOf<(keyof ProductOption & string) | undefined>();
   });
 
   it('renderOption callback receives T', () => {

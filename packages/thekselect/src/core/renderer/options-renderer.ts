@@ -60,7 +60,7 @@ export function updateOptionAttrs<T extends object = ThekSelectOption>(
   li.classList.toggle('thek-focused', state.focusedIndex === index);
   li.setAttribute('aria-selected', isSelected.toString());
   // `disabled` is a ThekSelectOption convention; T may not declare it.
-  const isDisabled = !!((option as Record<string, unknown>)['disabled']);
+  const isDisabled = !!(option as Record<string, unknown>)['disabled'];
   li.classList.toggle('thek-disabled', isDisabled);
   if (isDisabled) {
     li.setAttribute('aria-disabled', 'true');

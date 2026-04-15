@@ -37,8 +37,8 @@ The `data?: T` field is removed. Domain data lives directly on the caller's opti
 ```ts
 export interface ThekSelectConfig<T extends object = ThekSelectOption> {
   options?: T[];
-  valueField?: keyof T & string;    // runtime default: 'value'
-  displayField?: keyof T & string;  // runtime default: 'label'
+  valueField?: keyof T & string; // runtime default: 'value'
+  displayField?: keyof T & string; // runtime default: 'label'
   renderOption?: (option: T) => string | HTMLElement;
   renderSelection?: (option: T) => string | HTMLElement;
   loadOptions?: (query: string, signal: AbortSignal) => Promise<T[]>;
@@ -55,10 +55,7 @@ export interface ThekSelectState<T extends object = ThekSelectOption> { ... }
 **`getOptionField`** becomes type-safe — no cast:
 
 ```ts
-export function getOptionField<T extends object, K extends keyof T>(
-  option: T,
-  field: K
-): T[K] {
+export function getOptionField<T extends object, K extends keyof T>(option: T, field: K): T[K] {
   return option[field];
 }
 ```
@@ -83,10 +80,10 @@ All renderer functions generic over `ThekSelectOption<T>` update their type cons
 
 Five locations replaced:
 
-| File | Lines |
-|---|---|
+| File                    | Lines              |
+| ----------------------- | ------------------ |
 | `selection-renderer.ts` | 121, 134, 143, 171 |
-| `options-renderer.ts` | 154 |
+| `options-renderer.ts`   | 154                |
 
 No behaviour change. `replaceChildren()` is equivalent to `innerHTML = ''` for clearing — it removes all child nodes.
 
@@ -124,6 +121,7 @@ New file: `packages/thekselect/tests/types.test-d.ts` using Vitest's `expectType
 ### `replaceChildren()` regression
 
 Verify that switching from `innerHTML = ''` doesn't change observable behaviour:
+
 - Selection container is empty after deselecting all items
 - Summary mode (`maxSelectedLabels`) toggles correctly
 - Single-select cleared correctly on value reset
@@ -133,6 +131,7 @@ These are covered by existing tests; a passing test suite after the change is th
 ### Spacer guard
 
 A scroll test calls `renderOptionsContent` twice with the same scroll position and asserts:
+
 - The `topSpacer` element reference is the same object on both calls
 - Its `parentElement` is unchanged (not re-inserted)
 

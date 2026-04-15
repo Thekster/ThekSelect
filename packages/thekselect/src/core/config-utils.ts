@@ -108,8 +108,7 @@ export function buildConfig<T extends object = ThekSelectOption>(
   const hasCustomRenderSelection = !!(globalDefaults.renderSelection || config.renderSelection);
 
   if (!hasCustomRenderOption) {
-    finalConfig.renderOption = (o: T) =>
-      String(getOptionField(o, finalConfig.displayField) ?? '');
+    finalConfig.renderOption = (o: T) => String(getOptionField(o, finalConfig.displayField) ?? '');
   }
   if (!hasCustomRenderSelection) {
     finalConfig.renderSelection = (o: T) =>
@@ -126,8 +125,7 @@ export function buildInitialState<T extends object = ThekSelectOption>(
 
   // `selected` is a convention on ThekSelectOption (and native <select> options).
   // For custom T shapes it may not exist; the cast is intentional.
-  const isPreSelected = (o: T): boolean =>
-    !!(o as Record<string, unknown>)['selected'];
+  const isPreSelected = (o: T): boolean => !!(o as Record<string, unknown>)['selected'];
 
   const firstSelected = config.options.find(isPreSelected);
   const selectedValues: ThekSelectPrimitive[] = config.multiple
@@ -140,9 +138,7 @@ export function buildInitialState<T extends object = ThekSelectOption>(
 
   const selectedOptionsByValue: Record<string, T> = {};
   selectedValues.forEach((value) => {
-    const option = config.options.find((o) =>
-      valuesMatch(getOptionField(o, valueField), value)
-    );
+    const option = config.options.find((o) => valuesMatch(getOptionField(o, valueField), value));
     if (option) {
       selectedOptionsByValue[String(value)] = option;
     }
