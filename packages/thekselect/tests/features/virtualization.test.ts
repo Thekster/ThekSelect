@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ThekSelect } from '../../src/core/thekselect';
+import { renderOptionsContent } from '../../src/core/renderer/options-renderer';
+import { buildConfig, buildInitialState } from '../../src/core/config-utils';
 
 function makeOptions(n: number) {
   return Array.from({ length: n }, (_, i) => ({ value: `${i}`, label: `Option ${i}` }));
@@ -140,5 +142,50 @@ describe('Virtualization', () => {
     initialNodes.forEach((node, index) => {
       expect(nextNodes[index]).toBe(node);
     });
+  });
+
+  it('does not reinsert spacers when already in position on repeated render', () => {
+    const list = document.createElement('ul');
+    list.style.height = '200px';
+    document.body.appendChild(list);
+
+    const options = makeOptions(100);
+    const config = buildConfig<{ value: string; label: string }>(null, {
+      options,
+      virtualize: true,
+      virtualThreshold: 80,
+      virtualItemHeight: 40
+    });
+    const state = buildInitialState(config);
+    const callbacks = {
+      onSelect: () => {},
+      onCreate: () => {},
+      onRemove: () => {},
+      onReorder: () => {},
+      onReorderKey: () => {},
+      onFocusCombobox: () => {},
+      onError: () => {},
+      onOrphan: () => {}
+    };
+
+    // First render — creates and positions spacers
+    renderOptionsContent(list, state, options, config, callbacks, 'test');
+
+    const topSpacer = list.firstChild as HTMLElement;
+    const bottomSpacer = list.lastChild as HTMLElement;
+
+    expect(topSpacer?.dataset?.position).toBe('top');
+    expect(bottomSpacer?.dataset?.position).toBe('bottom');
+
+    const insertSpy = vi.spyOn(list, 'insertBefore');
+    const appendSpy = vi.spyOn(list, 'appendChild');
+
+    // Second render — same scroll, same state; spacers already in position
+    renderOptionsContent(list, state, options, config, callbacks, 'test');
+
+    expect(insertSpy).not.toHaveBeenCalledWith(topSpacer, expect.anything());
+    expect(appendSpy).not.toHaveBeenCalledWith(bottomSpacer);
+
+    document.body.removeChild(list);
   });
 });

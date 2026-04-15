@@ -118,7 +118,7 @@ export function renderSelectionContent<T>(
   container.style.display = hasSelection ? 'flex' : 'none';
 
   if (!hasSelection) {
-    container.innerHTML = '';
+    container.replaceChildren();
     return;
   }
 
@@ -131,7 +131,7 @@ export function renderSelectionContent<T>(
 
     if (isSummaryMode) {
       if (!isCurrentlySummary) {
-        container.innerHTML = '';
+        container.replaceChildren();
         const summary = document.createElement('span');
         summary.className = 'thek-summary-text';
         container.appendChild(summary);
@@ -140,7 +140,7 @@ export function renderSelectionContent<T>(
         `${state.selectedValues.length} items selected`;
     } else {
       if (isCurrentlySummary) {
-        container.innerHTML = '';
+        container.replaceChildren();
       }
 
       const existing = new Map<string, HTMLElement>();
@@ -168,7 +168,7 @@ export function renderSelectionContent<T>(
       }
     }
   } else {
-    container.innerHTML = '';
+    container.replaceChildren();
     const val = state.selectedValues[0];
     const option =
       state.options.find((o) => valuesMatch(getOptionField(o, vField), val)) ||

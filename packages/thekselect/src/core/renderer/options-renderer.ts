@@ -151,7 +151,7 @@ export function renderOptionsContent<T>(
   const dField = config.displayField;
 
   if (state.isLoading && filteredOptions.length === 0) {
-    list.innerHTML = '';
+    list.replaceChildren();
     const li = document.createElement('li');
     li.className = 'thek-option thek-loading';
     li.dataset.key = '__loading__';
@@ -235,8 +235,8 @@ export function renderOptionsContent<T>(
     }
 
     syncVirtualSpacerHeight(bottomSpacer, (filteredOptions.length - end) * itemHeight);
-    list.insertBefore(topSpacer, list.firstChild);
-    list.appendChild(bottomSpacer);
+    if (list.firstChild !== topSpacer) list.insertBefore(topSpacer, list.firstChild);
+    if (list.lastChild !== bottomSpacer) list.appendChild(bottomSpacer);
   } else {
     for (const child of Array.from(list.children) as HTMLLIElement[]) {
       if (child.classList.contains('thek-virtual-spacer')) {
