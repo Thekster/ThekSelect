@@ -67,6 +67,12 @@ Run from **`packages/thekselect-vue/`**:
   4. `npm run build`
   5. `npm run release:check` in `packages/thekselect`
   6. `npm run release:check` in `packages/thekselect-vue`
+- After all checks pass, push the branch, then create the release with:
+  ```bash
+  gh release create v<version> --title "<version>" --notes "<release notes body>"
+  ```
+  The release notes body should be the content of the matching `## <version>` section from `RELEASE_NOTES.md`.
+  Creating the release triggers the publish workflow automatically — do not run `npm publish` locally.
 
 ## Validation Rules
 
