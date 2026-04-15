@@ -2,34 +2,31 @@ export type ThekSelectPrimitive = string | number;
 export type ThekSelectValue = ThekSelectPrimitive | ThekSelectPrimitive[] | undefined;
 
 /**
- * A single option in a ThekSelect instance.
+ * Default option shape. Used as the `T` default in all generics.
  *
- * `value` and `label` are the default field names used when `valueField` and
- * `displayField` are not customised. When using custom field names you still
- * need to satisfy this interface — either keep `value`/`label` as aliases or
- * use a cast. The library reads fields via `config.valueField` and
- * `config.displayField` at runtime, not via `.value`/`.label` directly.
+ * Pass a custom type to `ThekSelect.init<MyOption>(...)` to use your own
+ * option objects directly. `valueField` and `displayField` in config become
+ * `keyof MyOption & string`, giving you compile-time safety.
  *
- * To carry strongly-typed domain data into render functions, use the `data`
- * field. The generic parameter `T` provides type safety exclusively there.
+ * The `selected` field controls pre-selection when building initial state from
+ * a config or a native `<select>` element. It is an internal convention, not
+ * required on custom option types.
  */
-export interface ThekSelectOption<T = unknown> {
+export interface ThekSelectOption {
   value: ThekSelectPrimitive;
   label: string;
   disabled?: boolean;
   selected?: boolean;
-  /** Carry strongly-typed domain data for use in custom render functions. */
-  data?: T;
 }
 
-export interface ThekSelectConfig<T = unknown> {
-  options?: ThekSelectOption<T>[];
+export interface ThekSelectConfig<T extends object = ThekSelectOption> {
+  options?: T[];
   multiple?: boolean;
   searchable?: boolean;
   disabled?: boolean;
   placeholder?: string;
   canCreate?: boolean;
-  createText?: string; // Default "Create '{%t}'..."
+  createText?: string;
   height?: number | string;
   /**
    * Milliseconds to wait before firing `loadOptions` after each keystroke.
@@ -39,16 +36,16 @@ export interface ThekSelectConfig<T = unknown> {
    */
   debounce?: number;
   maxSelectedLabels?: number;
-  displayField?: string;
-  valueField?: string;
+  displayField?: keyof T & string;
+  valueField?: keyof T & string;
   maxOptions?: number | null;
   virtualize?: boolean;
   virtualItemHeight?: number;
   virtualOverscan?: number;
   virtualThreshold?: number;
-  loadOptions?: (query: string, signal: AbortSignal) => Promise<ThekSelectOption<T>[]>;
-  renderOption?: (option: ThekSelectOption<T>) => string | HTMLElement;
-  renderSelection?: (option: ThekSelectOption<T>) => string | HTMLElement;
+  loadOptions?: (query: string, signal: AbortSignal) => Promise<T[]>;
+  renderOption?: (option: T) => string | HTMLElement;
+  renderSelection?: (option: T) => string | HTMLElement;
   searchPlaceholder?: string;
   noResultsText?: string;
   loadingText?: string;
@@ -58,10 +55,10 @@ export interface ThekSelectConfig<T = unknown> {
   describedBy?: string;
 }
 
-export interface ThekSelectState<T = unknown> {
-  options: ThekSelectOption<T>[];
+export interface ThekSelectState<T extends object = ThekSelectOption> {
+  options: T[];
   selectedValues: ThekSelectPrimitive[];
-  selectedOptionsByValue: Record<string, ThekSelectOption<T>>;
+  selectedOptionsByValue: Record<string, T>;
   isOpen: boolean;
   focusedIndex: number;
   inputValue: string;
@@ -70,17 +67,20 @@ export interface ThekSelectState<T = unknown> {
 
 /**
  * @internal Read a runtime-configurable field name from an option object.
- * Required because `valueField`/`displayField` are strings known only at
- * runtime, and `ThekSelectOption` intentionally carries no index signature.
+ * Generic `K extends keyof T` ensures the field is a known key of `T` at the
+ * call site, eliminating `as Record<string, unknown>` casts across the codebase.
  */
-export function getOptionField(option: unknown, field: string): unknown {
-  return (option as Record<string, unknown>)[field];
+export function getOptionField<T extends object, K extends keyof T>(
+  option: T,
+  field: K
+): T[K] {
+  return option[field];
 }
 
 /**
  * @internal Compare two option values for equality after coercing both to
- * strings.  This prevents mismatches when options use numeric `value` fields
- * but external callers pass the equivalent string (e.g. setValue('1') against
+ * strings. Prevents mismatches when options use numeric `value` fields but
+ * external callers pass the equivalent string (e.g. setValue('1') against
  * { value: 1 }).
  */
 export function valuesMatch(a: unknown, b: unknown): boolean {
@@ -97,13 +97,13 @@ export type ThekSelectEvent =
   | 'reordered'
   | 'error';
 
-export interface ThekSelectEventPayloadMap<T = unknown> {
+export interface ThekSelectEventPayloadMap<T extends object = ThekSelectOption> {
   change: ThekSelectValue;
   open: null;
   close: null;
   search: string;
-  tagAdded: ThekSelectOption<T>;
-  tagRemoved: ThekSelectOption<T>;
+  tagAdded: T;
+  tagRemoved: T;
   reordered: ThekSelectPrimitive[];
   error: Error;
 }
