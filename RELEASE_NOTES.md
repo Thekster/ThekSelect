@@ -1,5 +1,33 @@
 # Release Notes
 
+## 2.0.1 / thekselect-vue 2.0.1 (2026-04-17)
+
+### Fixed
+
+- **Silent native sync contract** — `setValue(value, true)` no longer dispatches a native `change` event on wrapped `<select>` elements. This fixes event ping-pong risks in reactive form bindings and brings the DOM sync path in line with the documented `silent` contract.
+- **Wrapped native `<select>` rebuild on `setOptions()`** — calling `setOptions()` on an instance created from a native `<select>` now rebuilds the backing `<option>` list so form submission and DOM state stay aligned with the rendered widget.
+- **Shared orphan observer** — detached-wrapper cleanup now uses a shared document observer instead of one document-wide `MutationObserver` per instance, preserving ancestor-subtree cleanup while removing the previous per-instance observer cost.
+- **Abort-signal listener parity** — the renderer's `scroll` and `wheel` listeners now follow the same `AbortController` cleanup path as the rest of the component's direct DOM listeners.
+- **Escaped `label[for]` lookup** — accessible-name discovery now escapes native element IDs before querying `label[for="..."]`, so IDs containing CSS-significant characters continue to resolve their labels correctly.
+
+### Changed
+
+- **Real packaged component CSS** — the distributed CSS entrypoints now include a shared `thekselect.css` stylesheet containing the component styles. `base.css` remains the system theme, and named theme files now bundle the base styles plus their token overrides.
+
+### Documentation
+
+- **Theme usage clarified** — README and Vue README now document that named themes activate via `data-thek-theme`, and that importing a CSS entrypoint is the recommended CSP-friendly path.
+- **Vue typing limitation documented** — the Vue README now calls out that the wrapper cannot fully preserve the core package's generic option typing through SFC props and exposed refs.
+- **API docs updated** — `setDisabled()` now appears in the main README API docs, and the `debounce: 0` next-tick behavior is explicitly documented.
+
+### CI
+
+- **Validation gate aligned with repo policy** — CI now runs `format:check`, the full monorepo build, and `release:check` for both packages so the workflow matches the documented release gate.
+
+### thekselect-vue 2.0.1
+
+- **Workspace type-check path** — the Vue package now resolves the local workspace core types through the built declaration entry during `vue-tsc`, keeping the monorepo release check green without changing the published runtime surface.
+
 ## 2.0.0 / thekselect-vue 2.0.0 (2026-04-15)
 
 ### Breaking

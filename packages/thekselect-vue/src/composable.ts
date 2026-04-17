@@ -17,7 +17,7 @@ export function useThekSelect(
     const ts = ThekSelect.init(el.value, options);
     instance.value = ts;
     value.value = ts.getValue() as ThekSelectValue;
-    off = ts.on('change', (v) => {
+    off = ts.on('change', (v: ThekSelectValue) => {
       value.value = v as ThekSelectValue;
     });
   });

@@ -1,3 +1,5 @@
+@import './thekselect.css';
+
 html[data-thek-theme='dark'] {
   --thek-primary: #38bdf8;
   --thek-primary-light: rgba(56, 189, 248, 0.15);

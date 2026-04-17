@@ -104,8 +104,8 @@ onMounted(() => {
     height: props.height,
     debounce: props.debounce,
     maxSelectedLabels: props.maxSelectedLabels,
-    displayField: props.displayField as keyof ThekSelectOption & string | undefined,
-    valueField: props.valueField as keyof ThekSelectOption & string | undefined,
+    displayField: props.displayField as (keyof ThekSelectOption & string) | undefined,
+    valueField: props.valueField as (keyof ThekSelectOption & string) | undefined,
     maxOptions: props.maxOptions,
     virtualize: props.virtualize,
     virtualItemHeight: props.virtualItemHeight,
@@ -121,16 +121,18 @@ onMounted(() => {
   }
 
   unsubscribers.push(
-    instance.on('change', (v) => {
+    instance.on('change', (v: ThekSelectValue) => {
       emit('update:modelValue', v as ThekSelectValue);
       emit('change', v as ThekSelectValue);
     }),
     instance.on('open', () => emit('open')),
     instance.on('close', () => emit('close')),
-    instance.on('search', (q) => emit('search', q as string)),
-    instance.on('tagAdded', (o) => emit('tagAdded', o as ThekSelectOption)),
-    instance.on('tagRemoved', (o) => emit('tagRemoved', o as ThekSelectOption)),
-    instance.on('reordered', (o) => emit('reordered', o as ThekSelectPrimitive[]))
+    instance.on('search', (q: string) => emit('search', q as string)),
+    instance.on('tagAdded', (o: ThekSelectOption) => emit('tagAdded', o as ThekSelectOption)),
+    instance.on('tagRemoved', (o: ThekSelectOption) => emit('tagRemoved', o as ThekSelectOption)),
+    instance.on('reordered', (o: ThekSelectPrimitive[]) =>
+      emit('reordered', o as ThekSelectPrimitive[])
+    )
   );
 
   setLoadingState();

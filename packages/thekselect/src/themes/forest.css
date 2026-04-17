@@ -1,3 +1,5 @@
+@import './thekselect.css';
+
 html[data-thek-theme='forest'] {
   --thek-primary: #14532d;
   --thek-primary-light: #dcfce7;

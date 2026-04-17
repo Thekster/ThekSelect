@@ -1,0 +1,306 @@
+:root {
+  --thek-primary: #0f172a;
+  --thek-primary-light: #f1f5f9;
+  --thek-bg-surface: #ffffff;
+  --thek-bg-panel: #f8fafc;
+  --thek-bg-subtle: #f1f5f9;
+  --thek-border: #e2e8f0;
+  --thek-border-strong: #cbd5e1;
+  --thek-text-main: #0f172a;
+  --thek-text-muted: #64748b;
+  --thek-text-inverse: #ffffff;
+  --thek-danger: #ef4444;
+  --thek-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --thek-input-height: 40px;
+  --thek-height-sm: 32px;
+  --thek-height-md: 40px;
+  --thek-height-lg: 48px;
+  --thek-item-padding: 8px 10px;
+  --thek-font-family: inherit;
+  --thek-border-radius: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --thek-primary: #38bdf8;
+    --thek-primary-light: rgba(56, 189, 248, 0.15);
+    --thek-bg-surface: #0f172a;
+    --thek-bg-panel: #334155;
+    --thek-bg-subtle: #475569;
+    --thek-border: #334155;
+    --thek-border-strong: #475569;
+    --thek-text-main: #f8fafc;
+    --thek-text-muted: #94a3b8;
+    --thek-text-inverse: #0f172a;
+    --thek-danger: #f43f5e;
+    --thek-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  }
+}
+
+html[data-thek-theme='dark'],
+[data-theme='dark'] {
+  --thek-primary: #38bdf8;
+  --thek-primary-light: rgba(56, 189, 248, 0.15);
+  --thek-bg-surface: #0f172a;
+  --thek-bg-panel: #334155;
+  --thek-bg-subtle: #475569;
+  --thek-border: #334155;
+  --thek-border-strong: #475569;
+  --thek-text-main: #f8fafc;
+  --thek-text-muted: #94a3b8;
+  --thek-text-inverse: #0f172a;
+  --thek-danger: #f43f5e;
+  --thek-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+}
+
+.thek-select {
+  position: relative;
+  width: 100%;
+  font-family: var(--thek-font-family);
+  box-sizing: border-box;
+}
+
+.thek-select *,
+.thek-dropdown * {
+  box-sizing: border-box;
+}
+
+.thek-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 12px;
+  cursor: pointer;
+  min-height: var(--thek-input-height);
+  background-color: var(--thek-bg-surface);
+  color: var(--thek-text-main);
+  border: 1px solid var(--thek-border);
+  border-radius: var(--thek-border-radius);
+  transition: all 0.2s ease;
+}
+
+.thek-control:hover {
+  border-color: var(--thek-primary);
+}
+
+.thek-control:focus-within,
+.thek-open .thek-control {
+  border-color: var(--thek-primary);
+  box-shadow: 0 0 0 3px var(--thek-primary-light);
+}
+
+.thek-disabled .thek-control {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--thek-bg-subtle);
+}
+
+.thek-selection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.thek-placeholder {
+  color: var(--thek-text-muted);
+}
+
+.thek-single-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.thek-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 2px 8px;
+  background-color: var(--thek-primary-light);
+  color: var(--thek-text-main);
+  border-radius: calc(var(--thek-border-radius) - 2px);
+  user-select: none;
+}
+
+.thek-tag[draggable='true'] {
+  cursor: grab;
+}
+
+.thek-tag.thek-dragging {
+  opacity: 0.5;
+}
+
+.thek-tag.thek-drag-over {
+  outline: 2px dashed var(--thek-primary);
+  outline-offset: 2px;
+}
+
+.thek-tag-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.thek-tag-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.thek-tag-remove:hover {
+  background-color: rgba(15, 23, 42, 0.08);
+}
+
+.thek-tag-remove:focus-visible {
+  outline: 2px solid var(--thek-primary);
+  outline-offset: 2px;
+}
+
+.thek-summary {
+  color: var(--thek-text-muted);
+}
+
+.thek-input {
+  min-width: 60px;
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+}
+
+.thek-input::placeholder {
+  color: var(--thek-text-muted);
+}
+
+.thek-indicators {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 8px;
+  color: var(--thek-text-muted);
+}
+
+.thek-chevron,
+.thek-spinner {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.thek-spinner {
+  animation: thek-spin 0.9s linear infinite;
+}
+
+@keyframes thek-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.thek-dropdown {
+  position: absolute;
+  min-width: 0;
+  max-height: min(320px, calc(100vh - 16px));
+  overflow: hidden;
+  background-color: var(--thek-bg-surface);
+  border: 1px solid var(--thek-border);
+  border-radius: var(--thek-border-radius);
+  box-shadow: var(--thek-shadow);
+}
+
+.thek-drop-up {
+  transform-origin: bottom center;
+}
+
+.thek-search {
+  padding: 8px;
+  border-bottom: 1px solid var(--thek-border);
+  background-color: var(--thek-bg-panel);
+}
+
+.thek-search .thek-input {
+  width: 100%;
+  min-height: calc(var(--thek-input-height) - 12px);
+}
+
+.thek-options {
+  overflow: auto;
+  overscroll-behavior: contain;
+  max-height: min(320px, calc(100vh - 16px));
+  padding: 4px;
+  background-color: var(--thek-bg-surface);
+}
+
+.thek-option,
+.thek-create,
+.thek-no-results,
+.thek-loading {
+  display: flex;
+  align-items: center;
+  min-height: var(--thek-input-height);
+  padding: var(--thek-item-padding);
+  border-radius: calc(var(--thek-border-radius) - 2px);
+}
+
+.thek-option,
+.thek-create {
+  cursor: pointer;
+  color: var(--thek-text-main);
+}
+
+.thek-option:hover,
+.thek-option.thek-focused,
+.thek-create:hover,
+.thek-create.thek-focused {
+  background-color: var(--thek-primary-light);
+}
+
+.thek-option[aria-selected='true'] {
+  background-color: var(--thek-primary-light);
+  color: var(--thek-text-main);
+}
+
+.thek-option.thek-disabled {
+  color: var(--thek-text-muted);
+  cursor: not-allowed;
+}
+
+.thek-option-label,
+.thek-create,
+.thek-no-results,
+.thek-loading {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.thek-no-results,
+.thek-loading {
+  color: var(--thek-text-muted);
+}
+
+.thek-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

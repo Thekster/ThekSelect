@@ -16,6 +16,12 @@ Import a theme from the core package:
 import 'thekselect/css/base.css';
 ```
 
+Named theme files such as `thekselect/css/dark.css` include the full component stylesheet, but they only activate their token overrides when the page root has the matching `data-thek-theme` attribute:
+
+```html
+<html data-thek-theme="dark"></html>
+```
+
 ## Component
 
 ```vue
@@ -77,7 +83,7 @@ All [`ThekSelectConfig`](https://github.com/Thekster/ThekSelect#configuration) o
 | `canCreate`         | `boolean`                                             | `false`              | Allow creating new options                                                  |
 | `createText`        | `string`                                              | `"Create '{%t}'..."` | Create row label template                                                   |
 | `height`            | `number \| string`                                    | `40`                 | Control height (`number` = px)                                              |
-| `debounce`          | `number`                                              | `300`                | Debounce delay for `loadOptions`                                            |
+| `debounce`          | `number`                                              | `300`                | Debounce delay for `loadOptions`; `0` still defers to the next timer tick   |
 | `maxSelectedLabels` | `number`                                              | `3`                  | Max visible tags before summary                                             |
 | `displayField`      | `string`                                              | `'label'`            | Field used for display text                                                 |
 | `valueField`        | `string`                                              | `'value'`            | Field used as value key                                                     |
@@ -91,6 +97,8 @@ All [`ThekSelectConfig`](https://github.com/Thekster/ThekSelect#configuration) o
 | `renderSelection`   | `(option) => string \| HTMLElement`                   | —                    | Custom selected-item renderer                                               |
 
 > **Init-time props:** `multiple`, `searchable`, `disabled`, `canCreate`, `loadOptions`, and other structural props are read once at mount. Changing them after mount has no effect. To reconfigure, destroy and reinitialize the component (e.g. with a `:key` change). Props with runtime setters (`modelValue`, `height`, `maxOptions`, `renderOption`) update the instance reactively.
+
+> **TypeScript limitation:** Vue SFC props cannot carry the core library's generic `T` through `displayField`, `valueField`, or the exposed `instance` type. If you use a custom option shape, the core package keeps the stronger typing (`ThekSelect.init<MyOption>(...)`), but the Vue wrapper currently treats those prop names as plain strings and may require local casts around wrapper refs or callbacks.
 
 ## Events
 
@@ -126,7 +134,7 @@ function openSelect() {
 </template>
 ```
 
-Available methods: `open()`, `close()`, `toggle()`, `getValue()`, `setValue(value, silent?)`.
+Available methods: `open()`, `close()`, `toggle()`, `getValue()`, `setValue(value, silent?)`, `setDisabled(disabled)`.
 
 ## Loading Slot
 
@@ -197,6 +205,8 @@ import 'thekselect/css/bootstrap.css';
 import 'thekselect/css/tailwind.css';
 import 'thekselect/css/material.css';
 ```
+
+`base.css` is the system theme. Named themes require the matching `data-thek-theme` attribute on `<html>` to activate their token overrides.
 
 Customize with CSS variables:
 

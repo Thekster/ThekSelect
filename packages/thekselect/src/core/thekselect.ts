@@ -449,7 +449,7 @@ class ThekSelectDom<T extends object = ThekSelectOption> extends ThekSelect<T> {
     const parent = this.originalElement.parentNode;
     if (parent) {
       parent.insertBefore(this.renderer.wrapper, this.originalElement.nextSibling);
-      // Observe only the direct parent — avoids one full-body subtree observer per instance.
+      // Shared orphan observation keeps subtree-removal cleanup working without one observer per instance.
       this.renderer.startOrphanObserver(parent);
     }
   }
@@ -475,7 +475,11 @@ class ThekSelectDom<T extends object = ThekSelectOption> extends ThekSelect<T> {
       } else {
         const id = el.id;
         if (id) {
-          const label = document.querySelector<HTMLLabelElement>(`label[for="${id}"]`);
+          const escapedId =
+            typeof CSS !== 'undefined' && typeof CSS.escape === 'function'
+              ? CSS.escape(id)
+              : id.replace(/["\\]/g, '\\$&');
+          const label = document.querySelector<HTMLLabelElement>(`label[for="${escapedId}"]`);
           if (label) {
             if (!label.id) {
               label.id = `${id}-label`;
@@ -641,7 +645,35 @@ class ThekSelectDom<T extends object = ThekSelectOption> extends ThekSelect<T> {
     this.renderer.render(s, getFilteredOptions(this.config, s));
   }
 
-  private syncOriginalElement(values: ThekSelectPrimitive[]): void {
+  private rebuildOriginalSelectOptions(
+    options: T[],
+    values: ThekSelectPrimitive[],
+    dispatchChange: boolean
+  ): void {
+    if (!(this.originalElement instanceof HTMLSelectElement)) return;
+
+    const select = this.originalElement;
+    select.innerHTML = '';
+    this.injectedOptionValues.clear();
+
+    options.forEach((option) => {
+      const value = getOptionField(option, this.config.valueField);
+      const stringValue = String(value);
+      const label = String(getOptionField(option, this.config.displayField) ?? stringValue);
+      const opt = new Option(
+        label,
+        stringValue,
+        false,
+        values.some((selectedValue) => valuesMatch(selectedValue, value))
+      );
+      opt.disabled = Boolean((option as Record<string, unknown>)['disabled']);
+      select.add(opt);
+    });
+
+    this.syncOriginalElement(values, dispatchChange);
+  }
+
+  private syncOriginalElement(values: ThekSelectPrimitive[], dispatchChange: boolean = true): void {
     if (this.originalElement instanceof HTMLSelectElement) {
       const select = this.originalElement;
       Array.from(select.options).forEach((opt) => {
@@ -663,7 +695,9 @@ class ThekSelectDom<T extends object = ThekSelectOption> extends ThekSelect<T> {
           this.injectedOptionValues.add(stringValue);
         }
       });
-      select.dispatchEvent(new Event('change', { bubbles: true }));
+      if (dispatchChange) {
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      }
     }
   }
 
@@ -697,7 +731,12 @@ class ThekSelectDom<T extends object = ThekSelectOption> extends ThekSelect<T> {
     silent: boolean = false
   ): void {
     super.setValue(value, silent);
-    this.syncOriginalElement(this.stateManager.getState().selectedValues);
+    this.syncOriginalElement(this.stateManager.getState().selectedValues, !silent);
+  }
+
+  public override setOptions(options: T[]): void {
+    super.setOptions(options);
+    this.rebuildOriginalSelectOptions(options, this.stateManager.getState().selectedValues, false);
   }
 
   // Override removeLastSelection to also sync the native element

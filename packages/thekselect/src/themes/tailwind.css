@@ -1,3 +1,5 @@
+@import './thekselect.css';
+
 html[data-thek-theme='tailwind'] {
   --thek-primary: #0ea5e9;
   --thek-primary-light: #e0f2fe;

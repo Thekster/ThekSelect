@@ -19,6 +19,12 @@ import { positionDropdown, normalizeHeight } from './renderer/dropdown-positione
 export type { RendererCallbacks };
 
 export class DomRenderer<T extends object = ThekSelectOption> {
+  private static orphanObserver: MutationObserver | null = null;
+  private static orphanSubscribers: Set<{
+    wrapper: HTMLElement;
+    onOrphan: () => void;
+  }> = new Set();
+
   public wrapper!: HTMLElement;
   public control!: HTMLElement;
   public selectionContainer!: HTMLElement;
@@ -49,16 +55,21 @@ export class DomRenderer<T extends object = ThekSelectOption> {
     Object.assign(this, elements);
 
     let scrollRafPending = false;
-    this.optionsList.addEventListener('scroll', () => {
-      if (scrollRafPending) return;
-      scrollRafPending = true;
-      requestAnimationFrame(() => {
-        scrollRafPending = false;
-        this.handleOptionsScroll();
-      });
-    });
+    this.optionsList.addEventListener(
+      'scroll',
+      () => {
+        if (scrollRafPending) return;
+        scrollRafPending = true;
+        requestAnimationFrame(() => {
+          scrollRafPending = false;
+          this.handleOptionsScroll();
+        });
+      },
+      { signal }
+    );
     this.optionsList.addEventListener('wheel', (e) => this.handleOptionsWheel(e), {
-      passive: false
+      passive: false,
+      signal
     });
 
     // Prevent mousedown on dropdown items from stealing focus away from the
@@ -91,21 +102,38 @@ export class DomRenderer<T extends object = ThekSelectOption> {
       typeof document !== 'undefined' && document.body ? document.body : document.documentElement;
     if (!root) return;
 
-    this._orphanObserver = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const removed of Array.from(mutation.removedNodes)) {
-          if (
-            removed === this.wrapper ||
-            (removed.nodeType === 1 && (removed as Element).contains(this.wrapper)) ||
-            !this.wrapper.isConnected
-          ) {
-            this.callbacks.onOrphan();
-            return;
+    if (!this._orphanObserver) {
+      const orphanSubscriber = {
+        wrapper: this.wrapper,
+        onOrphan: () => this.callbacks.onOrphan()
+      };
+      DomRenderer.orphanSubscribers.add(orphanSubscriber);
+      this._orphanObserver = {
+        disconnect: () => {
+          DomRenderer.orphanSubscribers.delete(orphanSubscriber);
+        }
+      } as MutationObserver;
+    }
+    if (!DomRenderer.orphanObserver) {
+      DomRenderer.orphanObserver = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          for (const removed of Array.from(mutation.removedNodes)) {
+            if (removed.nodeType !== 1) continue;
+            const removedElement = removed as Element;
+            for (const subscriber of Array.from(DomRenderer.orphanSubscribers)) {
+              if (
+                removedElement === subscriber.wrapper ||
+                removedElement.contains(subscriber.wrapper) ||
+                !subscriber.wrapper.isConnected
+              ) {
+                subscriber.onOrphan();
+              }
+            }
           }
         }
-      }
-    });
-    this._orphanObserver.observe(root, { childList: true, subtree: true });
+      });
+      DomRenderer.orphanObserver.observe(root, { childList: true, subtree: true });
+    }
   }
 
   public render(state: ThekSelectState<T>, filteredOptions: T[]): void {
@@ -267,6 +295,10 @@ export class DomRenderer<T extends object = ThekSelectOption> {
     this._destroyed = true;
     this._orphanObserver?.disconnect();
     this._orphanObserver = null;
+    if (DomRenderer.orphanObserver && DomRenderer.orphanSubscribers.size === 0) {
+      DomRenderer.orphanObserver.disconnect();
+      DomRenderer.orphanObserver = null;
+    }
     this._listenerController?.abort();
     this._listenerController = null;
     if (this.wrapper.parentNode) {

@@ -1,3 +1,5 @@
+@import './thekselect.css';
+
 html[data-thek-theme='material'] {
   --thek-primary: #6750a4;
   --thek-primary-light: #eaddff;

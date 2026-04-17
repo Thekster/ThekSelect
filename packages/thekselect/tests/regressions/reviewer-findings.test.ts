@@ -292,6 +292,97 @@ describe('Reviewer findings regressions', () => {
     expect(opt!.text).toBe('Fig');
   });
 
+  it('does not dispatch native change when setValue is called with silent=true', () => {
+    document.body.innerHTML = `
+      <select id="fruit">
+        <option value="apple">Apple</option>
+        <option value="pear">Pear</option>
+      </select>
+    `;
+    const select = document.getElementById('fruit') as HTMLSelectElement;
+    const nativeChange = vi.fn();
+    select.addEventListener('change', nativeChange);
+
+    ThekSelect.init(select).setValue('pear', true);
+
+    expect(nativeChange).not.toHaveBeenCalled();
+    expect(select.value).toBe('pear');
+  });
+
+  it('setOptions rebuilds the wrapped native select option list', () => {
+    document.body.innerHTML = `
+      <select id="fruit">
+        <option value="apple">Apple</option>
+        <option value="pear" selected>Pear</option>
+      </select>
+    `;
+    const select = document.getElementById('fruit') as HTMLSelectElement;
+    const ts = ThekSelect.init(select);
+
+    ts.setOptions([
+      { value: 'fig', label: 'Fig' },
+      { value: 'plum', label: 'Plum', disabled: true }
+    ]);
+
+    expect(
+      Array.from(select.options).map((opt) => ({
+        value: opt.value,
+        text: opt.text,
+        disabled: opt.disabled,
+        selected: opt.selected
+      }))
+    ).toEqual([
+      { value: 'fig', text: 'Fig', disabled: false, selected: false },
+      { value: 'plum', text: 'Plum', disabled: true, selected: false },
+      { value: 'pear', text: 'Pear', disabled: false, selected: true }
+    ]);
+  });
+
+  it('associates labels for ids that require CSS escaping', () => {
+    document.body.innerHTML = `
+      <label for="user.name">User name</label>
+      <select id="user.name">
+        <option value="1">One</option>
+      </select>
+    `;
+
+    ThekSelect.init(document.getElementById('user.name') as HTMLSelectElement);
+
+    const combobox = document.querySelector('.thek-input') as HTMLInputElement;
+    expect(combobox.getAttribute('aria-labelledby')).toBe('user.name-label');
+    expect((document.querySelector('label[for="user.name"]') as HTMLLabelElement).id).toBe(
+      'user.name-label'
+    );
+  });
+
+  it('shares a single orphan observer across multiple instances', () => {
+    const NativeMutationObserver = globalThis.MutationObserver;
+    let observerCount = 0;
+
+    class CountingMutationObserver extends NativeMutationObserver {
+      constructor(callback: MutationCallback) {
+        super(callback);
+        observerCount++;
+      }
+    }
+
+    globalThis.MutationObserver = CountingMutationObserver as typeof MutationObserver;
+
+    try {
+      document.body.innerHTML = '<div id="one"></div><div id="two"></div>';
+      ThekSelect.init(document.getElementById('one') as HTMLDivElement, {
+        options: [{ value: '1', label: 'One' }]
+      });
+      ThekSelect.init(document.getElementById('two') as HTMLDivElement, {
+        options: [{ value: '2', label: 'Two' }]
+      });
+
+      expect(observerCount).toBe(1);
+    } finally {
+      globalThis.MutationObserver = NativeMutationObserver;
+    }
+  });
+
   it('throttles positionDropdown calls — multiple rapid resize events cause only one call per rAF', async () => {
     const ts = ThekSelect.init(container, {
       options: [{ value: '1', label: 'One' }]

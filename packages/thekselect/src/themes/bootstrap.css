@@ -1,3 +1,5 @@
+@import './thekselect.css';
+
 html[data-thek-theme='bootstrap'] {
   --thek-primary: #0d6efd;
   --thek-primary-light: #cfe2ff;
