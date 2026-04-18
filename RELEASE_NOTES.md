@@ -2,6 +2,12 @@
 
 ## 2.1.1 / thekselect-vue 2.1.1 (2026-04-18)
 
+### Breaking
+
+- **Factory method moved for Vanilla JS** — To fix tree-shaking violations, the core engine has been decoupled from the DOM renderer. Vanilla JS/TS users must now use `ThekSelectDom.init()` instead of `ThekSelect.init()`. 
+  - **Migration:** Change `ThekSelect.init(el, config)` to `ThekSelectDom.init(el, config)`.
+  - **Note:** This change is transparent for users of the Vue wrapper (`thekselect-vue`).
+
 ### Fixed
 
 - **Tree-Shaking Violation** — The core `ThekSelect` base class no longer statically depends on the `DomRenderer`. DOM initialization logic has been strictly decoupled into `ThekSelectDom.init()`. Headless and SSR consumers can now import the core library with zero overhead for the unused DOM payload.
