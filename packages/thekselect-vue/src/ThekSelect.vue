@@ -2,6 +2,7 @@
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 import {
   ThekSelect,
+  ThekSelectDom,
   type ThekSelectHandle,
   type ThekSelectConfig,
   type ThekSelectOption,
@@ -93,7 +94,7 @@ defineExpose({
 onMounted(() => {
   if (!el.value) return;
 
-  instance = ThekSelect.init(el.value, {
+  instance = ThekSelectDom.init(el.value, {
     options: props.options,
     multiple: props.multiple,
     searchable: props.searchable,

@@ -55,13 +55,13 @@ if (thekThemeSelect) {
 }
 
 // Basic
-const basic = ThekSelect.init('#basic-select', {
+const basic = ThekSelectDom.init('#basic-select', {
   placeholder: 'Select framework...'
 });
 registerInstance(basic);
 
 // Quick docs: initialize from existing native select
-const quickCountry = ThekSelect.init('#quick-country-select');
+const quickCountry = ThekSelectDom.init('#quick-country-select');
 registerInstance(quickCountry);
 
 // Quick docs: global defaults demo
@@ -71,11 +71,11 @@ const quickDefaultsOptions = [
   { value: 'gamma', label: 'Gamma' }
 ];
 ThekSelect.setDefaults({ height: 44 });
-const quickDefaultsFirst = ThekSelect.init('#quick-defaults-first', {
+const quickDefaultsFirst = ThekSelectDom.init('#quick-defaults-first', {
   options: quickDefaultsOptions,
   placeholder: 'Uses global height (44px)'
 });
-const quickDefaultsSecond = ThekSelect.init('#quick-defaults-second', {
+const quickDefaultsSecond = ThekSelectDom.init('#quick-defaults-second', {
   options: quickDefaultsOptions,
   height: 56,
   placeholder: 'Overrides to 56px'
@@ -85,14 +85,14 @@ registerInstance(quickDefaultsFirst);
 registerInstance(quickDefaultsSecond);
 
 // Multi
-const multi = ThekSelect.init('#multi-select', {
+const multi = ThekSelectDom.init('#multi-select', {
   multiple: true,
   maxSelectedLabels: 3
 });
 registerInstance(multi);
 
 // Creation
-const create = ThekSelect.init('#create-container', {
+const create = ThekSelectDom.init('#create-container', {
   canCreate: true,
   multiple: true,
   options: [
@@ -104,7 +104,7 @@ const create = ThekSelect.init('#create-container', {
 registerInstance(create);
 
 // Remote
-const remote = ThekSelect.init('#remote-container', {
+const remote = ThekSelectDom.init('#remote-container', {
   searchable: true,
   placeholder: 'Type a GitHub username...',
   loadOptions: async (query) => {
@@ -125,7 +125,7 @@ const bigOptions = Array.from({ length: 5000 }, (_, i) => ({
   value: `opt_${i + 1}`,
   label: `Option ${i + 1}`
 }));
-const virtualized = ThekSelect.init('#virtual-container', {
+const virtualized = ThekSelectDom.init('#virtual-container', {
   options: bigOptions,
   searchable: true,
   placeholder: 'Search large list...',
@@ -142,24 +142,30 @@ const options = [
   { value: '2', label: 'Option 2' },
   { value: '3', label: 'Option 3' }
 ];
-registerInstance(ThekSelect.init('#size-sm', { height: 32, options, placeholder: 'Small size' }));
-registerInstance(ThekSelect.init('#size-md', { height: 40, options, placeholder: 'Medium size' }));
-registerInstance(ThekSelect.init('#size-lg', { height: 48, options, placeholder: 'Large size' }));
+registerInstance(
+  ThekSelectDom.init('#size-sm', { height: 32, options, placeholder: 'Small size' })
+);
+registerInstance(
+  ThekSelectDom.init('#size-md', { height: 40, options, placeholder: 'Medium size' })
+);
+registerInstance(
+  ThekSelectDom.init('#size-lg', { height: 48, options, placeholder: 'Large size' })
+);
 
 // Multi-select sizing
-const smMulti = ThekSelect.init('#size-sm-multi', {
+const smMulti = ThekSelectDom.init('#size-sm-multi', {
   height: 32,
   multiple: true,
   options,
   placeholder: 'Small multi'
 });
-const mdMulti = ThekSelect.init('#size-md-multi', {
+const mdMulti = ThekSelectDom.init('#size-md-multi', {
   height: 40,
   multiple: true,
   options,
   placeholder: 'Medium multi'
 });
-const lgMulti = ThekSelect.init('#size-lg-multi', {
+const lgMulti = ThekSelectDom.init('#size-lg-multi', {
   height: 48,
   multiple: true,
   options,
@@ -181,7 +187,7 @@ const fieldOptions = [
   { id: 'usr_3', name: 'Bob Wilson', role: 'User' }
 ];
 registerInstance(
-  ThekSelect.init('#fields-container', {
+  ThekSelectDom.init('#fields-container', {
     displayField: 'name',
     valueField: 'id',
     options: fieldOptions,
@@ -196,7 +202,7 @@ const initApiInstance = () => {
   const maxOptVal = document.getElementById('api-max-options').value;
   const maxOptions = maxOptVal ? parseInt(maxOptVal) : null;
 
-  apiInstance = ThekSelect.init('#api-target-container', {
+  apiInstance = ThekSelectDom.init('#api-target-container', {
     multiple: isMultiple,
     maxOptions: maxOptions,
     options: [
@@ -273,7 +279,7 @@ const optionsWithMetadata = [
   }
 ];
 
-const configPreview = ThekSelect.init('#config-preview-container', {
+const configPreview = ThekSelectDom.init('#config-preview-container', {
   placeholder: 'Custom preview...',
   options: optionsWithMetadata,
   multiple: true

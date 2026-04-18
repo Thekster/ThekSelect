@@ -1,5 +1,6 @@
 declare module 'thekselect' {
-  export { ThekSelect, type ThekSelectHandle } from '../../thekselect/src/core/thekselect';
+  export { ThekSelect } from '../../thekselect/src/core/thekselect';
+  export { ThekSelectDom, type ThekSelectHandle } from '../../thekselect/src/core/thekselect-dom';
   export type {
     ThekSelectConfig,
     ThekSelectOption,

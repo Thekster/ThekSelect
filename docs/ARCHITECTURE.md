@@ -5,7 +5,7 @@
 ThekSelect is a zero-dependency TypeScript select component for browsers. It is split into two layers:
 
 - **Reusable core** (`ThekSelect`) — state and selection logic that does not require binding to a DOM element, but still targets browser-like environments.
-- **DOM layer** (`ThekSelectDom`) — a subclass of `ThekSelect` that wires the core to a rendered widget. Created via the static `ThekSelect.init(element, config)` factory.
+- **DOM layer** (`ThekSelectDom`) — a subclass of `ThekSelect` that wires the core to a rendered widget. Created via the static `ThekSelectDom.init(element, config)` factory.
 
 CSS themes are distributed as importable CSS files and are entirely optional.
 
@@ -14,12 +14,12 @@ CSS themes are distributed as importable CSS files and are entirely optional.
 ```
 ┌─────────────────────────────────────────────────────┐
 │                   Consumer Code                      │
-│  ThekSelect.init(el, config)  /  new ThekSelect(cfg) │
+│  ThekSelectDom.init(el, config)  /  new ThekSelect(cfg) │
 └────────────────────┬────────────────────────────────┘
                      │
           ┌──────────▼──────────┐
           │   ThekSelectDom     │  (DOM subclass — unexported)
-          │  ThekSelect.init()  │
+          │  ThekSelectDom.init()  │
           └──────────┬──────────┘
                      │ extends
           ┌──────────▼──────────┐
@@ -106,7 +106,7 @@ This directory contains stateless functional utilities used by `DomRenderer`:
 
 `ThekSelect` is the exported reusable core class. It composes `StateManager` and `ThekSelectEventEmitter`, exposes the public action API (`open`, `close`, `toggle`, `select`, `setValue`, `search`, etc.), and calls the pure logic functions.
 
-`ThekSelectDom` is an unexported subclass. It is the only class instantiated by `ThekSelect.init()`. It:
+`ThekSelectDom` is an unexported subclass. It is the only class instantiated by `ThekSelectDom.init()`. It:
 
 - Creates `DomRenderer` and subscribes to `StateManager` to re-render on every state change.
 - Wires DOM events (click, keydown, input, focus, blur) to the core action methods.

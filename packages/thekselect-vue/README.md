@@ -98,7 +98,7 @@ All [`ThekSelectConfig`](https://github.com/Thekster/ThekSelect#configuration) o
 
 > **Init-time props:** `multiple`, `searchable`, `disabled`, `canCreate`, `loadOptions`, and other structural props are read once at mount. Changing them after mount has no effect. To reconfigure, destroy and reinitialize the component (e.g. with a `:key` change). Props with runtime setters (`modelValue`, `height`, `maxOptions`, `renderOption`) update the instance reactively.
 
-> **TypeScript limitation:** Vue SFC props cannot carry the core library's generic `T` through `displayField`, `valueField`, or the exposed `instance` type. If you use a custom option shape, the core package keeps the stronger typing (`ThekSelect.init<MyOption>(...)`), but the Vue wrapper currently treats those prop names as plain strings and may require local casts around wrapper refs or callbacks.
+> **TypeScript limitation:** Vue SFC props cannot carry the core library's generic `T` through `displayField`, `valueField`, or the exposed `instance` type. If you use a custom option shape, the core package keeps the stronger typing (`ThekSelectDom.init<MyOption>(...)`), but the Vue wrapper currently treats those prop names as plain strings and may require local casts around wrapper refs or callbacks.
 
 ## Events
 

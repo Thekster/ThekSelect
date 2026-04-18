@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 function flush(ms: number = 0): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -20,7 +20,7 @@ describe('TDD: review hardening regressions', () => {
 
   it('renders string option labels as text, not executable HTML', () => {
     const dangerousLabel = '<img src=x onerror=alert(1)>safe';
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: [{ value: 'xss', label: dangerousLabel }]
     });
 
@@ -50,7 +50,7 @@ describe('TDD: review hardening regressions', () => {
       return Promise.resolve([]);
     });
 
-    ThekSelect.init(container, { loadOptions, debounce: 0 });
+    ThekSelectDom.init(container, { loadOptions, debounce: 0 });
     const input = document.querySelector('.thek-input') as HTMLInputElement;
 
     input.value = 'a';
@@ -86,7 +86,7 @@ describe('TDD: review hardening regressions', () => {
       return Promise.resolve([]);
     });
 
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       multiple: true,
       loadOptions,
       debounce: 0
@@ -115,7 +115,7 @@ describe('TDD: review hardening regressions', () => {
     vi.useFakeTimers();
     const loadOptions = vi.fn().mockResolvedValue([]);
 
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       loadOptions,
       debounce: 50
     });

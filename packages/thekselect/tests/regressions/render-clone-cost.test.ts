@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 /**
  * Regression: render() called getState() twice per state change notification —
@@ -21,7 +21,7 @@ describe('Render clone cost', () => {
     document.body.innerHTML = '';
   });
 
-  function countGetStateCallsDuringNotify(ts: ReturnType<typeof ThekSelect.init>): () => number {
+  function countGetStateCallsDuringNotify(ts: ReturnType<typeof ThekSelectDom.init>): () => number {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sm = (ts as any).stateManager;
     const spy = vi.spyOn(sm, 'getState');
@@ -42,7 +42,7 @@ describe('Render clone cost', () => {
   }
 
   it('calls getState() at most once during the notification that drives render', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: [
         { value: '1', label: 'One' },
         { value: '2', label: 'Two' }
@@ -61,7 +61,7 @@ describe('Render clone cost', () => {
   });
 
   it('calls getState() at most once when a selection triggers a render', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: [
         { value: '1', label: 'One' },
         { value: '2', label: 'Two' }

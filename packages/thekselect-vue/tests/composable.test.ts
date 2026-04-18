@@ -12,7 +12,7 @@ const mockInstance = {
 };
 
 vi.mock('thekselect', () => ({
-  ThekSelect: {
+  ThekSelectDom: {
     init: vi.fn(() => mockInstance)
   }
 }));
@@ -23,7 +23,7 @@ describe('useThekSelect', () => {
   });
 
   it('initializes ThekSelect with the element and options on mount', async () => {
-    const { ThekSelect } = await import('thekselect');
+    const { ThekSelectDom } = await import('thekselect');
     const TestComponent = defineComponent({
       setup() {
         const el = ref<HTMLElement | null>(null);
@@ -36,8 +36,8 @@ describe('useThekSelect', () => {
     const wrapper = mount(TestComponent, { attachTo: document.body });
     await nextTick();
 
-    expect(ThekSelect.init).toHaveBeenCalledOnce();
-    expect(ThekSelect.init).toHaveBeenCalledWith(expect.any(HTMLElement), { multiple: true });
+    expect(ThekSelectDom.init).toHaveBeenCalledOnce();
+    expect(ThekSelectDom.init).toHaveBeenCalledWith(expect.any(HTMLElement), { multiple: true });
     wrapper.unmount();
   });
 
@@ -85,7 +85,7 @@ describe('useThekSelect', () => {
   });
 
   it('does not initialize when the element ref is null', async () => {
-    const { ThekSelect } = await import('thekselect');
+    const { ThekSelectDom } = await import('thekselect');
     const TestComponent = defineComponent({
       setup() {
         const el = ref<HTMLElement | null>(null);
@@ -99,7 +99,7 @@ describe('useThekSelect', () => {
     const wrapper = mount(TestComponent, { attachTo: document.body });
     await nextTick();
 
-    expect(ThekSelect.init).not.toHaveBeenCalled();
+    expect(ThekSelectDom.init).not.toHaveBeenCalled();
     wrapper.unmount();
   });
 

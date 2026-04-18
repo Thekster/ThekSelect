@@ -167,14 +167,14 @@ export function renderOptionsContent<T extends object = ThekSelectOption>(
     return v != null && v.toString().toLowerCase() === state.inputValue.toLowerCase();
   });
   const canCreate = config.canCreate && !!state.inputValue && !exactMatch;
-  const shouldVirtualize =
-    config.virtualize && filteredOptions.length >= config.virtualThreshold && !canCreate;
+  const shouldVirtualize = config.virtualize && filteredOptions.length >= config.virtualThreshold;
   const itemHeight = Math.max(20, config.virtualItemHeight);
   const overscan = Math.max(0, config.virtualOverscan);
 
   if (shouldVirtualize) {
+    const totalItems = filteredOptions.length + (canCreate ? 1 : 0);
     const viewportHeight = list.clientHeight || 240;
-    if (alignFocused && state.focusedIndex >= 0 && state.focusedIndex < filteredOptions.length) {
+    if (alignFocused && state.focusedIndex >= 0 && state.focusedIndex < totalItems) {
       const focusedTop = state.focusedIndex * itemHeight;
       const focusedBottom = focusedTop + itemHeight;
       const currentTop = list.scrollTop;
@@ -189,7 +189,7 @@ export function renderOptionsContent<T extends object = ThekSelectOption>(
     const scrollTop = preservedScrollTop ?? list.scrollTop;
     const start = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
     const end = Math.min(
-      filteredOptions.length,
+      totalItems,
       Math.ceil((scrollTop + viewportHeight) / itemHeight) + overscan
     );
 
@@ -198,11 +198,7 @@ export function renderOptionsContent<T extends object = ThekSelectOption>(
     }
 
     for (const child of Array.from(list.children) as HTMLLIElement[]) {
-      if (
-        child.classList.contains('thek-loading') ||
-        child.classList.contains('thek-no-results') ||
-        child.classList.contains('thek-create')
-      ) {
+      if (child.classList.contains('thek-loading') || child.classList.contains('thek-no-results')) {
         list.removeChild(child);
       }
     }
@@ -212,22 +208,53 @@ export function renderOptionsContent<T extends object = ThekSelectOption>(
     syncVirtualSpacerHeight(topSpacer, start * itemHeight);
 
     const existingOptions = Array.from(
-      list.querySelectorAll<HTMLLIElement>(
-        '.thek-option:not(.thek-loading):not(.thek-no-results):not(.thek-create)'
-      )
+      list.querySelectorAll<HTMLLIElement>('.thek-option:not(.thek-loading):not(.thek-no-results)')
     );
     const needed = end - start;
 
     for (let offset = 0; offset < needed; offset++) {
       const optionIndex = start + offset;
-      const option = filteredOptions[optionIndex];
+      const isCreate = canCreate && optionIndex === filteredOptions.length;
       let li = existingOptions[offset];
-      if (li) {
-        updateOptionAttrs(li, option, optionIndex, state, config, id);
-        updateOptionContent(li, option, config, callbacks);
+
+      if (isCreate) {
+        if (!li || li.dataset.key !== '__create__') {
+          const createLi = document.createElement('li');
+          createLi.className = 'thek-option thek-create';
+          createLi.setAttribute('role', 'option');
+          createLi.setAttribute('aria-selected', 'false');
+          createLi.dataset.key = '__create__';
+          createLi.onclick = (e) => {
+            e.stopPropagation();
+            callbacks.onCreate(state.inputValue);
+          };
+          if (li) {
+            list.replaceChild(createLi, li);
+            existingOptions[offset] = createLi;
+            li = createLi;
+          } else {
+            list.insertBefore(createLi, bottomSpacer);
+            li = createLi;
+          }
+        }
+        li.textContent = config.createText.replace('{%t}', state.inputValue);
+        li.classList.toggle('thek-focused', state.focusedIndex === filteredOptions.length);
       } else {
-        li = createOptionItem(option, optionIndex, state, config, callbacks, id);
-        list.insertBefore(li, bottomSpacer);
+        const option = filteredOptions[optionIndex];
+        if (!li || li.dataset.key === '__create__') {
+          const newLi = createOptionItem(option, optionIndex, state, config, callbacks, id);
+          if (li) {
+            list.replaceChild(newLi, li);
+            existingOptions[offset] = newLi;
+            li = newLi;
+          } else {
+            list.insertBefore(newLi, bottomSpacer);
+            li = newLi;
+          }
+        } else {
+          updateOptionAttrs(li, option, optionIndex, state, config, id);
+          updateOptionContent(li, option, config, callbacks);
+        }
       }
     }
 
@@ -235,7 +262,7 @@ export function renderOptionsContent<T extends object = ThekSelectOption>(
       existingOptions[index].remove();
     }
 
-    syncVirtualSpacerHeight(bottomSpacer, (filteredOptions.length - end) * itemHeight);
+    syncVirtualSpacerHeight(bottomSpacer, (totalItems - end) * itemHeight);
     if (list.firstChild !== topSpacer) list.insertBefore(topSpacer, list.firstChild);
     if (list.lastChild !== bottomSpacer) list.appendChild(bottomSpacer);
   } else {

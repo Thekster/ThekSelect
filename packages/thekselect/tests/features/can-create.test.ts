@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('ThekSelect canCreate', () => {
   let container: HTMLDivElement;
@@ -10,7 +10,7 @@ describe('ThekSelect canCreate', () => {
   });
 
   it('should allow creating a new option', async () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       canCreate: true,
       options: [{ value: '1', label: 'Existing' }]
     });

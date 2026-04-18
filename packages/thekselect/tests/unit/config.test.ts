@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('Config field validation', () => {
   afterEach(() => {
@@ -10,7 +10,7 @@ describe('Config field validation', () => {
     document.body.innerHTML = '<div id="c"></div>';
     const el = document.getElementById('c') as HTMLElement;
     expect(() =>
-      ThekSelect.init(el, {
+      ThekSelectDom.init(el, {
         valueField: '',
         options: [{ value: '1', label: 'One' }]
       })
@@ -21,7 +21,7 @@ describe('Config field validation', () => {
     document.body.innerHTML = '<div id="c"></div>';
     const el = document.getElementById('c') as HTMLElement;
     expect(() =>
-      ThekSelect.init(el, {
+      ThekSelectDom.init(el, {
         displayField: '',
         options: [{ value: '1', label: 'One' }]
       })
@@ -33,7 +33,7 @@ describe('Config field validation', () => {
     const el = document.getElementById('c') as HTMLElement;
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-    ThekSelect.init(el, {
+    ThekSelectDom.init(el, {
       valueField: 'id',
       options: [{ value: '1', label: 'One' }]
     });
@@ -49,7 +49,7 @@ describe('Config field validation', () => {
     const el = document.getElementById('c') as HTMLElement;
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-    ThekSelect.init(el, {
+    ThekSelectDom.init(el, {
       displayField: 'name',
       options: [{ value: '1', label: 'One' }]
     });
@@ -65,7 +65,7 @@ describe('Config field validation', () => {
     const el = document.getElementById('c') as HTMLElement;
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-    ThekSelect.init(el, {
+    ThekSelectDom.init(el, {
       options: [{ value: '1', label: 'One' }]
     });
 

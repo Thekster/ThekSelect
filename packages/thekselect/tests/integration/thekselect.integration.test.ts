@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('ThekSelect', () => {
   let selectEl: HTMLSelectElement;
@@ -15,13 +15,13 @@ describe('ThekSelect', () => {
   });
 
   it('should initialize and hide the original select', () => {
-    ThekSelect.init(selectEl);
+    ThekSelectDom.init(selectEl);
     expect(selectEl.style.display).toBe('none');
     expect(document.querySelector('.thek-select')).toBeTruthy();
   });
 
   it('should show options when clicked', () => {
-    ThekSelect.init(selectEl);
+    ThekSelectDom.init(selectEl);
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
 
@@ -30,7 +30,7 @@ describe('ThekSelect', () => {
   });
 
   it('should select an option when clicked', () => {
-    const ts = ThekSelect.init(selectEl);
+    const ts = ThekSelectDom.init(selectEl);
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
 
@@ -42,7 +42,7 @@ describe('ThekSelect', () => {
   });
 
   it('should filter options based on input', async () => {
-    ThekSelect.init(selectEl, { debounce: 0 });
+    ThekSelectDom.init(selectEl, { debounce: 0 });
     const input = document.querySelector('.thek-input') as HTMLInputElement;
     input.value = 'Option 1';
     input.dispatchEvent(new Event('input'));
@@ -57,7 +57,7 @@ describe('ThekSelect', () => {
   it('should support multi-select', () => {
     selectEl.multiple = true;
     Array.from(selectEl.options).forEach((opt) => (opt.selected = false));
-    const ts = ThekSelect.init(selectEl);
+    const ts = ThekSelectDom.init(selectEl);
 
     let options = document.querySelectorAll('.thek-option');
     (options[0] as HTMLElement).click();

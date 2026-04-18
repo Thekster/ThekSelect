@@ -1,5 +1,13 @@
 # Release Notes
 
+## 2.1.1 / thekselect-vue 2.1.1 (2026-04-18)
+
+### Fixed
+
+- **Tree-Shaking Violation** — The core `ThekSelect` base class no longer statically depends on the `DomRenderer`. DOM initialization logic has been strictly decoupled into `ThekSelectDom.init()`. Headless and SSR consumers can now import the core library with zero overhead for the unused DOM payload.
+- **Virtualization Silent Abort** — Fixed a severe performance bug where virtualization was dynamically disabled whenever the searchable input was open with `canCreate: true`. The injected create-option is now correctly recycled as part of the virtualized node sequence, restoring 60fps rendering for thousands of dynamic items.
+- **Vue Type Resolution** — Fixed `vue-tsc` resolution failures within the `thekselect-vue` wrapper caused by the headless/DOM decoupling. The local wrapper correctly imports and re-exports the separated `ThekSelectDom` component.
+
 ## 2.1.0 / thekselect-vue 2.1.0 (2026-04-18)
 
 ### Performance

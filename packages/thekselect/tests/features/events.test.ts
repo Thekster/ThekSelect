@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('ThekSelect Events', () => {
   let selectEl: HTMLSelectElement;
@@ -15,7 +15,7 @@ describe('ThekSelect Events', () => {
   });
 
   it('should emit open and close events', () => {
-    const ts = ThekSelect.init(selectEl);
+    const ts = ThekSelectDom.init(selectEl);
     const onOpen = vi.fn();
     const onClose = vi.fn();
 
@@ -32,7 +32,7 @@ describe('ThekSelect Events', () => {
   });
 
   it('should emit change event when an option is selected', () => {
-    const ts = ThekSelect.init(selectEl);
+    const ts = ThekSelectDom.init(selectEl);
     const onChange = vi.fn();
     ts.on('change', onChange);
 
@@ -46,7 +46,7 @@ describe('ThekSelect Events', () => {
   });
 
   it('should emit search event when typing', async () => {
-    const ts = ThekSelect.init(selectEl, { debounce: 0 });
+    const ts = ThekSelectDom.init(selectEl, { debounce: 0 });
     const onSearch = vi.fn();
     ts.on('search', onSearch);
 
@@ -64,7 +64,7 @@ describe('ThekSelect Events', () => {
     // Clear initial selection that JSDOM might have set
     Array.from(selectEl.options).forEach((opt) => (opt.selected = false));
 
-    const ts = ThekSelect.init(selectEl);
+    const ts = ThekSelectDom.init(selectEl);
     const onTagAdded = vi.fn();
     const onTagRemoved = vi.fn();
 

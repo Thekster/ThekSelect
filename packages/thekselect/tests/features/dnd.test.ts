@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('ThekSelect Drag and Drop', () => {
   let container: HTMLDivElement;
@@ -10,7 +10,7 @@ describe('ThekSelect Drag and Drop', () => {
   });
 
   it('should reorder tags via drag and drop', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       multiple: true,
       options: [
         { value: '1', label: 'One', selected: true },
@@ -43,7 +43,7 @@ describe('ThekSelect Drag and Drop', () => {
   });
 
   it('reorders by stable tag value even if dataset indices are stale', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       multiple: true,
       options: [
         { value: '1', label: 'One', selected: true },

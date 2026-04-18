@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('ARIA state correctness', () => {
   let container: HTMLDivElement;
@@ -16,7 +16,7 @@ describe('ARIA state correctness', () => {
   // ── aria-activedescendant ─────────────────────────────────────────────────
 
   it('sets aria-activedescendant on the control in non-searchable mode when navigating', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: false,
       options: [
         { value: '1', label: 'One' },
@@ -35,7 +35,7 @@ describe('ARIA state correctness', () => {
   });
 
   it('updates aria-activedescendant on the control as focus moves in non-searchable mode', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: false,
       options: [
         { value: '1', label: 'One' },
@@ -55,7 +55,7 @@ describe('ARIA state correctness', () => {
   });
 
   it('clears aria-activedescendant from the control when dropdown closes', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: false,
       options: [{ value: '1', label: 'One' }]
     });
@@ -68,8 +68,8 @@ describe('ARIA state correctness', () => {
     expect(control.getAttribute('aria-activedescendant')).toBeNull();
   });
 
-  it('sets aria-activedescendant on the input (not control) in searchable mode', () => {
-    ThekSelect.init(container, {
+  it('sets aria-activedescendant on the control (even in searchable mode)', () => {
+    ThekSelectDom.init(container, {
       searchable: true,
       options: [
         { value: '1', label: 'One' },
@@ -77,20 +77,17 @@ describe('ARIA state correctness', () => {
       ]
     });
     const control = document.querySelector('.thek-control') as HTMLElement;
-    const input = document.querySelector('.thek-input') as HTMLInputElement;
 
     control.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
 
     const firstOption = document.querySelector('.thek-option') as HTMLElement;
-    expect(input.getAttribute('aria-activedescendant')).toBe(firstOption.id);
-    // Control should NOT have aria-activedescendant in searchable mode
-    expect(control.getAttribute('aria-activedescendant')).toBeNull();
+    expect(control.getAttribute('aria-activedescendant')).toBe(firstOption.id);
   });
 
   // ── aria-disabled ─────────────────────────────────────────────────────────
 
   it('disabled options have aria-disabled="true"', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: [
         { value: '1', label: 'One', disabled: true },
         { value: '2', label: 'Two' }
@@ -105,7 +102,7 @@ describe('ARIA state correctness', () => {
   });
 
   it('non-disabled options do not have aria-disabled', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'One' }]
     });
     const control = document.querySelector('.thek-control') as HTMLElement;
@@ -118,7 +115,7 @@ describe('ARIA state correctness', () => {
   // ── tag-remove button ─────────────────────────────────────────────────────
 
   it('tag-remove elements are <button> elements', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       multiple: true,
       options: [
         { value: '1', label: 'Apple', selected: true },
@@ -134,7 +131,7 @@ describe('ARIA state correctness', () => {
   });
 
   it('tag-remove buttons have type="button" to prevent form submission', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       multiple: true,
       options: [{ value: '1', label: 'Apple', selected: true }]
     });
@@ -144,7 +141,7 @@ describe('ARIA state correctness', () => {
   });
 
   it('tag-remove buttons have an aria-label containing the option label', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       multiple: true,
       options: [
         { value: '1', label: 'Apple', selected: true },
@@ -158,7 +155,7 @@ describe('ARIA state correctness', () => {
   });
 
   it('tag-remove button removes the tag when clicked', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       multiple: true,
       options: [
         { value: '1', label: 'Apple', selected: true },
@@ -175,7 +172,7 @@ describe('ARIA state correctness', () => {
   // ── i18n configurable strings ─────────────────────────────────────────────
 
   it('uses custom noResultsText when provided', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: [],
       noResultsText: 'Keine Ergebnisse'
     });
@@ -186,7 +183,7 @@ describe('ARIA state correctness', () => {
   });
 
   it('uses default noResultsText when not provided', () => {
-    ThekSelect.init(container, { options: [] });
+    ThekSelectDom.init(container, { options: [] });
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
 
@@ -194,7 +191,7 @@ describe('ARIA state correctness', () => {
   });
 
   it('uses custom searchPlaceholder when provided', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: [],
       searchable: true,
       searchPlaceholder: 'Suchen...'
@@ -206,7 +203,7 @@ describe('ARIA state correctness', () => {
 
   it('uses custom loadingText when provided', async () => {
     let resolve!: (v: { value: string; label: string }[]) => void;
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       debounce: 0,
       loadingText: 'Wird geladen...',
       loadOptions: () =>
@@ -224,9 +221,9 @@ describe('ARIA state correctness', () => {
     resolve([]);
   });
 
-  it('marks the searchable combobox and listbox as busy while loading', async () => {
+  it('marks the control and listbox as busy while loading', async () => {
     let resolve!: (v: { value: string; label: string }[]) => void;
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: true,
       debounce: 0,
       loadOptions: () =>
@@ -236,23 +233,24 @@ describe('ARIA state correctness', () => {
     });
 
     const input = document.querySelector('.thek-input') as HTMLInputElement;
+    const control = document.querySelector('.thek-control') as HTMLElement;
     const listbox = document.querySelector('[role="listbox"]') as HTMLElement;
     input.value = 'x';
     input.dispatchEvent(new Event('input'));
     await new Promise((r) => setTimeout(r, 10));
 
-    expect(input.getAttribute('aria-busy')).toBe('true');
+    expect(control.getAttribute('aria-busy')).toBe('true');
     expect(listbox.getAttribute('aria-busy')).toBe('true');
 
     resolve([]);
     await new Promise((r) => setTimeout(r, 10));
 
-    expect(input.getAttribute('aria-busy')).toBe('false');
+    expect(control.getAttribute('aria-busy')).toBe('false');
     expect(listbox.getAttribute('aria-busy')).toBe('false');
   });
 
   it('marks the non-searchable combobox and listbox as not busy by default', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: false,
       options: [{ value: '1', label: 'One' }]
     });
@@ -265,38 +263,35 @@ describe('ARIA state correctness', () => {
 
   // ── combobox role placement ───────────────────────────────────────────────
 
-  it('places role="combobox" on the input element in searchable mode', () => {
-    ThekSelect.init(container, { searchable: true, options: [] });
+  it('places role="combobox" on the control element even in searchable mode', () => {
+    ThekSelectDom.init(container, { searchable: true, options: [] });
     const input = document.querySelector('.thek-input') as HTMLInputElement;
     const control = document.querySelector('.thek-control') as HTMLElement;
-    expect(input.getAttribute('role')).toBe('combobox');
-    expect(control.getAttribute('role')).toBeNull();
+    expect(control.getAttribute('role')).toBe('combobox');
+    expect(input.getAttribute('role')).toBe('textbox');
   });
 
-  it('places aria-expanded on the input in searchable mode', () => {
-    ThekSelect.init(container, { searchable: true, options: [] });
-    const input = document.querySelector('.thek-input') as HTMLInputElement;
-    expect(input.getAttribute('aria-expanded')).toBe('false');
+  it('places aria-expanded on the control in searchable mode', () => {
+    ThekSelectDom.init(container, { searchable: true, options: [] });
     const control = document.querySelector('.thek-control') as HTMLElement;
-    expect(control.getAttribute('aria-expanded')).toBeNull();
+    expect(control.getAttribute('aria-expanded')).toBe('false');
   });
 
-  it('updates aria-expanded on the input when dropdown opens in searchable mode', () => {
-    ThekSelect.init(container, { searchable: true, options: [{ value: '1', label: 'One' }] });
-    const input = document.querySelector('.thek-input') as HTMLInputElement;
+  it('updates aria-expanded on the control when dropdown opens in searchable mode', () => {
+    ThekSelectDom.init(container, { searchable: true, options: [{ value: '1', label: 'One' }] });
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
-    expect(input.getAttribute('aria-expanded')).toBe('true');
+    expect(control.getAttribute('aria-expanded')).toBe('true');
   });
 
   it('places role="combobox" on the control div in non-searchable mode', () => {
-    ThekSelect.init(container, { searchable: false, options: [] });
+    ThekSelectDom.init(container, { searchable: false, options: [] });
     const control = document.querySelector('.thek-control') as HTMLElement;
     expect(control.getAttribute('role')).toBe('combobox');
   });
 
   it('marks the widget disabled in searchable mode', () => {
-    ThekSelect.init(container, { searchable: true, disabled: true, options: [] });
+    ThekSelectDom.init(container, { searchable: true, disabled: true, options: [] });
     const control = document.querySelector('.thek-control') as HTMLElement;
     const input = document.querySelector('.thek-input') as HTMLInputElement;
     expect(control.getAttribute('aria-disabled')).toBe('true');
@@ -308,7 +303,7 @@ describe('ARIA state correctness', () => {
   // ── aria-multiselectable ──────────────────────────────────────────────────
 
   it('listbox has aria-multiselectable="true" in multiple mode', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       multiple: true,
       options: [{ value: '1', label: 'One' }]
     });
@@ -317,7 +312,7 @@ describe('ARIA state correctness', () => {
   });
 
   it('listbox does not have aria-multiselectable in single mode', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       multiple: false,
       options: [{ value: '1', label: 'One' }]
     });

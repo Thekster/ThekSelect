@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('ThekSelect Global Defaults', () => {
   beforeEach(() => {
@@ -17,7 +17,7 @@ describe('ThekSelect Global Defaults', () => {
       virtualize: true
     });
 
-    ThekSelect.init('#a', {
+    ThekSelectDom.init('#a', {
       options: [{ value: '1', label: 'One' }]
     });
 
@@ -30,7 +30,7 @@ describe('ThekSelect Global Defaults', () => {
       height: 52
     });
 
-    ThekSelect.init('#b', {
+    ThekSelectDom.init('#b', {
       height: '36px',
       options: [{ value: '1', label: 'One' }]
     });
@@ -43,7 +43,7 @@ describe('ThekSelect Global Defaults', () => {
     ThekSelect.setDefaults({ height: 52 });
     ThekSelect.resetDefaults();
 
-    ThekSelect.init('#c', { options: [{ value: '1', label: 'One' }] });
+    ThekSelectDom.init('#c', { options: [{ value: '1', label: 'One' }] });
 
     const wrapper = document.querySelector('.thek-select') as HTMLElement;
     expect(wrapper.style.getPropertyValue('--thek-input-height')).toBe('40px');

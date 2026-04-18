@@ -18,7 +18,7 @@ const mockInstance = {
 };
 
 vi.mock('thekselect', () => ({
-  ThekSelect: {
+  ThekSelectDom: {
     init: vi.fn(() => mockInstance)
   }
 }));
@@ -34,16 +34,16 @@ describe('ThekSelect.vue', () => {
     wrapper.unmount();
   });
 
-  it('calls ThekSelect.init with the element and props on mount', async () => {
-    const { ThekSelect } = await import('thekselect');
+  it('calls ThekSelectDom.init with the element and props on mount', async () => {
+    const { ThekSelectDom } = await import('thekselect');
     const wrapper = mount(ThekSelectComponent, {
       props: { options: [{ value: 'a', label: 'A' }], multiple: true },
       attachTo: document.body
     });
     await nextTick();
 
-    expect(ThekSelect.init).toHaveBeenCalledOnce();
-    expect(ThekSelect.init).toHaveBeenCalledWith(
+    expect(ThekSelectDom.init).toHaveBeenCalledOnce();
+    expect(ThekSelectDom.init).toHaveBeenCalledWith(
       expect.any(HTMLElement),
       expect.objectContaining({ options: [{ value: 'a', label: 'A' }], multiple: true })
     );
@@ -150,14 +150,14 @@ describe('ThekSelect.vue', () => {
   });
 
   it('disables the core instance and renders loading UI when loading is true', async () => {
-    const { ThekSelect } = await import('thekselect');
+    const { ThekSelectDom } = await import('thekselect');
     const wrapper = mount(ThekSelectComponent, {
       props: { loading: true, disabled: false },
       attachTo: document.body
     });
     await nextTick();
 
-    expect(ThekSelect.init).toHaveBeenCalledWith(
+    expect(ThekSelectDom.init).toHaveBeenCalledWith(
       expect.any(HTMLElement),
       expect.objectContaining({ disabled: true })
     );

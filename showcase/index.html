@@ -143,7 +143,7 @@ npm run dev</pre
   &lt;option value="jp" disabled&gt;Japan (disabled)&lt;/option&gt;
 &lt;/select&gt;
 
-ThekSelect.init('#country-select');</pre
+ThekSelectDom.init('#country-select');</pre
                   >
                 </div>
                 <div>
@@ -159,8 +159,8 @@ ThekSelect.setDefaults({
   virtualize: true
 });
 
-ThekSelect.init('#first');
-ThekSelect.init('#second', { height: 52 });
+ThekSelectDom.init('#first');
+ThekSelectDom.init('#second', { height: 52 });
 ThekSelect.resetDefaults();</pre
                   >
                 </div>
@@ -199,7 +199,7 @@ ThekSelect.resetDefaults();</pre
   &lt;option value="jp" disabled&gt;Japan (disabled)&lt;/option&gt;
 &lt;/select&gt;
 
-ThekSelect.init('#quick-country-select');</pre
+ThekSelectDom.init('#quick-country-select');</pre
                     >
                   </div>
                 </div>
@@ -230,8 +230,8 @@ const demoOptions = [
 ];
 
 ThekSelect.setDefaults({ height: 44 });
-ThekSelect.init('#quick-defaults-first', { options: demoOptions });
-ThekSelect.init('#quick-defaults-second', { options: demoOptions, height: 56 });
+ThekSelectDom.init('#quick-defaults-first', { options: demoOptions });
+ThekSelectDom.init('#quick-defaults-second', { options: demoOptions, height: 56 });
 ThekSelect.resetDefaults();</pre
                     >
                   </div>
@@ -252,7 +252,7 @@ ThekSelect.resetDefaults();</pre
 
 &lt;script&gt;
   const { ThekSelect } = window.ThekSelect;
-  ThekSelect.init('#my-select');
+  ThekSelectDom.init('#my-select');
 &lt;/script&gt;</pre
                 >
               </div>
@@ -292,7 +292,7 @@ ThekSelect.resetDefaults();</pre
   &lt;option value="angular"&gt;Angular&lt;/option&gt;
 &lt;/select&gt;
 
-ThekSelect.init('#basic-select', {
+ThekSelectDom.init('#basic-select', {
   placeholder: 'Select a framework...'
 });</pre
                 >
@@ -331,7 +331,7 @@ ThekSelect.init('#basic-select', {
               <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
               <div class="code-snippet">
                 <pre>
-ThekSelect.init('#multi-select', {
+ThekSelectDom.init('#multi-select', {
   multiple: true,
   maxSelectedLabels: 3
 });</pre
@@ -361,7 +361,7 @@ ThekSelect.init('#multi-select', {
               <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
               <div class="code-snippet">
                 <pre>
-ThekSelect.init('#create-container', {
+ThekSelectDom.init('#create-container', {
   canCreate: true,
   multiple: true,
   createText: "Add skill: '{%t}'",
@@ -396,7 +396,7 @@ ThekSelect.init('#create-container', {
               <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
               <div class="code-snippet">
                 <pre>
-ThekSelect.init('#remote-container', {
+ThekSelectDom.init('#remote-container', {
   loadOptions: async (query) => {
     const res = await fetch(`https://api.github.com/search/users?q=${query}`);
     const data = await res.json();
@@ -439,7 +439,7 @@ const bigOptions = Array.from({ length: 5000 }, (_, i) => ({
   label: `Option ${i + 1}`
 }));
 
-ThekSelect.init('#virtual-container', {
+ThekSelectDom.init('#virtual-container', {
   options: bigOptions,
   searchable: true,
   virtualize: true,
@@ -499,7 +499,7 @@ ThekSelect.init('#virtual-container', {
               <div class="code-snippet">
                 <pre>
 // height accepts number(px) or CSS string
-ThekSelect.init('#el', { height: 36, multiple: true });</pre
+ThekSelectDom.init('#el', { height: 36, multiple: true });</pre
                 >
               </div>
             </div>
@@ -526,7 +526,7 @@ ThekSelect.init('#el', { height: 36, multiple: true });</pre
               <button class="toggle-code" onclick="toggleCode(this)">Show Code</button>
               <div class="code-snippet">
                 <pre>
-ThekSelect.init('#fields-container', {
+ThekSelectDom.init('#fields-container', {
   displayField: 'name',
   valueField: 'id',
   options: [

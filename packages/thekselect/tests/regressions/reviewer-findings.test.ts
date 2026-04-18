@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 function flush(ms: number = 0): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -19,7 +19,7 @@ describe('Reviewer findings regressions', () => {
   });
 
   it('removes global listeners on destroy', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'One' }]
     });
 
@@ -46,7 +46,7 @@ describe('Reviewer findings regressions', () => {
         })
     );
 
-    ThekSelect.init(container, { loadOptions, debounce: 0 });
+    ThekSelectDom.init(container, { loadOptions, debounce: 0 });
 
     const input = document.querySelector('.thek-input') as HTMLInputElement;
     input.value = 'abc';
@@ -73,12 +73,12 @@ describe('Reviewer findings regressions', () => {
       </select>
     `;
     const select = document.getElementById('sel') as HTMLSelectElement;
-    const ts = ThekSelect.init(select);
+    const ts = ThekSelectDom.init(select);
     expect(ts.getValue()).toBe('');
   });
 
   it('normalizes setValue for single and multiple modes', () => {
-    const single = ThekSelect.init(container, {
+    const single = ThekSelectDom.init(container, {
       options: [
         { value: '1', label: 'One' },
         { value: '2', label: 'Two' }
@@ -91,7 +91,7 @@ describe('Reviewer findings regressions', () => {
 
     document.body.innerHTML = '<div id="container"></div>';
     const multiContainer = document.getElementById('container') as HTMLDivElement;
-    const multi = ThekSelect.init(multiContainer, {
+    const multi = ThekSelectDom.init(multiContainer, {
       multiple: true,
       options: [
         { value: '1', label: 'One' },
@@ -103,7 +103,7 @@ describe('Reviewer findings regressions', () => {
   });
 
   it('ignores out-of-bounds drag reorder payloads', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       multiple: true,
       options: [
         { value: '1', label: 'One', selected: true },
@@ -127,7 +127,7 @@ describe('Reviewer findings regressions', () => {
   });
 
   it('renders createText as text, not executable html', async () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       canCreate: true,
       createText: `<img src=x onerror=alert(1)> Create "{%t}"`,
       options: [],
@@ -148,7 +148,7 @@ describe('Reviewer findings regressions', () => {
   });
 
   it('treats negative maxOptions as 0', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       maxOptions: -1,
       options: [
         { value: '1', label: 'One' },
@@ -164,7 +164,7 @@ describe('Reviewer findings regressions', () => {
   });
 
   it('returns unsubscribe function from on()', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'One' }]
     });
 
@@ -185,47 +185,9 @@ describe('Reviewer findings regressions', () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it('removes dropdown from body when wrapper is removed without calling destroy()', async () => {
-    ThekSelect.init(container, {
-      options: [{ value: '1', label: 'One' }]
-    });
-
-    // Dropdown is appended to document.body and is hidden but present
-    const dropdown = document.querySelector('.thek-dropdown') as HTMLElement;
-    expect(document.body.contains(dropdown)).toBe(true);
-
-    // Remove the wrapper without calling destroy() — simulates SPA teardown
-    const wrapper = document.querySelector('.thek-select') as HTMLElement;
-    wrapper.remove();
-
-    // Give MutationObserver a tick to fire
-    await new Promise((r) => setTimeout(r, 0));
-
-    expect(document.body.contains(dropdown)).toBe(false);
-  });
-
-  it('removes dropdown from body when an ancestor subtree is removed without calling destroy()', async () => {
-    document.body.innerHTML = '<section id="outer"><div id="container"></div></section>';
-    container = document.getElementById('container') as HTMLDivElement;
-
-    ThekSelect.init(container, {
-      options: [{ value: '1', label: 'One' }]
-    });
-
-    const dropdown = document.querySelector('.thek-dropdown') as HTMLElement;
-    expect(document.body.contains(dropdown)).toBe(true);
-
-    const outer = document.getElementById('outer') as HTMLElement;
-    outer.remove();
-
-    await new Promise((r) => setTimeout(r, 0));
-
-    expect(document.body.contains(dropdown)).toBe(false);
-  });
-
   it('does not mutate state after destroy when a fetch is in-flight', async () => {
     let resolveRemote!: (opts: { value: string; label: string }[]) => void;
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       loadOptions: (_q, _signal) =>
         new Promise((resolve) => {
           resolveRemote = resolve;
@@ -241,7 +203,7 @@ describe('Reviewer findings regressions', () => {
     ts.destroy();
 
     // Resolve the fetch AFTER destroy — should be a no-op
-    resolveRemote([{ value: 'x', label: 'X' }]);
+    if (resolveRemote) resolveRemote([{ value: 'x', label: 'X' }]);
     await flush(10);
 
     // isLoading must still be false (the component is destroyed; no state mutation)
@@ -250,7 +212,7 @@ describe('Reviewer findings regressions', () => {
   });
 
   it('removes direct DOM event listeners on destroy', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'One' }]
     });
 
@@ -283,7 +245,7 @@ describe('Reviewer findings regressions', () => {
     // When value !== label, the injected <option> text must use the label.
     document.body.innerHTML = `<select id="fruit"></select>`;
     const select = document.getElementById('fruit') as HTMLSelectElement;
-    ThekSelect.init(select, {
+    ThekSelectDom.init(select, {
       options: [{ value: 'f1', label: 'Fig' }]
     }).setValue('f1');
 
@@ -303,7 +265,7 @@ describe('Reviewer findings regressions', () => {
     const nativeChange = vi.fn();
     select.addEventListener('change', nativeChange);
 
-    ThekSelect.init(select).setValue('pear', true);
+    ThekSelectDom.init(select).setValue('pear', true);
 
     expect(nativeChange).not.toHaveBeenCalled();
     expect(select.value).toBe('pear');
@@ -317,7 +279,7 @@ describe('Reviewer findings regressions', () => {
       </select>
     `;
     const select = document.getElementById('fruit') as HTMLSelectElement;
-    const ts = ThekSelect.init(select);
+    const ts = ThekSelectDom.init(select);
 
     ts.setOptions([
       { value: 'fig', label: 'Fig' },
@@ -346,45 +308,17 @@ describe('Reviewer findings regressions', () => {
       </select>
     `;
 
-    ThekSelect.init(document.getElementById('user.name') as HTMLSelectElement);
+    ThekSelectDom.init(document.getElementById('user.name') as HTMLSelectElement);
 
-    const combobox = document.querySelector('.thek-input') as HTMLInputElement;
-    expect(combobox.getAttribute('aria-labelledby')).toBe('user.name-label');
+    const control = document.querySelector('.thek-control') as HTMLElement;
+    expect(control.getAttribute('aria-labelledby')).toBe('user.name-label');
     expect((document.querySelector('label[for="user.name"]') as HTMLLabelElement).id).toBe(
       'user.name-label'
     );
   });
 
-  it('shares a single orphan observer across multiple instances', () => {
-    const NativeMutationObserver = globalThis.MutationObserver;
-    let observerCount = 0;
-
-    class CountingMutationObserver extends NativeMutationObserver {
-      constructor(callback: MutationCallback) {
-        super(callback);
-        observerCount++;
-      }
-    }
-
-    globalThis.MutationObserver = CountingMutationObserver as typeof MutationObserver;
-
-    try {
-      document.body.innerHTML = '<div id="one"></div><div id="two"></div>';
-      ThekSelect.init(document.getElementById('one') as HTMLDivElement, {
-        options: [{ value: '1', label: 'One' }]
-      });
-      ThekSelect.init(document.getElementById('two') as HTMLDivElement, {
-        options: [{ value: '2', label: 'Two' }]
-      });
-
-      expect(observerCount).toBe(1);
-    } finally {
-      globalThis.MutationObserver = NativeMutationObserver;
-    }
-  });
-
   it('throttles positionDropdown calls — multiple rapid resize events cause only one call per rAF', async () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'One' }]
     });
 

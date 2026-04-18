@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('ThekSelect UI Features', () => {
   let selectEl: HTMLSelectElement;
@@ -18,7 +18,7 @@ describe('ThekSelect UI Features', () => {
   });
 
   it('should render checkboxes in multiple mode', () => {
-    ThekSelect.init(selectEl, { multiple: true });
+    ThekSelectDom.init(selectEl, { multiple: true });
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
 
@@ -27,7 +27,7 @@ describe('ThekSelect UI Features', () => {
   });
 
   it('should show summary text when maxSelectedLabels is exceeded', () => {
-    ThekSelect.init(selectEl, { multiple: true, maxSelectedLabels: 2 });
+    ThekSelectDom.init(selectEl, { multiple: true, maxSelectedLabels: 2 });
 
     const options = document.querySelectorAll('.thek-option');
     (options[0] as HTMLElement).click();
@@ -46,7 +46,7 @@ describe('ThekSelect UI Features', () => {
   });
 
   it('should show loading spinner when isLoading is true', async () => {
-    ThekSelect.init(selectEl, {
+    ThekSelectDom.init(selectEl, {
       loadOptions: async () => {
         return new Promise((resolve) =>
           setTimeout(() => resolve([{ value: 'r1', label: 'Remote 1' }]), 100)
@@ -72,7 +72,7 @@ describe('ThekSelect UI Features', () => {
       label: `Option ${i + 1}`
     }));
 
-    ThekSelect.init('#virtual', {
+    ThekSelectDom.init('#virtual', {
       options,
       virtualize: true,
       virtualThreshold: 80,

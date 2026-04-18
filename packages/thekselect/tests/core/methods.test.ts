@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('ThekSelect Methods', () => {
   let selectEl: HTMLSelectElement;
@@ -16,7 +16,7 @@ describe('ThekSelect Methods', () => {
 
   it('getValue and setValue should work for single select', () => {
     selectEl.selectedIndex = -1;
-    const ts = ThekSelect.init(selectEl);
+    const ts = ThekSelectDom.init(selectEl);
     expect(ts.getValue()).toBeUndefined();
 
     ts.setValue('2');
@@ -27,7 +27,7 @@ describe('ThekSelect Methods', () => {
   it('getValue and setValue should work for multi-select', () => {
     selectEl.multiple = true;
     Array.from(selectEl.options).forEach((opt) => (opt.selected = false));
-    const ts = ThekSelect.init(selectEl);
+    const ts = ThekSelectDom.init(selectEl);
     expect(ts.getValue()).toEqual([]);
 
     ts.setValue(['1', '2']);
@@ -38,7 +38,7 @@ describe('ThekSelect Methods', () => {
   it('setOptions replaces the option list and re-renders', () => {
     const container = document.createElement('div');
     document.body.appendChild(container);
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'One' }]
     });
     const control = document.querySelector('.thek-control') as HTMLElement;
@@ -57,7 +57,7 @@ describe('ThekSelect Methods', () => {
   it('setOptions preserves selected values still present in the new list', () => {
     const container = document.createElement('div');
     document.body.appendChild(container);
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       multiple: true,
       options: [
         { value: '1', label: 'One' },
@@ -78,7 +78,7 @@ describe('ThekSelect Methods', () => {
   });
 
   it('destroy should remove the wrapper and show the original element', () => {
-    const ts = ThekSelect.init(selectEl);
+    const ts = ThekSelectDom.init(selectEl);
     expect(selectEl.style.display).toBe('none');
 
     ts.destroy();

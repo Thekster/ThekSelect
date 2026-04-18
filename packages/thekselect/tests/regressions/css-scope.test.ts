@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('CSS variable scoping', () => {
   let container: HTMLDivElement;
@@ -14,14 +14,14 @@ describe('CSS variable scoping', () => {
   });
 
   it('thek-select element is used as CSS variable scope (not :root)', () => {
-    ThekSelect.init(container, { options: [] });
+    ThekSelectDom.init(container, { options: [] });
     // The wrapper must carry the .thek-select class so scoped variables apply
     const wrapper = document.querySelector('.thek-select');
     expect(wrapper).not.toBeNull();
   });
 
   it('thek-dropdown element carries .thek-dropdown class for variable inheritance', () => {
-    ThekSelect.init(container, { options: [] });
+    ThekSelectDom.init(container, { options: [] });
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
     const dropdown = document.querySelector('.thek-dropdown');

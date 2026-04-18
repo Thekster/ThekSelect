@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('No external icon dependency', () => {
   let container: HTMLDivElement;
@@ -14,7 +14,7 @@ describe('No external icon dependency', () => {
   });
 
   it('indicator area contains an SVG, not a FontAwesome <i> element', () => {
-    ThekSelect.init(container, { options: [{ value: '1', label: 'One' }] });
+    ThekSelectDom.init(container, { options: [{ value: '1', label: 'One' }] });
     const indicators = document.querySelector('.thek-indicators') as HTMLElement;
 
     // Must NOT rely on FontAwesome classes
@@ -26,7 +26,7 @@ describe('No external icon dependency', () => {
   });
 
   it('search wrapper contains an SVG icon, not a FontAwesome <i> element', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: true,
       options: [{ value: '1', label: 'One' }]
     });
@@ -43,7 +43,7 @@ describe('No external icon dependency', () => {
 
   it('loading state shows an SVG spinner, not a FontAwesome <i> element', async () => {
     let resolve!: (v: { value: string; label: string }[]) => void;
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       debounce: 0,
       loadOptions: () =>
         new Promise((r) => {
@@ -64,7 +64,7 @@ describe('No external icon dependency', () => {
   });
 
   it('multi-select checkboxes use inline SVG, not FontAwesome', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       multiple: true,
       options: [
         { value: '1', label: 'One', selected: true },

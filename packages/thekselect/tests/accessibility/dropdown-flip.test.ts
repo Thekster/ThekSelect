@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 const originalGetBCR = HTMLElement.prototype.getBoundingClientRect;
 
@@ -39,7 +39,7 @@ describe('Dropdown flip / viewport-aware positioning', () => {
     // Control near the top of the viewport — plenty of space below
     mockControlRect({ top: 50, bottom: 90, left: 10, width: 200 });
 
-    ThekSelect.init(container, { options: [{ value: '1', label: 'One' }] });
+    ThekSelectDom.init(container, { options: [{ value: '1', label: 'One' }] });
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
 
@@ -54,7 +54,7 @@ describe('Dropdown flip / viewport-aware positioning', () => {
     mockControlRect({ top: 710, bottom: 750, left: 10, width: 200 });
 
     // JSDOM window.innerHeight defaults to 768; 750+240 > 768 so flip expected
-    ThekSelect.init(container, { options: [{ value: '1', label: 'One' }] });
+    ThekSelectDom.init(container, { options: [{ value: '1', label: 'One' }] });
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
 
@@ -67,7 +67,7 @@ describe('Dropdown flip / viewport-aware positioning', () => {
   it('adds thek-drop-up class when flipped above', () => {
     mockControlRect({ top: 710, bottom: 750, left: 10, width: 200 });
 
-    ThekSelect.init(container, { options: [{ value: '1', label: 'One' }] });
+    ThekSelectDom.init(container, { options: [{ value: '1', label: 'One' }] });
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
 
@@ -78,7 +78,7 @@ describe('Dropdown flip / viewport-aware positioning', () => {
   it('does NOT add thek-drop-up class when dropdown opens below', () => {
     mockControlRect({ top: 50, bottom: 90, left: 10, width: 200 });
 
-    ThekSelect.init(container, { options: [{ value: '1', label: 'One' }] });
+    ThekSelectDom.init(container, { options: [{ value: '1', label: 'One' }] });
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
 

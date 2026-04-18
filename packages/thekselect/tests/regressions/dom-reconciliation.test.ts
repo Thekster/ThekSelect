@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('DOM reconciliation — options list', () => {
   let container: HTMLDivElement;
@@ -14,7 +14,7 @@ describe('DOM reconciliation — options list', () => {
   });
 
   it('reuses existing option nodes when filter narrows the list', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: true,
       options: [
         { value: '1', label: 'Apple' },
@@ -47,7 +47,7 @@ describe('DOM reconciliation — options list', () => {
   });
 
   it('updates thek-selected class on existing nodes without recreating them', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: [
         { value: '1', label: 'One' },
         { value: '2', label: 'Two' }
@@ -71,7 +71,7 @@ describe('DOM reconciliation — options list', () => {
   });
 
   it('reuses the __create__ sentinel node across renders', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: true,
       canCreate: true,
       options: [{ value: '1', label: 'Apple' }],
@@ -100,7 +100,7 @@ describe('DOM reconciliation — options list', () => {
   });
 
   it('updates reused option node content when setRenderOption changes output', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       searchable: true,
       options: [{ value: '1', label: 'Apple' }]
     });
@@ -115,7 +115,7 @@ describe('DOM reconciliation — options list', () => {
   });
 
   it('removes orphan nodes when an option disappears from the filtered list', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: true,
       options: [
         { value: '1', label: 'Apple' },
@@ -150,7 +150,7 @@ describe('DOM reconciliation — selection container (tags)', () => {
   });
 
   it('reuses existing tag nodes when a second option is selected', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       multiple: true,
       options: [
         { value: '1', label: 'One' },
@@ -179,7 +179,7 @@ describe('DOM reconciliation — selection container (tags)', () => {
   });
 
   it('removes a tag node when its option is deselected', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       multiple: true,
       options: [
         { value: '1', label: 'One' },
@@ -207,7 +207,7 @@ describe('DOM reconciliation — selection container (tags)', () => {
   });
 
   it('switches to summary mode and back to tag mode without stale nodes', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       multiple: true,
       maxSelectedLabels: 2,
       options: [
@@ -253,7 +253,7 @@ describe('DOM reconciliation — selection container (tags)', () => {
 
   it('updates reused tag content and aria-label when option labels change', () => {
     const options = [{ value: '1', label: 'One', selected: true }];
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       multiple: true,
       options
     });

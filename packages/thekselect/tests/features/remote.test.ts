@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('ThekSelect Remote loading', () => {
   let container: HTMLDivElement;
@@ -15,7 +15,7 @@ describe('ThekSelect Remote loading', () => {
       { value: 'r2', label: 'Remote 2' }
     ]);
 
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       loadOptions,
       debounce: 0
     });
@@ -41,7 +41,7 @@ describe('ThekSelect Remote loading', () => {
     });
     const loadOptions = vi.fn().mockReturnValue(promise);
 
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       loadOptions,
       debounce: 0
     });
@@ -66,7 +66,7 @@ describe('ThekSelect Remote loading', () => {
   it('passes an AbortSignal as second argument to loadOptions', async () => {
     const loadOptions = vi.fn().mockResolvedValue([]);
 
-    ThekSelect.init(container, { loadOptions, debounce: 0 });
+    ThekSelectDom.init(container, { loadOptions, debounce: 0 });
 
     const input = document.querySelector('.thek-input') as HTMLInputElement;
     input.value = 'test';
@@ -90,7 +90,7 @@ describe('ThekSelect Remote loading', () => {
       });
     });
 
-    ThekSelect.init(container, { loadOptions, debounce: 0 });
+    ThekSelectDom.init(container, { loadOptions, debounce: 0 });
 
     const input = document.querySelector('.thek-input') as HTMLInputElement;
     input.value = 'a';
@@ -115,7 +115,7 @@ describe('ThekSelect Remote loading', () => {
       });
     });
 
-    ThekSelect.init(container, { loadOptions, debounce: 0 });
+    ThekSelectDom.init(container, { loadOptions, debounce: 0 });
 
     const input = document.querySelector('.thek-input') as HTMLInputElement;
     input.value = 'hello';
@@ -132,7 +132,7 @@ describe('ThekSelect Remote loading', () => {
 
   it('emits error event when loadOptions rejects with a real error', async () => {
     const networkError = new Error('network failure');
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       loadOptions: async (_q, _s) => {
         throw networkError;
       },
@@ -155,7 +155,7 @@ describe('ThekSelect Remote loading', () => {
   });
 
   it('does NOT emit error event when loadOptions is aborted', async () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       loadOptions: (_q, signal) =>
         new Promise((_resolve, reject) => {
           signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')));

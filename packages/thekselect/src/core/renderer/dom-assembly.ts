@@ -31,13 +31,11 @@ export function createRendererSkeleton<T extends object = ThekSelectOption>(
   const control = document.createElement('div');
   control.className = 'thek-control';
   control.setAttribute('tabindex', config.disabled ? '-1' : '0');
+  control.setAttribute('role', 'combobox');
+  control.setAttribute('aria-expanded', 'false');
+  control.setAttribute('aria-haspopup', 'listbox');
+  control.setAttribute('aria-controls', `${id}-list`);
   control.setAttribute('aria-disabled', config.disabled ? 'true' : 'false');
-  if (!config.searchable) {
-    control.setAttribute('role', 'combobox');
-    control.setAttribute('aria-expanded', 'false');
-    control.setAttribute('aria-haspopup', 'listbox');
-    control.setAttribute('aria-controls', `${id}-list`);
-  }
 
   const selectionContainer = document.createElement('div');
   selectionContainer.className = 'thek-selection';
@@ -129,11 +127,9 @@ export function createRendererSkeleton<T extends object = ThekSelectOption>(
     input.autocomplete = 'off';
     input.placeholder = config.searchPlaceholder;
     input.disabled = config.disabled;
-    input.setAttribute('role', 'combobox');
-    input.setAttribute('aria-expanded', 'false');
-    input.setAttribute('aria-haspopup', 'listbox');
-    input.setAttribute('aria-controls', `${id}-list`);
+    input.setAttribute('role', 'textbox');
     input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-controls', `${id}-list`);
     input.setAttribute('aria-disabled', config.disabled ? 'true' : 'false');
 
     searchWrapper.appendChild(input);

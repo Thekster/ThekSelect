@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('loadOptions: undefined safety', () => {
   let container: HTMLDivElement;
@@ -17,7 +17,7 @@ describe('loadOptions: undefined safety', () => {
 
   it('does not show a loading spinner when loadOptions is explicitly undefined', async () => {
     // Passing undefined should mean "no remote mode" — never show a loading indicator
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'One' }],
       loadOptions: undefined,
       debounce: 0
@@ -37,7 +37,7 @@ describe('loadOptions: undefined safety', () => {
   });
 
   it('uses local filtering (not remote) when loadOptions is explicitly undefined', async () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: [
         { value: '1', label: 'One' },
         { value: '2', label: 'Two' }
@@ -67,7 +67,7 @@ describe('loadOptions: undefined safety', () => {
     const globalLoader = vi.fn().mockResolvedValue([{ value: 'r1', label: 'Remote' }]);
     ThekSelect.setDefaults({ loadOptions: globalLoader });
 
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'Local' }],
       loadOptions: undefined,
       debounce: 0

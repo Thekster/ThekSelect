@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('syncOriginalElement option leak', () => {
   afterEach(() => {
@@ -15,7 +15,7 @@ describe('syncOriginalElement option leak', () => {
     const select = document.getElementById('sel') as HTMLSelectElement;
     const originalOptionCount = select.options.length; // 1
 
-    const ts = ThekSelect.init(select, { canCreate: true });
+    const ts = ThekSelectDom.init(select, { canCreate: true });
     // Create a new tag — this calls syncOriginalElement which injects a new <option>
     ts.setValue('new-tag');
 
@@ -37,7 +37,7 @@ describe('syncOriginalElement option leak', () => {
     const select = document.getElementById('sel') as HTMLSelectElement;
     const originalValues = Array.from(select.options).map((o) => o.value);
 
-    const ts = ThekSelect.init(select);
+    const ts = ThekSelectDom.init(select);
     ts.setValue('injected-1');
     ts.setValue('injected-2');
 
@@ -50,7 +50,7 @@ describe('syncOriginalElement option leak', () => {
   it('destroy() on a non-select element does not crash', () => {
     document.body.innerHTML = '<div id="d"></div>';
     const el = document.getElementById('d') as HTMLElement;
-    const ts = ThekSelect.init(el, { options: [{ value: '1', label: 'One' }] });
+    const ts = ThekSelectDom.init(el, { options: [{ value: '1', label: 'One' }] });
     ts.setValue('1');
     expect(() => ts.destroy()).not.toThrow();
   });

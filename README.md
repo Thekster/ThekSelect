@@ -1,6 +1,6 @@
 # ThekSelect
 
-A lightweight, framework-agnostic browser select library with native drag-and-drop tag reordering.
+A dependency-free select library for browser apps, with an official Vue 3 wrapper, themeable CSS, and built-in tag reordering.
 
 **[Live showcase →](https://thekster.github.io/ThekSelect/)**
 
@@ -11,16 +11,42 @@ A lightweight, framework-agnostic browser select library with native drag-and-dr
 | [`thekselect`](https://www.npmjs.com/package/thekselect) | Core library — vanilla JS, no dependencies                            |
 | [`thekselect-vue`](packages/thekselect-vue/README.md)    | Vue 3 wrapper — `<ThekSelect>` component + `useThekSelect` composable |
 
+## Positioning
+
+ThekSelect is not trying to be the broadest or oldest select library in the ecosystem.
+
+It is optimized for teams that want:
+
+- A dependency-free core they can reason about and ship in browser apps
+- A first-party Vue 3 wrapper instead of a third-party adapter
+- Theme control through plain CSS entrypoints and tokens
+- Built-in tag reordering for multi-select workflows
+- An explicit lifecycle with predictable setup and teardown
+
+If your priority is a more battle-tested general-purpose library with a larger community footprint, another library may be the safer default. If your priority is a smaller, more controlled select stack for your own apps, ThekSelect is designed for that use case.
+
 ## Features
 
+- Dependency-free core package
+- Official Vue 3 wrapper in the same monorepo
 - Reusable core with renderer/state separation
 - Search with debounce support
 - Single and multi-select modes
 - User-created tags (`canCreate`)
 - Remote async options (`loadOptions`)
 - Native HTML5 drag-and-drop for selected tags
+- CSS theme entrypoints plus token-based customization
+- Virtualized option rendering for large datasets
 - Keyboard and ARIA support for browser usage
 - Height control via `height` option (`number` or CSS string)
+
+## Choose ThekSelect When
+
+- You want a dependency-free core plus a supported Vue 3 wrapper
+- You need built-in tag reordering without a plugin layer
+- You want theme control through CSS files and custom properties
+- You prefer a smaller API surface that you can evolve with your own product needs
+- You are standardizing select behavior across internal or product-family apps
 
 ## Installation
 
@@ -57,14 +83,7 @@ The publish workflow uses **npm trusted publishing** and publishes the monorepo 
 
 This order is required because `thekselect-vue` expects the matching core release to already exist on npm.
 
-Manual fallback from a local terminal:
-
-```bash
-npm run release:check
-npm publish --access public
-```
-
-Use local `npm publish` only as a fallback when repository ownership and npm permissions are confirmed.
+Local `npm publish` should be treated as a fallback path, not the default release flow.
 
 ## CSS Themes
 
@@ -127,9 +146,9 @@ Customize tokens with plain CSS:
 ```
 
 ```js
-import { ThekSelect } from 'thekselect';
+import { ThekSelectDom } from 'thekselect';
 
-const select = ThekSelect.init('#my-select', {
+const select = ThekSelectDom.init('#my-select', {
   placeholder: 'Select an option...'
 });
 ```
@@ -146,8 +165,8 @@ const select = ThekSelect.init('#my-select', {
 </select>
 
 <script>
-  const { ThekSelect } = window.ThekSelect;
-  ThekSelect.init('#my-select');
+  const { ThekSelectDom } = window.ThekSelect;
+  ThekSelectDom.init('#my-select');
 </script>
 ```
 
@@ -166,9 +185,9 @@ If options already exist in your native `<select>`, initialize directly from it:
 ```
 
 ```js
-import { ThekSelect } from 'thekselect';
+import { ThekSelectDom } from 'thekselect';
 
-ThekSelect.init('#country-select');
+ThekSelectDom.init('#country-select');
 ```
 
 `ThekSelect` reads existing `<option>` values, labels, `selected`, `disabled`, and `multiple` automatically.
@@ -180,7 +199,9 @@ ThekSelect.init('#country-select');
 ```
 
 ```js
-ThekSelect.init('#big-list', {
+import { ThekSelectDom } from 'thekselect';
+
+ThekSelectDom.init('#big-list', {
   options: hugeOptions,
   searchable: true,
   virtualize: true,
@@ -206,10 +227,10 @@ ThekSelect.setDefaults({
 });
 
 // Uses global defaults
-ThekSelect.init('#first');
+ThekSelectDom.init('#first');
 
 // Instance options still override globals
-ThekSelect.init('#second', { height: 52 });
+ThekSelectDom.init('#second', { height: 52 });
 
 // Optional cleanup (tests, app teardown, etc.)
 ThekSelect.resetDefaults();
@@ -221,6 +242,17 @@ ThekSelect.resetDefaults();
 npm install
 npm test
 ```
+
+For non-trivial changes, validate in this order:
+
+```bash
+npm run format:check
+npm run lint
+npm test -- --run
+npm run build
+```
+
+The current test expansion plan is tracked in [docs/TEST_PLAN.md](docs/TEST_PLAN.md).
 
 ### Scripts
 
@@ -324,11 +356,11 @@ When using custom fields (`valueField`, `displayField`), keep `value` and `label
 | `on(event, callback)`       | `event: ThekSelectEvent`, `callback: (payload) => void`                  | `() => void`                                               | Subscribes to an event and returns an unsubscribe function.                                   |
 | `destroy()`                 | none                                                                     | `void`                                                     | Removes generated DOM/listeners and restores original element visibility.                     |
 
-| Static Method                       | Parameters                                                    | Returns      | Description                                      |
-| ----------------------------------- | ------------------------------------------------------------- | ------------ | ------------------------------------------------ |
-| `ThekSelect.init(element, config?)` | `element: string \| HTMLElement`, `config?: ThekSelectConfig` | `ThekSelect` | Creates and initializes a new instance.          |
-| `ThekSelect.setDefaults(defaults)`  | `defaults: Partial<ThekSelectConfig>`                         | `void`       | Sets process-wide defaults for future instances. |
-| `ThekSelect.resetDefaults()`        | none                                                          | `void`       | Clears global defaults.                          |
+| Static Method                          | Parameters                                                    | Returns      | Description                                      |
+| -------------------------------------- | ------------------------------------------------------------- | ------------ | ------------------------------------------------ |
+| `ThekSelectDom.init(element, config?)` | `element: string \| HTMLElement`, `config?: ThekSelectConfig` | `ThekSelect` | Creates and initializes a new instance.          |
+| `ThekSelect.setDefaults(defaults)`     | `defaults: Partial<ThekSelectConfig>`                         | `void`       | Sets process-wide defaults for future instances. |
+| `ThekSelect.resetDefaults()`           | none                                                          | `void`       | Clears global defaults.                          |
 
 ## Events
 

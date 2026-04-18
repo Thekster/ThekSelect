@@ -4,7 +4,7 @@ export type ThekSelectValue = ThekSelectPrimitive | ThekSelectPrimitive[] | unde
 /**
  * Default option shape. Used as the `T` default in all generics.
  *
- * Pass a custom type to `ThekSelect.init<MyOption>(...)` to use your own
+ * Pass a custom type to `ThekSelectDom.init<MyOption>(...)` to use your own
  * option objects directly. `valueField` and `displayField` in config become
  * `keyof MyOption & string`, giving you compile-time safety.
  *

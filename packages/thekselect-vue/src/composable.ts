@@ -1,5 +1,5 @@
 import { ref, shallowRef, onMounted, onUnmounted, type Ref } from 'vue';
-import { ThekSelect, type ThekSelectConfig, type ThekSelectValue } from 'thekselect';
+import { ThekSelect, ThekSelectDom, type ThekSelectConfig, type ThekSelectValue } from 'thekselect';
 
 export function useThekSelect(
   el: Ref<HTMLElement | null>,
@@ -14,7 +14,7 @@ export function useThekSelect(
 
   onMounted(() => {
     if (!el.value) return;
-    const ts = ThekSelect.init(el.value, options);
+    const ts = ThekSelectDom.init(el.value, options);
     instance.value = ts;
     value.value = ts.getValue() as ThekSelectValue;
     off = ts.on('change', (v: ThekSelectValue) => {

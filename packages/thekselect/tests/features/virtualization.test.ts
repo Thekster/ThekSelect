@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 import { renderOptionsContent } from '../../src/core/renderer/options-renderer';
 import { buildConfig, buildInitialState } from '../../src/core/config-utils';
 
@@ -21,7 +21,7 @@ describe('Virtualization', () => {
   });
 
   it('activates when option count meets virtualThreshold', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: makeOptions(100),
       virtualize: true,
       virtualThreshold: 80,
@@ -36,7 +36,7 @@ describe('Virtualization', () => {
   });
 
   it('does not activate below virtualThreshold', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: makeOptions(10),
       virtualize: true,
       virtualThreshold: 80,
@@ -54,7 +54,7 @@ describe('Virtualization', () => {
   it('batches multiple rapid scroll events into one DOM update per animation frame', () => {
     vi.useFakeTimers();
 
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: makeOptions(200),
       virtualize: true,
       virtualThreshold: 80,
@@ -91,7 +91,7 @@ describe('Virtualization', () => {
   it('fires another scroll render after the first rAF completes', () => {
     vi.useFakeTimers();
 
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: makeOptions(200),
       virtualize: true,
       virtualThreshold: 80,
@@ -119,7 +119,7 @@ describe('Virtualization', () => {
   });
 
   it('reuses existing option nodes while virtual scrolling', async () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: makeOptions(200),
       virtualize: true,
       virtualThreshold: 80,

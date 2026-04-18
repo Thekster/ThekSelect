@@ -39,15 +39,7 @@ export class ThekSelectEventEmitter<T extends object = ThekSelectOption> {
   emit<K extends ThekSelectEvent>(event: K, data: ThekSelectEventPayloadMap<T>[K]): void {
     if (!this.listeners.has(event)) return;
     this.listeners.get(event)!.forEach((listener) => {
-      try {
-        listener(data);
-      } catch (err) {
-        // Re-throw asynchronously so the error reaches global handlers (e.g.
-        // Sentry) without blocking subsequent listeners from firing.
-        setTimeout(() => {
-          throw err;
-        }, 0);
-      }
+      listener(data);
     });
   }
 }

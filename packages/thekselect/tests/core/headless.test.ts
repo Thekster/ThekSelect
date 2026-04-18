@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelect } from '../../src/core/thekselect.js';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('ThekSelect headless core', () => {
   it('can be instantiated without a DOM element', () => {
@@ -162,10 +163,10 @@ describe('ThekSelect headless core', () => {
     core.destroy();
   });
 
-  it('ThekSelect.init() still returns a working instance', () => {
+  it('ThekSelectDom.init() still returns a working instance', () => {
     document.body.innerHTML = '<div id="c"></div>';
     const el = document.getElementById('c') as HTMLElement;
-    const ts = ThekSelect.init(el, { options: [{ value: '1', label: 'One' }] });
+    const ts = ThekSelectDom.init(el, { options: [{ value: '1', label: 'One' }] });
     expect(ts.getValue()).toBeUndefined();
     ts.setValue('1');
     expect(ts.getValue()).toBe('1');

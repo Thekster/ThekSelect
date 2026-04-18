@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('Render function error boundary', () => {
   let container: HTMLDivElement;
@@ -14,7 +14,7 @@ describe('Render function error boundary', () => {
   });
 
   it('falls back to plain label text when renderOption throws', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'Apple' }],
       renderOption: () => {
         throw new Error('render crash');
@@ -31,7 +31,7 @@ describe('Render function error boundary', () => {
   });
 
   it('fires error event when renderOption throws', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'Apple' }],
       renderOption: () => {
         throw new Error('render crash');
@@ -53,7 +53,7 @@ describe('Render function error boundary', () => {
   });
 
   it('falls back to plain label text when renderSelection throws in single mode', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'Apple', selected: true }],
       renderSelection: () => {
         throw new Error('selection crash');
@@ -66,7 +66,7 @@ describe('Render function error boundary', () => {
   });
 
   it('fires error event when renderSelection throws', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'Apple', selected: true }],
       renderSelection: () => {
         throw new Error('selection crash');

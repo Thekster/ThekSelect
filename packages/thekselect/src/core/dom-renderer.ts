@@ -19,12 +19,6 @@ import { positionDropdown, normalizeHeight } from './renderer/dropdown-positione
 export type { RendererCallbacks };
 
 export class DomRenderer<T extends object = ThekSelectOption> {
-  private static orphanObserver: MutationObserver | null = null;
-  private static orphanSubscribers: Set<{
-    wrapper: HTMLElement;
-    onOrphan: () => void;
-  }> = new Set();
-
   public wrapper!: HTMLElement;
   public control!: HTMLElement;
   public selectionContainer!: HTMLElement;
@@ -38,7 +32,6 @@ export class DomRenderer<T extends object = ThekSelectOption> {
   private lastFilteredOptions: T[] = [];
   private _destroyed = false;
   private _listenerController: AbortController | null = null;
-  private _orphanObserver: MutationObserver | null = null;
   private statusRegion: HTMLElement | null = null;
 
   constructor(
@@ -67,10 +60,6 @@ export class DomRenderer<T extends object = ThekSelectOption> {
       },
       { signal }
     );
-    this.optionsList.addEventListener('wheel', (e) => this.handleOptionsWheel(e), {
-      passive: false,
-      signal
-    });
 
     // Prevent mousedown on dropdown items from stealing focus away from the
     // combobox input, which would fire a spurious blur and close the dropdown
@@ -96,53 +85,12 @@ export class DomRenderer<T extends object = ThekSelectOption> {
     this.dropdown.style.setProperty('--thek-input-height', resolved);
   }
 
-  /** Start watching the document for detached wrappers so destroy() still runs on subtree removals. */
-  public startOrphanObserver(_parent: Node): void {
-    const root =
-      typeof document !== 'undefined' && document.body ? document.body : document.documentElement;
-    if (!root) return;
-
-    if (!this._orphanObserver) {
-      const orphanSubscriber = {
-        wrapper: this.wrapper,
-        onOrphan: () => this.callbacks.onOrphan()
-      };
-      DomRenderer.orphanSubscribers.add(orphanSubscriber);
-      this._orphanObserver = {
-        disconnect: () => {
-          DomRenderer.orphanSubscribers.delete(orphanSubscriber);
-        }
-      } as MutationObserver;
-    }
-    if (!DomRenderer.orphanObserver) {
-      DomRenderer.orphanObserver = new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-          for (const removed of Array.from(mutation.removedNodes)) {
-            if (removed.nodeType !== 1) continue;
-            const removedElement = removed as Element;
-            for (const subscriber of Array.from(DomRenderer.orphanSubscribers)) {
-              if (
-                removedElement === subscriber.wrapper ||
-                removedElement.contains(subscriber.wrapper) ||
-                !subscriber.wrapper.isConnected
-              ) {
-                subscriber.onOrphan();
-              }
-            }
-          }
-        }
-      });
-      DomRenderer.orphanObserver.observe(root, { childList: true, subtree: true });
-    }
-  }
-
   public render(state: ThekSelectState<T>, filteredOptions: T[]): void {
     const prevState = this.lastState;
     this.lastState = state;
     this.lastFilteredOptions = filteredOptions;
-    const ariaTarget = this.config.searchable ? this.input : this.control;
-    ariaTarget.setAttribute('aria-expanded', state.isOpen.toString());
-    ariaTarget.setAttribute('aria-busy', state.isLoading ? 'true' : 'false');
+    this.control.setAttribute('aria-expanded', state.isOpen.toString());
+    this.control.setAttribute('aria-busy', state.isLoading ? 'true' : 'false');
     this.optionsList.setAttribute('aria-busy', state.isLoading ? 'true' : 'false');
     this.dropdown.hidden = !state.isOpen;
     this.wrapper.classList.toggle('thek-open', state.isOpen);
@@ -181,11 +129,10 @@ export class DomRenderer<T extends object = ThekSelectOption> {
   }
 
   private updateActiveDescendant(id: string | null): void {
-    const target = this.config.searchable ? this.input : this.control;
     if (id) {
-      target.setAttribute('aria-activedescendant', id);
+      this.control.setAttribute('aria-activedescendant', id);
     } else {
-      target.removeAttribute('aria-activedescendant');
+      this.control.removeAttribute('aria-activedescendant');
     }
   }
 
@@ -202,26 +149,6 @@ export class DomRenderer<T extends object = ThekSelectOption> {
       false,
       scrollTop
     );
-  }
-
-  private handleOptionsWheel(e: WheelEvent): void {
-    if (!this.config.virtualize) return;
-    const list = this.optionsList;
-    const atTop = list.scrollTop <= 0;
-    const atBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 1;
-    const scrollingUp = e.deltaY < 0;
-    const scrollingDown = e.deltaY > 0;
-
-    if ((scrollingUp && !atTop) || (scrollingDown && !atBottom)) {
-      e.preventDefault();
-      let delta = e.deltaY;
-      if (e.deltaMode === 1) {
-        delta *= Math.max(1, this.config.virtualItemHeight);
-      } else if (e.deltaMode === 2) {
-        delta *= list.clientHeight || 240;
-      }
-      list.scrollTop += delta;
-    }
   }
 
   /** Announce a message to screen readers via the polite live region. */
@@ -293,12 +220,6 @@ export class DomRenderer<T extends object = ThekSelectOption> {
   public destroy(): void {
     if (this._destroyed) return;
     this._destroyed = true;
-    this._orphanObserver?.disconnect();
-    this._orphanObserver = null;
-    if (DomRenderer.orphanObserver && DomRenderer.orphanSubscribers.size === 0) {
-      DomRenderer.orphanObserver.disconnect();
-      DomRenderer.orphanObserver = null;
-    }
     this._listenerController?.abort();
     this._listenerController = null;
     if (this.wrapper.parentNode) {

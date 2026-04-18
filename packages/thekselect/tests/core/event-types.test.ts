@@ -1,10 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import {
-  ThekSelect,
-  ThekSelectOption,
-  type ThekSelectPrimitive,
-  type ThekSelectValue
-} from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('Typed event callbacks', () => {
   let container: HTMLDivElement;
@@ -19,7 +14,7 @@ describe('Typed event callbacks', () => {
   });
 
   it('change event callback receives string in single mode', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'One' }]
     });
 
@@ -38,7 +33,7 @@ describe('Typed event callbacks', () => {
   });
 
   it('change event callback receives string[] in multi mode', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       multiple: true,
       options: [{ value: '1', label: 'One' }]
     });
@@ -57,7 +52,7 @@ describe('Typed event callbacks', () => {
   });
 
   it('tagAdded callback receives a ThekSelectOption', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       multiple: true,
       options: [{ value: '1', label: 'One' }]
     });
@@ -78,7 +73,7 @@ describe('Typed event callbacks', () => {
   });
 
   it('search callback receives a string', async () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'One' }],
       debounce: 0
     });
@@ -97,7 +92,7 @@ describe('Typed event callbacks', () => {
   });
 
   it('reordered callback receives primitive[]', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       multiple: true,
       options: [
         { value: '1', label: 'One', selected: true },
@@ -122,7 +117,7 @@ describe('Typed event callbacks', () => {
   });
 
   it('error event callback receives an Error object', async () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       loadOptions: async () => {
         throw new Error('network failure');
       },

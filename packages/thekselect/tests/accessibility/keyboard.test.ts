@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('Keyboard accessibility', () => {
   let container: HTMLDivElement;
@@ -15,20 +15,20 @@ describe('Keyboard accessibility', () => {
 
   // Issue 1: keyboard reachability depends on searchable mode
   it('non-searchable control has tabindex="0" so keyboard users can reach it via Tab', () => {
-    ThekSelect.init(container, { searchable: false, options: [{ value: '1', label: 'One' }] });
+    ThekSelectDom.init(container, { searchable: false, options: [{ value: '1', label: 'One' }] });
     const control = document.querySelector('.thek-control') as HTMLElement;
     expect(control.getAttribute('tabindex')).toBe('0');
   });
 
   it('searchable mode keeps the visible control in the tab order', () => {
-    ThekSelect.init(container, { searchable: true, options: [{ value: '1', label: 'One' }] });
+    ThekSelectDom.init(container, { searchable: true, options: [{ value: '1', label: 'One' }] });
     const control = document.querySelector('.thek-control') as HTMLElement;
     expect(control.getAttribute('tabindex')).toBe('0');
   });
 
   // Issue 2: Enter on focused control opens dropdown
   it('pressing Enter on the focused control opens the dropdown', () => {
-    ThekSelect.init(container, { options: [{ value: '1', label: 'One' }] });
+    ThekSelectDom.init(container, { options: [{ value: '1', label: 'One' }] });
     const control = document.querySelector('.thek-control') as HTMLElement;
 
     control.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
@@ -39,7 +39,7 @@ describe('Keyboard accessibility', () => {
 
   // Issue 3: Space on focused control opens dropdown
   it('pressing Space on the focused control opens the dropdown', () => {
-    ThekSelect.init(container, { options: [{ value: '1', label: 'One' }] });
+    ThekSelectDom.init(container, { options: [{ value: '1', label: 'One' }] });
     const control = document.querySelector('.thek-control') as HTMLElement;
 
     control.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
@@ -50,7 +50,7 @@ describe('Keyboard accessibility', () => {
 
   // Issue 4: Escape on focused control closes dropdown
   it('pressing Escape on the focused control closes the dropdown', () => {
-    ThekSelect.init(container, { options: [{ value: '1', label: 'One' }] });
+    ThekSelectDom.init(container, { options: [{ value: '1', label: 'One' }] });
     const control = document.querySelector('.thek-control') as HTMLElement;
 
     // Open first
@@ -65,7 +65,7 @@ describe('Keyboard accessibility', () => {
 
   // Issue 5: searchable:false still responds to keyboard on the control
   it('non-searchable mode responds to keyboard on control (ArrowDown opens)', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: false,
       options: [{ value: '1', label: 'One' }]
     });
@@ -79,7 +79,7 @@ describe('Keyboard accessibility', () => {
 
   // Issue 6: Enter selects focused option in non-searchable mode
   it('non-searchable mode: ArrowDown + Enter selects the first option', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       searchable: false,
       options: [
         { value: '1', label: 'One' },
@@ -96,7 +96,7 @@ describe('Keyboard accessibility', () => {
 
   // Disabled item navigation — focusNext/focusPrev must skip disabled options
   it('ArrowDown skips over a disabled option', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: false,
       options: [
         { value: '1', label: 'One' },
@@ -117,7 +117,7 @@ describe('Keyboard accessibility', () => {
   });
 
   it('ArrowUp skips over a disabled option', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: false,
       options: [
         { value: '1', label: 'One' },
@@ -140,7 +140,7 @@ describe('Keyboard accessibility', () => {
   });
 
   it('open() skips a disabled first option and focuses the first non-disabled one', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: false,
       options: [
         { value: '1', label: 'One', disabled: true },
@@ -157,7 +157,7 @@ describe('Keyboard accessibility', () => {
   });
 
   it('aria-activedescendant never points at a disabled option after ArrowDown', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: false,
       options: [
         { value: '1', label: 'One' },
@@ -177,7 +177,7 @@ describe('Keyboard accessibility', () => {
 
   // Escape should return focus to the combobox element
   it('Escape returns focus to the control in non-searchable mode', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: false,
       options: [{ value: '1', label: 'One' }]
     });
@@ -192,7 +192,7 @@ describe('Keyboard accessibility', () => {
 
   // ArrowUp on a closed dropdown should open it (consistent with ArrowDown)
   it('ArrowUp on a closed dropdown opens it', () => {
-    ThekSelect.init(container, { searchable: false, options: [{ value: '1', label: 'One' }] });
+    ThekSelectDom.init(container, { searchable: false, options: [{ value: '1', label: 'One' }] });
     const control = document.querySelector('.thek-control') as HTMLElement;
 
     control.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
@@ -201,7 +201,7 @@ describe('Keyboard accessibility', () => {
   });
 
   it('disabled controls ignore keyboard open attempts', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       disabled: true,
       searchable: true,
       options: [{ value: '1', label: 'One' }]
@@ -223,7 +223,7 @@ describe('Keyboard accessibility', () => {
     const localContainer = document.getElementById('container') as HTMLDivElement;
     const outside = document.getElementById('outside') as HTMLInputElement;
 
-    ThekSelect.init(localContainer, {
+    ThekSelectDom.init(localContainer, {
       searchable: true,
       options: [{ value: '1', label: 'One' }]
     });
@@ -245,7 +245,7 @@ describe('Keyboard accessibility', () => {
     const localContainer = document.getElementById('container') as HTMLDivElement;
     const outside = document.getElementById('outside') as HTMLInputElement;
 
-    ThekSelect.init(localContainer, {
+    ThekSelectDom.init(localContainer, {
       searchable: false,
       options: [{ value: '1', label: 'One' }]
     });
@@ -259,7 +259,7 @@ describe('Keyboard accessibility', () => {
   });
 
   it('does not close when focus moves from the control to the search input within the dropdown', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: true,
       options: [{ value: '1', label: 'One' }]
     });
@@ -277,7 +277,7 @@ describe('Keyboard accessibility', () => {
   });
 
   it('does not close when focus moves between elements inside the wrapper', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       searchable: false,
       options: [{ value: '1', label: 'One' }]
     });

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('Infrastructure regressions', () => {
   let container: HTMLDivElement;
@@ -19,7 +19,7 @@ describe('Infrastructure regressions', () => {
   it('window.removeEventListener is called when the last instance is destroyed', () => {
     const removeSpy = vi.spyOn(window, 'removeEventListener');
 
-    const ts = ThekSelect.init(container, { options: [] });
+    const ts = ThekSelectDom.init(container, { options: [] });
     removeSpy.mockClear(); // ignore any removes that happened during init
 
     ts.destroy();
@@ -33,8 +33,8 @@ describe('Infrastructure regressions', () => {
     const container2 = document.createElement('div');
     document.body.appendChild(container2);
 
-    const ts1 = ThekSelect.init(container, { options: [] });
-    const ts2 = ThekSelect.init(container2, { options: [] });
+    const ts1 = ThekSelectDom.init(container, { options: [] });
+    const ts2 = ThekSelectDom.init(container2, { options: [] });
 
     const removeSpy = vi.spyOn(window, 'removeEventListener');
 
@@ -49,7 +49,7 @@ describe('Infrastructure regressions', () => {
 
   it('injectStyles re-injects the style element if it was removed from the document', () => {
     // First instance injects the style tag
-    const ts1 = ThekSelect.init(container, { options: [] });
+    const ts1 = ThekSelectDom.init(container, { options: [] });
     expect(document.getElementById('thekselect-base-styles')).not.toBeNull();
     ts1.destroy();
 
@@ -60,14 +60,14 @@ describe('Infrastructure regressions', () => {
     // Creating a new instance should re-inject the styles
     document.body.innerHTML = '<div id="c2"></div>';
     const container2 = document.getElementById('c2') as HTMLElement;
-    ThekSelect.init(container2, { options: [] });
+    ThekSelectDom.init(container2, { options: [] });
     expect(document.getElementById('thekselect-base-styles')).not.toBeNull();
   });
 
   // ── DomRenderer.destroy: double-destroy safety ────────────────────────────
 
   it('calling destroy() twice does not throw', () => {
-    const ts = ThekSelect.init(container, { options: [] });
+    const ts = ThekSelectDom.init(container, { options: [] });
     expect(() => {
       ts.destroy();
       ts.destroy();
@@ -77,7 +77,7 @@ describe('Infrastructure regressions', () => {
   // ── Programmatic open(): positions dropdown and focuses search input ───────
 
   it('programmatic open() positions the dropdown', () => {
-    const ts = ThekSelect.init(container, { options: [{ value: '1', label: 'One' }] });
+    const ts = ThekSelectDom.init(container, { options: [{ value: '1', label: 'One' }] });
     const dropdown = document.querySelector('.thek-dropdown') as HTMLElement;
 
     expect(dropdown.hidden).toBe(true);
@@ -90,7 +90,7 @@ describe('Infrastructure regressions', () => {
   });
 
   it('programmatic open() schedules focus on the search input in searchable mode', async () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       searchable: true,
       options: [{ value: '1', label: 'One' }]
     });
@@ -105,7 +105,7 @@ describe('Infrastructure regressions', () => {
   });
 
   it('programmatic open() does not focus input in non-searchable mode', async () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       searchable: false,
       options: [{ value: '1', label: 'One' }]
     });
@@ -125,7 +125,7 @@ describe('Infrastructure regressions', () => {
       label: `Option ${i}`
     }));
 
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options,
       virtualize: true,
       virtualThreshold: 10,

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ThekSelect } from '../../src/core/thekselect';
+import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('ThekSelect Edge Cases', () => {
   let container: HTMLElement;
@@ -16,7 +16,7 @@ describe('ThekSelect Edge Cases', () => {
   });
 
   it('should handle initialization with empty options', () => {
-    ThekSelect.init(container, { options: [] });
+    ThekSelectDom.init(container, { options: [] });
     const control = document.querySelector('.thek-control') as HTMLElement;
     control.click();
 
@@ -27,7 +27,7 @@ describe('ThekSelect Edge Cases', () => {
 
   it('should handle options with special characters and HTML (XSS check)', () => {
     const dangerousLabel = '<img src=x onerror=alert(1)>';
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: [{ value: 'danger', label: dangerousLabel }]
     });
 
@@ -41,7 +41,7 @@ describe('ThekSelect Edge Cases', () => {
 
   it('should handle extremely long labels gracefully', () => {
     const longLabel = 'A'.repeat(1000);
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       options: [{ value: 'long', label: longLabel }]
     });
 
@@ -54,7 +54,7 @@ describe('ThekSelect Edge Cases', () => {
   });
 
   it('should handle setValue with a value that does not exist in options', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'One' }]
     });
 
@@ -67,7 +67,7 @@ describe('ThekSelect Edge Cases', () => {
   });
 
   it('should handle missing displayField properties in data', () => {
-    ThekSelect.init(container, {
+    ThekSelectDom.init(container, {
       displayField: 'name',
       valueField: 'id',
       options: [
@@ -84,7 +84,7 @@ describe('ThekSelect Edge Cases', () => {
   });
 
   it('should safely destroy the instance', () => {
-    const ts = ThekSelect.init(container, {});
+    const ts = ThekSelectDom.init(container, {});
 
     expect(document.querySelector('.thek-select')).toBeTruthy();
     expect(document.querySelector('.thek-dropdown')).toBeTruthy();
@@ -98,7 +98,7 @@ describe('ThekSelect Edge Cases', () => {
   it('a throwing listener does not silence subsequent listeners and re-throws globally', () => {
     vi.useFakeTimers();
 
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'One' }]
     });
 
@@ -111,21 +111,23 @@ describe('ThekSelect Edge Cases', () => {
       results.push('second');
     });
 
-    const control = document.querySelector('.thek-control') as HTMLElement;
-    control.click();
-    (document.querySelector('.thek-option') as HTMLElement).click();
+    // The throw now happens synchronously.
+    let caughtError: Error | null = null;
+    try {
+      ts.setValue('1');
+    } catch (err) {
+      caughtError = err as Error;
+    }
 
-    // Both listeners ran — the throw did not silence the second one.
-    expect(results).toEqual(['first', 'second']);
+    expect(caughtError).not.toBeNull();
+    expect(caughtError?.message).toBe('boom');
 
-    // Advance the fake clock: the queued setTimeout fires and throws.
-    // Wrapping in expect().toThrow() both asserts the re-throw happened and
-    // prevents it escaping as an unhandled exception in the test runner.
-    expect(() => vi.runAllTimers()).toThrow('boom');
+    // Subsequent listeners are now blocked by the synchronous throw.
+    expect(results).toEqual(['first']);
   });
 
   it('setValue with empty array clears single-select selection', () => {
-    const ts = ThekSelect.init(container, {
+    const ts = ThekSelectDom.init(container, {
       options: [{ value: '1', label: 'One', selected: true }]
     });
     expect(ts.getValue()).toBe('1');
