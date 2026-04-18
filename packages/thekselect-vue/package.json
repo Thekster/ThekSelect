@@ -1,6 +1,6 @@
 {
   "name": "thekselect-vue",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Vue 3 wrapper for ThekSelect",
   "keywords": [
     "accessible",
@@ -30,7 +30,7 @@
     }
   },
   "peerDependencies": {
-    "thekselect": ">=2.0.1",
+    "thekselect": ">=2.1.0",
     "vue": ">=3.0.0"
   },
   "devDependencies": {

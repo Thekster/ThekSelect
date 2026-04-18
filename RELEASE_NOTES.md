@@ -1,5 +1,25 @@
 # Release Notes
 
+## 2.1.0 / thekselect-vue 2.1.0 (2026-04-18)
+
+### Performance
+
+- **Removed Global MutationObserver** — The catastrophic document-wide observer that scanned every removed DOM node has been removed. Component lifecycle management now relies exclusively on the explicit `.destroy()` method. This eliminates significant layout thrashing and CPU spikes in complex SPA environments during route changes or list rendering.
+
+### Accessibility
+
+- **Correct ARIA Combobox Hierarchy** — Fixed fundamental WAI-ARIA violations where the primary control wrapper was roleless. The `.thek-control` element is now always assigned `role="combobox"` and manages `aria-expanded` and `aria-activedescendant` directly.
+- **Searchable Mode ARIA 1.2+ Pattern** — In searchable mode, the inner `<input>` now correctly uses `role="textbox"` with `aria-autocomplete="list"` instead of competing for the `combobox` role, ensuring screen readers announce the component and its popup state correctly.
+
+### Fixed
+
+- **Native OS Scrolling Restored** — Removed custom wheel event hijacking and `preventDefault()` calls on the options list. The browser now handles standard scroll physics, restoring smooth scrolling, trackpad momentum, and OS-level friction settings.
+- **Synchronous Event Errors** — Removed the `setTimeout` and `try/catch` wrapper in the event emitter. Errors in event listeners now throw synchronously, allowing them to be correctly intercepted by framework error boundaries (e.g., Vue's `onErrorCaptured`).
+
+### Changed
+
+- **Explicit Destruction Contract** — As the library no longer automatically detects DOM removal via a global observer, consumers MUST now call `.destroy()` when removing an instance from the DOM to ensure complete cleanup of global listeners and the injected dropdown. (Framework wrappers like `thekselect-vue` handle this automatically).
+
 ## 2.0.1 / thekselect-vue 2.0.1 (2026-04-17)
 
 ### Fixed
