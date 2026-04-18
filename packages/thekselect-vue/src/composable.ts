@@ -1,6 +1,5 @@
 import { ref, shallowRef, onMounted, onUnmounted, type Ref } from 'vue';
 import {
-  ThekSelect,
   ThekSelectDom,
   type ThekSelectHandle,
   type ThekSelectConfig,
