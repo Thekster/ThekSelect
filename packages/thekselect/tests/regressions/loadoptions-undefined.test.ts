@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { ThekSelect } from '../../src/core/thekselect.js';
 import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('loadOptions: undefined safety', () => {

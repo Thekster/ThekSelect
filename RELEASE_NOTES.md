@@ -1,5 +1,15 @@
 # Release Notes
 
+## 2.2.0 / thekselect-vue 2.2.0 (2026-04-22)
+
+### Added
+
+- **`hideSearch` option** — Set `hideSearch: true` to hide the search input box while keeping full keyboard support. When the search box is hidden, pressing any alphanumeric key opens the dropdown and jumps to the first option whose label starts with that character — identical to native `<select>` typeahead behaviour. Arrow keys, Enter, Space, and Escape all continue to work as normal. The Vue wrapper exposes this as the `hideSearch` prop.
+
+### Fixed
+
+- **Missing `ThekSelect` import in test files** — `tests/core/defaults.test.ts` and `tests/regressions/loadoptions-undefined.test.ts` referenced `ThekSelect.setDefaults()` / `ThekSelect.resetDefaults()` without importing the class, causing those test suites to fail with `ReferenceError: ThekSelect is not defined`.
+
 ## 2.1.1 / thekselect-vue 2.1.1 (2026-04-18)
 
 ### Breaking

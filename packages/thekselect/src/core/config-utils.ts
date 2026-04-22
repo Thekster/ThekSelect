@@ -35,6 +35,7 @@ export function buildConfig<T extends object = ThekSelectOption>(
     options: initialOptions,
     multiple: isSelect ? element.multiple : false,
     searchable: true,
+    hideSearch: false,
     disabled: isSelect ? element.disabled : false,
     placeholder: 'Select...',
     canCreate: false,

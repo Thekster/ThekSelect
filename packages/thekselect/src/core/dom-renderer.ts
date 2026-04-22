@@ -208,6 +208,34 @@ export class DomRenderer<T extends object = ThekSelectOption> {
     }
   }
 
+  public scrollToFocused(index: number): void {
+    const list = this.optionsList;
+    if (this.config.virtualize) {
+      const itemHeight = Math.max(20, this.config.virtualItemHeight);
+      const viewportHeight = list.clientHeight || 240;
+      const focusedTop = index * itemHeight;
+      const focusedBottom = focusedTop + itemHeight;
+      const currentTop = list.scrollTop;
+      const currentBottom = currentTop + viewportHeight;
+      if (focusedTop < currentTop) {
+        list.scrollTop = focusedTop;
+      } else if (focusedBottom > currentBottom) {
+        list.scrollTop = focusedBottom - viewportHeight;
+      }
+    } else {
+      const el = document.getElementById(`${this.id}-opt-${index}`);
+      if (!el) return;
+      const elRect = el.getBoundingClientRect();
+      const listRect = list.getBoundingClientRect();
+      const elOffsetInList = elRect.top - listRect.top + list.scrollTop;
+      const elBottom = elOffsetInList + el.offsetHeight;
+      const listBottom = list.scrollTop + list.clientHeight;
+      if (elOffsetInList < list.scrollTop || elBottom > listBottom) {
+        list.scrollTop = elOffsetInList - list.clientHeight / 2 + el.offsetHeight / 2;
+      }
+    }
+  }
+
   public setHeight(height: number | string): void {
     this.config.height = height;
     this.applyHeight(height);

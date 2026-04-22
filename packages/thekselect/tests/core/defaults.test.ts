@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { ThekSelect } from '../../src/core/thekselect.js';
 import { ThekSelectDom } from '../../src/core/thekselect-dom.js';
 
 describe('ThekSelect Global Defaults', () => {

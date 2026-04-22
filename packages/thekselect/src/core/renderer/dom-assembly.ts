@@ -116,7 +116,7 @@ export function createRendererSkeleton<T extends object = ThekSelectOption>(
   dropdown.hidden = true;
 
   let input: HTMLInputElement;
-  if (config.searchable) {
+  if (config.searchable && !config.hideSearch) {
     const searchWrapper = document.createElement('div');
     searchWrapper.className = 'thek-search-wrapper';
     searchWrapper.appendChild(createSearchIcon());

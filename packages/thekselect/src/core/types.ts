@@ -23,6 +23,8 @@ export interface ThekSelectConfig<T extends object = ThekSelectOption> {
   options?: T[];
   multiple?: boolean;
   searchable?: boolean;
+  /** Hide the search input box while keeping arrow-key navigation and typeahead (letter-key jumps). */
+  hideSearch?: boolean;
   disabled?: boolean;
   placeholder?: string;
   canCreate?: boolean;

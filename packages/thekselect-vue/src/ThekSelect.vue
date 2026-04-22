@@ -15,6 +15,7 @@ const props = defineProps<{
   options?: ThekSelectOption[];
   multiple?: boolean;
   searchable?: boolean;
+  hideSearch?: boolean;
   disabled?: boolean;
   loading?: boolean;
   placeholder?: string;
@@ -98,6 +99,7 @@ onMounted(() => {
     options: props.options,
     multiple: props.multiple,
     searchable: props.searchable,
+    hideSearch: props.hideSearch,
     disabled: props.disabled || props.loading,
     placeholder: props.placeholder,
     canCreate: props.canCreate,

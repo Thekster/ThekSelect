@@ -66,7 +66,7 @@ export class ThekSelectDom<T extends object = ThekSelectOption> extends ThekSele
         });
       },
       onFocusCombobox: () => {
-        if (this.config.searchable) {
+        if (this.config.searchable && !this.config.hideSearch) {
           this.renderer.input.focus();
         } else {
           this.renderer.control.focus();
@@ -213,6 +213,27 @@ export class ThekSelectDom<T extends object = ThekSelectOption> extends ThekSele
     if (this.config.disabled) return;
     const state = this.stateManager.getState();
 
+    // Typeahead for hideSearch mode — single printable character jumps to first matching option.
+    if (this.config.hideSearch && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      if (!state.isOpen) this.open();
+      const char = e.key.toLowerCase();
+      const opts = this.getFilteredOptions();
+      const idx = opts.findIndex(
+        (opt) =>
+          String(getOptionField(opt, this.config.displayField) ?? '')
+            .toLowerCase()
+            .startsWith(char) && !(opt as Record<string, unknown>)['disabled']
+      );
+      if (idx !== -1) {
+        this.stateManager.setState({ focusedIndex: idx });
+        requestAnimationFrame(() => {
+          if (!this.isDestroyed) this.renderer.scrollToFocused(idx);
+        });
+      }
+      return;
+    }
+
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
@@ -249,7 +270,7 @@ export class ThekSelectDom<T extends object = ThekSelectOption> extends ThekSele
       case 'Escape':
         this.close();
         // Return focus to the combobox element so keyboard users don't lose their position.
-        if (this.config.searchable) {
+        if (this.config.searchable && !this.config.hideSearch) {
           this.renderer.input.focus();
         } else {
           this.renderer.control.focus();
@@ -272,7 +293,7 @@ export class ThekSelectDom<T extends object = ThekSelectOption> extends ThekSele
       this.stateManager.getState() as ThekSelectState<T>,
       this.getFilteredOptions()
     );
-    if (this.config.searchable) {
+    if (this.config.searchable && !this.config.hideSearch) {
       this.focusTimeoutId = setTimeout(() => {
         if (!this.isDestroyed && this.stateManager.getState().isOpen) {
           this.renderer.input.focus();
